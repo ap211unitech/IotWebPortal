@@ -2,6 +2,8 @@ let mainLocationsDiv = document.getElementById("mainLocationsDiv");
 let mainSensorsDiv = document.getElementById("mainSensorsDiv");
 
 const giveTemplate = (data) => {
+
+  // Template To be rendered for a particular sensor
   const giveDataOfSelectedLocation = ({
     id,
     location,
@@ -17,10 +19,11 @@ const giveTemplate = (data) => {
     </div>`;
   };
 
-  giveDataOfSelectedLocation(data[0]);
+  // Making previous data empty , then we will store new data coming from backend
+  mainLocationsDiv.innerHTML = "";
 
   data.forEach((res) => {
-    const { id, location, time_of_reading, weight } = res;
+    const { id, location } = res;
     var div = document.createElement("div");
     div.className = "location_card";
     div.id = id;
@@ -33,6 +36,10 @@ const giveTemplate = (data) => {
 
     mainLocationsDiv.appendChild(div);
   });
+
+  // By default for First element 
+  giveDataOfSelectedLocation(data[0]);
+
 };
 
 async function getRefreshData() {
@@ -49,4 +56,4 @@ getRefreshData();
 
 setInterval(() => {
   getRefreshData();
-}, 10 * 1000);
+}, 2 * 60 * 1000);
