@@ -5,10 +5,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-
-    <!-- CSS File -->
-    <link rel="stylesheet" href="../css/style.css">
-
   <!-- Font Awesome CDN -->
   <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
     integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
@@ -18,78 +14,72 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Lato&family=Playfair+Display&family=Roboto&display=swap"
     rel="stylesheet" />
-    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
-    integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+  <link href="https://fonts.googleapis.com/css2?family=Staatliches&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="index.css" />
-  <title>IOT web portal</title>
-  
+  <!-- CSS File -->
+  <link rel="stylesheet" href="../css/style.css">
+
+  <title>IoT web portal</title>
+
 </head>
 
 <body>
- <!------------------------------Hamberger Menu---------------------------------- -->
- <div id="menu-bar">
-        <div id="menu" onclick="onClickMenu()">
-          <div id="bar1" class="bar"></div>
-          <div id="bar2" class="bar"></div>
-          <div id="bar3" class="bar"></div>
-        </div>
-        <ul class="nav" id="nav">
-          <h1 style="color: white;">Project</h1>
-          <li>
-            <a href="#"><i class="fa fa-home" aria-hidden="true"></i> Home</a>
-          </li>
-          <li>
-            <a href="#"><i class="fa fa-address-book" aria-hidden="true"></i> About Us</a>
-          </li>
-          <li>
-            <a href="#"><i class="fa fa-phone-square" aria-hidden="true"></i> Contact Us</a>
-          </li>
-          <li>
-            <a href="#"><i class="fa fa-briefcase" aria-hidden="true"></i> Tools</a>
-          </li>
-        </ul>
-      </div>
-      <div class="menu-bg" id="menu-bg"></div>
-  
-      <!-------------------------------------Main Navbar-------------------------------->
-  
-      <div id="navbar">
-        <div class="nav-items">
-          <div class="links">
-            <div class="logo">
-              <h3>Project</h3>
-            </div>
-  
-            <a href="#"><i class="fa fa-home" aria-hidden="true"></i> Home</a>
-            <a href="#"><i class="fa fa-address-book" aria-hidden="true"></i> About Us</a>
-            <a href="#"><i class="fa fa-phone-square" aria-hidden="true"></i> Contact Us</a>
-            <a href="#"><i class="fa fa-briefcase" aria-hidden="true"></i> Tools</a>
-          </div>
-        </div>
-      </div>
-    </header>
-  
-    <!-------------------------------------Center Body-------------------------------->
-            <%- body %>
+  <div id="left-coloumn">
+    <p style="color: white; font-size: 1.85rem; font-family: 'Staatliches', cursive; margin: auto;">IoT Web Portal
+    </p>
+    <div>
+      <p style="margin: 40px 0px 5px 0px; color: white; font-size: 0.9rem; font-family: 'Staatliches', cursive;">
+        LOCATIONS <i class="fas fa-map-marker-alt"></i>
+      </p>
+    </div>
+    <div id="mainLocationsDiv">
 
-    <!-------------------------------------Footer
-        -------------------------------->
-    <footer>
-            <div id="socialIcons">
-              <a href=""><i class="fab fa-instagram"></i></a>
-              <a href=""><i class="fab fa-github"></i></a>
-              <a href=""><i class="far fa-envelope"></i></a>
-              <a href=""><i class="fab fa-twitter"></i></a>
-            </div>
-            <!-- <hr class="new1"> -->
-            <!-- <hr style="color: red;"> -->
-            <div id="bottomFooter">
-              <p style="color:white; font-family: 'Lato', sans-serif;">Currently In Development Phase | Indian Institute of
-                Technology Jodhpur</p>
-            </div>
-          </footer>
-        <script src="../js/layout.js"></script>
-        </body>
-        
-        </html>
+    </div>
+  </div>
+
+  <div id="right-coloumn">
+
+    <!-------------------------------------Main Navbar-------------------------------->
+
+    <div id="navbar">
+      <div class="nav-items">
+        <div style="float: left; margin: auto 5px;">
+          <a href="/" style="color: #f96332; font-size: 1.2rem; font-family: 'Staatliches', cursive;">DASHBOARD</a>
+        </div>
+        <div style="float: right;">
+          <ul>
+            <li><a href="#"><i class="fa fa-home" aria-hidden="true"></i></a></li>
+            <li><a href="#"><i class="fa fa-address-book" aria-hidden="true"></i></a></li>
+            <li><a href="#"><i class="fa fa-phone-square" aria-hidden="true"></i></a></li>
+            <li><a href="#"><i class="fa fa-briefcase" aria-hidden="true"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!---------------------------------------- CENTER BODY ---------------------------------------->
+    <%- body %>
+
+
+      <footer>
+        <!-- <div id="leftFooter">
+          <p>Currently In Development Phase |
+            Indian Institute of
+            Technology Jodhpur</p>
+        </div> -->
+
+        <div id="socialIcons">
+          <ul>
+            <li><a href=""><i class="fab fa-instagram"></i></a></li>
+            <li><a href=""><i class="fab fa-github"></i></a></li>
+            <li><a href=""><i class="far fa-envelope"></i></a></li>
+            <li><a href=""><i class="fab fa-twitter"></i></a></li>
+          </ul>
+        </div>
+      </footer>
+  </div>
+  <!-- <script src="../js/layout.js"></script> -->
+</body>
+
+</html>

@@ -10,25 +10,32 @@ const giveTemplate = (data) => {
     time_of_reading,
     weight
   }) => {
+
+    const state = location[0];
+    const place = location[1];
     mainSensorsDiv.innerHTML = `
-  <div>
-    <h3>ID: ${id}</h3>
-    <p>Location: ${location}</p>
-    <p>Time of reading: ${time_of_reading}</p>
-    <p>Weight: ${weight}</p>
-    </div>`;
+            <div class="sensor-data-card" id=${id}>
+                <p class="sensor-data-card-sensor-name">#ID: ${id}</p>
+                <p class="sensor-data-card-sensor-value">Location: ${place}</p>
+                <p class="sensor-data-card-sensor-weight">Weight: ${weight}</p>
+                <p class="sensor-data-card-sensor-time"><i class="far fa-alarm-clock"></i> ${new Date(time_of_reading).toLocaleString()}</p>
+            </div>`;
   };
 
-  // Making previous data empty , then we will store new data coming from backend
-  mainLocationsDiv.innerHTML = "";
+
+
 
   data.forEach((res) => {
     const { id, location } = res;
     var div = document.createElement("div");
     div.className = "location_card";
+    div.tabIndex = 1;
     div.id = id;
 
-    div.innerHTML = `<h3>${location}</h3>`;
+    const state = location[0];
+    const place = location[1];
+
+    div.innerHTML = `<h3>${place}</h3><p>${state}</p>`;
 
     div.onclick = function () {
       giveDataOfSelectedLocation(res);
@@ -46,6 +53,7 @@ async function getRefreshData() {
   try {
     let response = await fetch("/call_data");
     let data = await response.json();
+    console.log(data)
     giveTemplate(data);
   } catch (err) {
     console.log(err);
@@ -55,5 +63,8 @@ async function getRefreshData() {
 getRefreshData();
 
 setInterval(() => {
+  // Making previous data empty , then we will store new data coming from backend
+  mainLocationsDiv.innerHTML = "";
+  mainSensorsDiv.innerHTML = `<div class="loader"></div>`
   getRefreshData();
 }, 2 * 60 * 1000);
