@@ -24,10 +24,13 @@
 
 </head>
 
-<body>
+<body class="body-class">
   <div id="left-coloumn">
-    <p style="color: white; font-size: 1.85rem; font-family: 'Staatliches', cursive; margin: auto;">IoT Web Portal
-    </p>
+    <a href="/"
+      style="color: white; font-size: 1.85rem; font-family: 'Staatliches', cursive; margin: auto;text-decoration: none;">IoT
+      Web
+      Portal
+    </a>
     <div>
       <p style="margin: 40px 0px 5px 0px; color: white; font-size: 0.9rem; font-family: 'Staatliches', cursive;">
         LOCATIONS <i class="fas fa-map-marker-alt"></i>
@@ -44,9 +47,35 @@
 
     <div id="navbar">
       <div class="nav-items">
-        <div style="float: left; margin: auto 5px;">
+        <div id="heading-text">
           <a href="/" style="color: #f96332; font-size: 1.2rem; font-family: 'Staatliches', cursive;">DASHBOARD</a>
         </div>
+
+        <div id="hamburgerNavbar">
+          <div id="menuToggle">
+            <input onclick="checkedFunc(this)" id="check" type="checkbox" />
+            <span></span>
+            <span></span>
+            <span></span>
+            <ul id="menu">
+              <div style="padding: 80px 20px;">
+                <p style="color: white; font-size: 1.85rem; font-family: 'Staatliches', cursive; margin: auto;">IoT Web
+                  Portal
+                </p>
+                <div>
+                  <p
+                    style="margin: 40px 0px 5px 0px; color: white; font-size: 0.9rem; font-family: 'Staatliches', cursive;">
+                    LOCATIONS <i class="fas fa-map-marker-alt"></i>
+                  </p>
+                </div>
+                <div id="navbarLocationsDiv">
+
+                </div>
+              </div>
+            </ul>
+          </div>
+        </div>
+
         <div style="float: right;">
           <ul>
             <li><a href="#"><i class="fa fa-home" aria-hidden="true"></i></a></li>

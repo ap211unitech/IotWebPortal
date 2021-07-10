@@ -9,7 +9,7 @@ html {
   /* overflow: visible; */
 }
 
-body {
+.body-class {
   scroll-behavior: smooth;
   /* overflow-x: hidden; */
   /* overflow: visible; */
@@ -56,7 +56,8 @@ h1 {
 /* Left-Section */
 
 #left-coloumn {
-  background-color: #f96332;
+  background-image: linear-gradient(#f96332, #fd4a0e);
+  /* background-color: #f96332; */
   height: 100%;
   width: 210px;
   position: fixed;
@@ -76,8 +77,15 @@ h1 {
   /* margin-top: 5px; */
 }
 
+#navbarLocationsDiv {
+  border-bottom: 1px solid white;
+  border-top: 2px solid white;
+  height: 500px;
+  overflow: auto;
+}
+
 .location_card {
-  padding: 6px;
+  padding: 10px 6px 6px 8px;
   transition: 0.3s;
   cursor: pointer;
   color: white;
@@ -118,19 +126,24 @@ h1 {
 /* Main Navbar */
 
 #navbar {
-  /* position: fixed; */
+  /* height: 300px; */
   top: 0;
-  /* width: 100%; */
-  /* background-color: #00bfff; */
-  /* background-color: rgb(31, 81, 255); */
   background-color: rgb(249, 249, 249);
-  /* z-index: 1; */
-  /* display: none; */
 }
 
 .nav-items {
   display: grid;
   grid-template-columns: 80% 20%;
+}
+
+#heading-text {
+  float: left;
+  margin: auto 5px;
+}
+
+#hamburgerNavbar {
+  display: none;
+  /* visibility: hidden; */
 }
 
 .nav-items a {
@@ -172,8 +185,123 @@ h1 {
   float: right;
 }
 
+/* Hamburger Navbar CSS */
+
+#menuToggle {
+  display: block;
+  position: relative;
+  top: 17px;
+  left: 10px;
+  z-index: 1;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#menuToggle a {
+  text-decoration: none;
+  color: black;
+  transition: color 0.3s ease;
+}
+
+#menuToggle a:hover {
+  color: white;
+}
+
+#menuToggle input {
+  display: block;
+  width: 42px;
+  height: 40px;
+  position: absolute;
+  top: 0 px;
+  left: 0 px;
+  cursor: pointer;
+  opacity: 0;
+  z-index: 3;
+  /* and place it over the hamburger */
+  -webkit-touch-callout: none;
+}
+
+#menuToggle span {
+  display: block;
+  width: 33px;
+  height: 4px;
+  margin-bottom: 5px;
+  position: relative;
+  background: #f96332;
+  border-radius: 3px;
+  z-index: 2;
+  transform-origin: 4px 0px;
+  transition: transform 0.5s cubic-bezier(0.77, 0.2, 0.05, 1.0), background 0.5s cubic-bezier(0.77, 0.2, 0.05, 1.0), opacity 0.55s ease;
+}
+
+#menuToggle span:first-child {
+  transform-origin: 0% 0%;
+}
+
+#menuToggle span:nth-last-child(2) {
+  transform-origin: 0% 100%;
+}
+
+#menuToggle input:checked~span {
+  opacity: 1;
+  transform: rotate(45deg) translate(-2px, -1px);
+  background: white;
+}
+
+#menuToggle input:checked~span:nth-last-child(3) {
+  opacity: 0;
+  transform: rotate(0deg) scale(0.2, 0.2);
+}
+
+#menuToggle input:checked~span:nth-last-child(2) {
+  transform: rotate(-45deg) translate(0, -1px);
+}
+
+#menu {
+  width: 340px;
+  height: 100%;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  padding-top: 100px;
+  /* overflow-x: hidden; */
+  background: #f96332;
+  list-style-type: none;
+  -webkit-font-smoothing: antialiased;
+  transform-origin: 0% 0%;
+  transform: translate(-100%, 0);
+  transition: transform 0.5s cubic-bezier(0.77, 0.2, 0.05, 1.0);
+}
+
+#menu li {
+  padding: 10px 0;
+  font-size: 22px;
+}
+
+#menuToggle input:checked~ul {
+  transform: none;
+}
+
+#currentLocation {
+  margin: 40px 10px 0px 50px;
+  display: none;
+}
+
+#currentLocation p {
+  font-family: "Montserrat", sans-serif;
+  font-size: 28px;
+  color: #232b2b;
+}
+
+#sensor-cards {
+  display: grid;
+  grid-template-columns: 25% 25% 25% 25%;
+  padding: 10px 30px;
+  margin: 30px 0px;
+}
+
 .sensor-data-card {
-  text-align: left;
   padding: 10px;
   background-color: white;
   margin: 0px 30px;
@@ -210,7 +338,7 @@ h1 {
 
 #sensors_data {
   padding: 5px 20px 5px 20px;
-  text-align: center;
+  text-align: left;
   margin-left: -10px;
   margin-top: 10px;
 }
@@ -289,63 +417,247 @@ footer {
   text-align: center;
 }
 
-@media screen and (max-width: 1299px) {
-  /* #menu {
-    visibility: visible;
+@media screen and (max-width: 1330px) and (min-width: 1220px) {
+  .nav-items {
+    grid-template-columns: 60% 40%;
   }
-  #navbar {
-    visibility: hidden;
-  } */
-  #center-body {
-    grid-template-columns: 100%;
+  #sensor-cards {
+    display: grid;
+    grid-template-columns: 25% 25% 25% 25%;
+    padding: 0px 20px;
+    margin: 30px 0px;
+  }
+  .sensor-data-card {
     padding: 10px;
+    margin: 30px 30px;
   }
 }
 
-/* IPAD */
-
-@media screen and (max-width: 770px) {
-  #center-body {
-    grid-template-columns: 100%;
+@media screen and (max-width: 1220px) and (min-width: 1000px) {
+  .nav-items {
+    grid-template-columns: 60% 40%;
+  }
+  #sensor-cards {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    padding: 0px 45px;
+    margin: 30px 0px;
+  }
+  .sensor-data-card {
     padding: 10px;
+    margin: 30px 30px;
   }
-  footer {
-    left: 0;
-    bottom: 0;
-    position: relative;
+}
+
+@media screen and (max-width: 1000px) and (min-width: 780px) {
+  .nav-items {
+    grid-template-columns: 60% 40%;
   }
-  #locations_data {
-    padding: 5px;
+  #sensor-cards {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    padding: 0px 20px;
+    margin: 0px 0px 30px 0px;
   }
-  #sensors_data {
-    padding: 5px;
-    text-align: center;
-    margin-bottom: 30px;
+  .sensor-data-card {
+    padding: 10px;
+    margin: 30px 30px;
+  }
+  #left-coloumn {
+    display: none;
+  }
+  #right-coloumn {
+    margin-left: 10px;
+  }
+  #heading-text {
+    display: none;
+  }
+  .nav-items a {
+    font-size: 1.7rem;
+    margin: auto 2px;
+  }
+  #hamburgerNavbar {
+    display: block;
+    /* visibility: visible; */
+  }
+  #currentLocation {
+    display: block;
+  }
+  #currentLocation p {
+    font-family: "Montserrat", sans-serif;
+    font-size: 28px;
+    color: #232b2b;
+  }
+}
+
+@media screen and (max-width: 780px) and (min-width: 600px) {
+  .nav-items {
+    grid-template-columns: 40% 60%;
+  }
+  #sensor-cards {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    padding: 0px 20px;
+    margin: 0px 0px 30px 0px;
+  }
+  .sensor-data-card {
+    padding: 10px;
+    margin: 30px 30px;
+  }
+  #left-coloumn {
+    display: none;
+  }
+  #right-coloumn {
+    margin-left: 10px;
+  }
+  #heading-text {
+    display: none;
+  }
+  #hamburgerNavbar {
+    display: block;
+    /* visibility: visible; */
+  }
+  .nav-items a {
+    font-size: 1.7rem;
+    margin: auto 2px;
+  }
+  #currentLocation {
+    margin: 40px 10px 0px 40px;
+    display: block;
+  }
+  #menuToggle {
+    top: 17px;
+    left: 10px;
+  }
+  .nav-items a {
+    font-size: 1.7rem;
+  }
+}
+
+@media screen and (max-width: 600px) and (min-width: 450px) {
+  .nav-items {
+    grid-template-columns: 10% 90%;
+  }
+  #sensor-cards {
+    display: grid;
+    grid-template-columns: 100%;
+    padding: 0px 50px;
+    margin: 0px 0px 30px 0px;
+  }
+  .sensor-data-card {
+    padding: 10px;
+    margin: 30px 30px;
+  }
+  #left-coloumn {
+    display: none;
+  }
+  #right-coloumn {
+    margin-left: 10px;
+  }
+  #heading-text {
+    display: none;
+  }
+  #hamburgerNavbar {
+    display: block;
+    /* visibility: visible; */
+  }
+  #currentLocation {
+    margin: 40px 10px 0px 73px;
+    display: block;
+  }
+  #menuToggle {
+    top: 17px;
+    left: 10px;
+  }
+  .nav-items a {
+    font-size: 1.7rem;
+  }
+}
+
+@media screen and (max-width: 450px) and (min-width: 300px) {
+  .nav-items {
+    grid-template-columns: 10% 90%;
+  }
+  #sensor-cards {
+    display: grid;
+    grid-template-columns: 100%;
+    padding: 0px 20px;
+    margin: 0px 0px 30px 0px;
+  }
+  .sensor-data-card {
+    padding: 10px;
+    margin: 30px 30px;
+  }
+  #left-coloumn {
+    display: none;
+  }
+  #right-coloumn {
+    margin-left: 10px;
+  }
+  #heading-text {
+    display: none;
+  }
+  #hamburgerNavbar {
+    display: block;
+    /* visibility: visible; */
+  }
+  #currentLocation {
+    margin: 40px 10px 0px 40px;
+    display: block;
+  }
+  #menuToggle {
+    top: 17px;
+    left: 10px;
+  }
+  .nav-items a {
+    font-size: 1.7rem;
+  }
+}
+
+@media screen and (max-width: 300px) and (min-width: 100px) {
+  .nav-items {
+    grid-template-columns: 10% 90%;
+  }
+  #sensor-cards {
+    display: grid;
+    grid-template-columns: 100%;
+    padding: 0px 0px;
+    margin: 0px 0px 30px 0px;
+  }
+  .sensor-data-card {
+    padding: 10px;
+    margin: 30px 30px;
+  }
+  #left-coloumn {
+    display: none;
+  }
+  #right-coloumn {
+    margin-left: 10px;
+  }
+  #heading-text {
+    display: none;
+  }
+  #hamburgerNavbar {
+    display: block;
+    /* visibility: visible; */
+  }
+  #currentLocation {
+    margin: 40px 10px 0px 20px;
+    display: block;
+  }
+  #menuToggle {
+    top: 17px;
+    left: 10px;
+  }
+  .nav-items a {
+    font-size: 1.4rem;
+    margin: auto 2px;
+  }
+  #navbar li {
+    padding: 16px 6px;
   }
   #menu {
-    margin: 30px 0 20px 10px;
-  }
-}
-
-/* IPhone */
-
-@media screen and (max-width: 500px) {
-  #center-body {
-    grid-template-columns: 100%;
-    padding: 4px;
-  }
-  footer {
-    left: 0;
-    bottom: 0;
-    position: relative;
-  }
-  #locations_data {
-    padding: 5px;
-  }
-  #sensors_data {
-    padding: 5px;
-    text-align: center;
-    margin-bottom: 30px;
+    width: 230px;
   }
 }
 
