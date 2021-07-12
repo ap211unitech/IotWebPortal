@@ -1,9 +1,12 @@
 const express = require("express");
 const app = express();
 const ConnectDB = require("./config/connect");
-
 const expressEjslayouts = require("express-ejs-layouts");
 const path = require("path");
+
+
+const cookieparser = require('cookie-parser');
+app.use(cookieparser());
 
 //Connect Database
 ConnectDB();
@@ -18,9 +21,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // View Routes
-app.use("/dashboard", require("./routes/viewRoutes"));
+app.use("/", require("./routes/viewRoutes")); // Dashbord
 
 // Server Routes
+app.use('/', require("./routes/users")); // Login / Signup / Logour Routes
 app.use("/call_data", require("./routes/dashboard"));
 
 app.get("*", (req, res) => {
