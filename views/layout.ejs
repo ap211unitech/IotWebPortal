@@ -17,14 +17,34 @@
   <link href="https://fonts.googleapis.com/css2?family=Staatliches&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
 
-  <!-- CSS File -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"
+    integrity="sha512-AA1Bzp5Q0K1KanKKmvN/4d3IRKVlv9PYgwFPvm32nPO6QS8yH1HO7LbgB1pgiOxPtfeg5zEn2ba64MUcqJx6CA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <script class="jsbin" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+  <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
+
+
+  <!-- All CSS file that used in every page -->
+  <link rel="stylesheet" href="css/navbar.css">
+  <link rel="stylesheet" href="css/hamburgerNavbar.css">
+  <link rel="stylesheet" href="css/footer.css">
+  <link rel="stylesheet" href="css/extra.css">
+  <link rel="stylesheet" href="css/add-new-sensor-form.css">
+  <link rel="stylesheet" href="css/loader.css">
+
+  <!-- CSS File For diffrent pages -->
   <link rel="stylesheet" href="<%- cssFile %>">
+
+  <!-- Media query file -->
+  <link rel="stylesheet" href="css/mediaQueries.css">
+
 
   <title>IoT web portal</title>
 
 </head>
 
-<body class="<%- bodyId %>">
+<body class="<%- bodyClass %>">
   <!---------------------------------------- CENTER BODY ---------------------------------------->
   <%- body %>
 </body>

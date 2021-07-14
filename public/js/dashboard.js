@@ -102,4 +102,4 @@ setInterval(() => {
   mainSensorsDiv.innerHTML = `<div class="loader"></div>`
 
   getRefreshData();
-}, 2*60 * 1000);
+}, 2 * 60 * 1000);

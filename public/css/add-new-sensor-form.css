@@ -1,0 +1,65 @@
+#add-sensor-top-slider {
+    padding: 5px;
+    background-color: #f96332;
+    border: solid 1px white;
+    top: 0;
+    position: fixed;
+    display: none;
+    z-index: 10;
+}
+
+#add-sensor-form h1 {
+    margin: 10px 0px 0px 20px;
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+}
+
+#add-sensor-form form {
+    border: 1px solid white;
+    margin: 5px 20px 20px 20px;
+    padding: 10px;
+}
+
+#add-sensor-form-cross-btn {
+    color: white;
+    margin: 3px;
+}
+
+#add-sensor-form-cross-btn:hover {
+    color: rgb(44, 11, 44);
+}
+
+#add-sensor-form input[type=text], select, input[type=number] {
+    width: 100%;
+    padding: 3px;
+    outline: none;
+    margin: 4px 0px;
+    font-family: 'Montserrat', sans-serif;
+    color: #c0c0c0;
+}
+
+#add-sensor-form input[type=text], select, input[type=number]:focus {
+    color: #222;
+}
+
+#add-sensor-form label {
+    font-size: 0.9rem;
+    font-family: 'Montserrat', sans-serif;
+    color: white;
+}
+
+#add-sensor-btn {
+    border: 1px solid white;
+    color: white;
+    background: none;
+    padding: 5px 22px;
+    margin: 5px;
+    cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    transition: 0.3s;
+}
+
+#add-sensor-btn:hover {
+    background: white;
+    color: #f96332;
+}

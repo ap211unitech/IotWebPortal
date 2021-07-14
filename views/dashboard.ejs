@@ -2,95 +2,262 @@
 </div> -->
 <!-- <div style="display: grid; grid-template-columns: 33% 33% 34%;">
 </div> -->
-<% bodyId='body-class' %> 
-<% cssFile='css/style.css' %> 
-<div id="left-coloumn">
-  <a href="/"
-    style="color: white; font-size: 1.85rem; font-family: 'Staatliches', cursive; margin: auto;text-decoration: none;">IoT
-    Web
-    Portal
-  </a>
-  <div>
-    <p style="margin: 40px 0px 5px 0px; color: white; font-size: 0.9rem; font-family: 'Staatliches', cursive;">
-      LOCATIONS <i class="fas fa-map-marker-alt"></i>
-    </p>
-  </div>
-  <div id="mainLocationsDiv">
+<% bodyClass='body-class' %>
+  <% cssFile='css/dashboard.css' %>
 
-  </div>
-</div>
 
-<div id="right-coloumn">
-
-  <!-------------------------------------Main Navbar-------------------------------->
-
-  <div id="navbar">
-    <div class="nav-items">
-      <div id="heading-text">
-        <a href="/" style="color: #f96332; font-size: 1.2rem; font-family: 'Staatliches', cursive;">DASHBOARD</a>
+    <!-- Top Slider to add a new sensor -->
+    <div id="add-sensor-top-slider">
+      <div style="float: right;">
+        <a id="add-sensor-form-cross-btn" href="#" onclick="closeSlider()"><i class="fas fa-times"></i></a>
       </div>
-
-      <div id="hamburgerNavbar">
-        <div id="menuToggle">
-          <input onclick="checkedFunc(this)" id="check" type="checkbox" />
-          <span></span>
-          <span></span>
-          <span></span>
-          <ul id="menu">
-            <div style="padding: 80px 20px;">
-              <p style="color: white; font-size: 1.85rem; font-family: 'Staatliches', cursive; margin: auto;">IoT Web
-                Portal
-              </p>
-              <div>
-                <p
-                  style="margin: 40px 0px 5px 0px; color: white; font-size: 0.9rem; font-family: 'Staatliches', cursive;">
-                  LOCATIONS <i class="fas fa-map-marker-alt"></i>
-                </p>
-              </div>
-              <div id="navbarLocationsDiv">
-
-              </div>
+      <div id="add-sensor-form">
+        <h1>Add Sensor</h1>
+        <form action="">
+          <div style="padding: 5px;">
+            <label for="lname">Sensor Name:</label><br>
+            <input type="text" id="sensor-name-form" name="sensor-name-form" placeholder="Name" autocomplete="off">
+          </div>
+          <div style="display: grid; grid-template-columns: 50% 50%;">
+            <div style="padding: 5px;">
+              <label for="fname">Latitude&deg; :</label><br>
+              <input type="number" step="any" id="latitude" name="latitude" placeholder="Latitude" autocomplete="off">
             </div>
-          </ul>
+            <div style="padding: 5px;">
+              <label for="lname">Longitude&deg; :</label><br>
+              <input type="number" step="any" id="longitude" name="longitude" placeholder="Longitude">
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 50% 50%;">
+            <div style="padding: 5px;">
+              <label for="fname">Sensor Id:</label><br>
+              <input style="color: #222;" type="text" id="sensor-id" name="sensor-id" value="ACJ143" readonly>
+              <p style="color: white; font-size: 0.6rem; font-family: 'Montserrat', sans-serif;">&#42;Sensor ID cannot
+                be
+                changed</p>
+            </div>
+            <div style="padding: 5px;">
+              <label for="lname">Category:</label><br>
+              <select id="sensor-categories" name="sensor-categories">
+                <option value="numerical">Numerical</option>
+                <option value="categorical">Categorical</option>
+                <option value="alphabetical">Alphabetical</option>
+                <option value="audi">Audi</option>
+              </select>
+            </div>
+          </div>
+          <button id="add-sensor-btn" type="submit">Add</button>
+        </form>
+      </div>
+    </div>
+
+
+    <!-- Left Coloumn containing the dufferent geo locations -->
+    <div id="left-coloumn">
+      <p style="color: white; font-size: 1.85rem; font-family: 'Staatliches', cursive; margin: auto;">IoT Web Portal
+      </p>
+      <div>
+        <p style="margin: 40px 0px 5px 0px; color: white; font-size: 0.9rem; font-family: 'Staatliches', cursive;">
+          LOCATIONS <i class="fas fa-map-marker-alt"></i>
+        </p>
+      </div>
+      <div id="mainLocationsDiv">
+
+      </div>
+      <div style="margin: 18px 0px">
+        <a href="geolocation/geolocation.html"><i class="fas fa-plus"></i> Add New</a>
+      </div>
+    </div>
+
+
+    <div id="right-coloumn">
+
+      <!-------------------------------------Main Navbar-------------------------------->
+      <div id="navbar">
+        <div class="nav-items">
+          <div id="heading-text">
+            <p style="color: #f96332; font-size: 1.2rem; font-family: 'Staatliches', cursive;">DASHBOARD</p>
+          </div>
+
+          <div id="hamburgerNavbar">
+            <div id="menuToggle">
+              <input onclick="checkedFunc(this)" id="check" type="checkbox" />
+
+              <span></span>
+              <span></span>
+              <span></span>
+
+              <ul id="menu">
+                <div style="padding: 80px 20px;">
+                  <p style="color: white; font-size: 1.85rem; font-family: 'Staatliches', cursive; margin: auto;">IoT
+                    Web
+                    Portal
+                  </p>
+                  <div>
+                    <p
+                      style="margin: 40px 0px 5px 0px; color: white; font-size: 0.9rem; font-family: 'Staatliches', cursive;">
+                      LOCATIONS <i class="fas fa-map-marker-alt"></i>
+                    </p>
+                  </div>
+                  <div id="navbarLocationsDiv">
+
+                  </div>
+                </div>
+              </ul>
+            </div>
+          </div>
+
+          <div style="float: right;">
+            <ul>
+              <li><a href="#"><i class="fa fa-home" aria-hidden="true"></i></a></li>
+              <li><a href="#"><i class="fas fa-sign-in-alt"></i></li>
+              <li><a href="#"><i class="fas fa-user-plus"></i></a></li>
+              <li><a href="#"><i class="fa fa-briefcase" aria-hidden="true"></i></a></li>
+            </ul>
+          </div>
         </div>
       </div>
 
-      <div style="float: right;">
-        <ul>
-          <li><a href="#"><i class="fa fa-home" aria-hidden="true"></i></a></li>
-          <li><a href="#"><i class="fa fa-address-book" aria-hidden="true"></i></a></li>
-          <li><a href="#"><i class="fa fa-phone-square" aria-hidden="true"></i></a></li>
-          <li><a href="#"><i class="fa fa-briefcase" aria-hidden="true"></i></a></li>
-        </ul>
+
+      <!-------------------------------------Center Body--------------------------->
+
+      <!-- It contains the current selected location -->
+      <div id="currentLocation">
+
       </div>
-    </div>
-  </div>
 
-  <div id="sensors_data">
-    <div id="mainSensorsDiv">
-      <div class="loader"></div>
-    </div>
-  </div>
+      <div id="sensors_data">
+        <div id="mainSensorsDiv">
+          <div class="loader"></div>
+        </div>
+      </div>
 
 
-  <footer>
-    <!-- <div id="leftFooter">
+
+      <!-- <div id="leftFooter">
       <p>Currently In Development Phase |
         Indian Institute of
         Technology Jodhpur</p>
     </div> -->
 
-    <div id="socialIcons">
-      <ul>
-        <li><a href=""><i class="fab fa-instagram"></i></a></li>
-        <li><a href=""><i class="fab fa-github"></i></a></li>
-        <li><a href=""><i class="far fa-envelope"></i></a></li>
-        <li><a href=""><i class="fab fa-twitter"></i></a></li>
-      </ul>
+
+      <!-- This coloumns contains the image of inside map as well buttons to contral them -->
+      <div id="data">
+        <div id="insideImage">
+          <div class="image-btn-and-dragger">
+            <button class="file-upload-btn" type="button" onclick="$('.file-upload-input').trigger( 'click' )">Add
+              Image</button>
+            <div class="image-upload-wrap">
+              <input class="file-upload-input" type='file' onchange="readURL(this);" accept="image/*" />
+              <div class="drag-text">
+                <h3>Drag and drop a file or select add Image</h3>
+              </div>
+            </div>
+          </div>
+          <div class="file-upload-content">
+            <img class="file-upload-image" src="#" alt="your image" />
+            <div class="image-title-wrap">
+              <button type="button" onclick="removeUpload()" class="remove-image">Remove
+                <button type="button" class="remove-image">Upload</button>
+            </div>
+          </div>
+        </div>
+        <div id="imageButtons">
+          <button onclick="slowAddSensorForm()">Add Sensor</button>
+          <button>Edit Sensor</button>
+          <button>Delete Sensor</button>
+        </div>
+      </div>
+
+
+      <!----------------------------------------Footer------------------------------->
+      <footer>
+        <div id="socialIcons">
+          <ul>
+            <li><a href=""><i class="fab fa-instagram"></i></a></li>
+            <li><a href=""><i class="fab fa-github"></i></a></li>
+            <li><a href=""><i class="far fa-envelope"></i></a></li>
+            <li><a href=""><i class="fab fa-twitter"></i></a></li>
+          </ul>
+        </div>
+      </footer>
+
     </div>
-  </footer>
-
-</div>
 
 
-<script src="/js/dashboard.js"></script>
+
+    <!-- This is used to Upload and Remove the image of inside map -->
+    <script>
+      function readURL(input) {
+        if (input.files && input.files[0]) {
+
+          var reader = new FileReader();
+
+          reader.onload = function (e) {
+            $('.image-btn-and-dragger').hide();
+            // $('.file-upload-btn').hide();
+            $('.file-upload-content').show();
+
+            $('.file-upload-image').attr('src', e.target.result);
+
+
+            $('.image-title').html(input.files[0].name);
+          };
+
+          reader.readAsDataURL(input.files[0]);
+
+        } else {
+          removeUpload();
+        }
+      }
+
+      function removeUpload() {
+        $('.file-upload-input').replaceWith($('.file-upload-input').clone());
+        $('.file-upload-content').hide();
+        $('.image-btn-and-dragger').show();
+        $('.file-upload-image').attr('src', "#");
+        // $('.file-upload-btn').show();
+      }
+      $('.image-upload-wrap').bind('dragover', function () {
+        $('.image-upload-wrap').addClass('image-dropping');
+      });
+      $('.image-upload-wrap').bind('dragleave', function () {
+        $('.image-upload-wrap').removeClass('image-dropping');
+      });
+
+    </script>
+
+
+    <script>
+      function slowAddSensorForm() {
+        $('#add-sensor-top-slider').slideDown('slow');
+        // $("#add-sensor-top-slider").css({ opacity: '1' });
+        $("#left-coloumn").css({ opacity: '0.4' });
+        $("#right-coloumn").css({ opacity: '0.4' });
+      }
+      function closeSlider() {
+        $('#add-sensor-top-slider').slideUp('slow');
+        $("#left-coloumn").css({ opacity: '1' });
+        $("#right-coloumn").css({ opacity: '1' });
+      }
+
+      // It takes the slider form exactly in the center of the frame.
+      var w = (screen.width) / 2 - $("#add-sensor-top-slider").width() / 2;
+      var len = w.toString() + "px";
+      document.getElementById('add-sensor-top-slider').style.left = len;
+
+
+
+      // Closses the slider, when we click outside that div/
+      $(document).mouseup(function (e) {
+        var container = $("#add-sensor-top-slider");
+        if (!container.is(e.target) && container.has(e.target).length === 0) {
+          container.slideUp("slow");
+          $("#left-coloumn").css({ opacity: '1' });
+          $("#right-coloumn").css({ opacity: '1' });
+        }
+      });
+    </script>
+
+
+    <script src="/js/dashboard.js"></script>
