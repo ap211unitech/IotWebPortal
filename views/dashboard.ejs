@@ -143,90 +143,41 @@
 
       <!-- This coloumns contains the image of inside map as well buttons to contral them -->
       <div id="data">
-        <div id="insideImage">
-          <div class="image-btn-and-dragger">
-            <button class="file-upload-btn" type="button" onclick="$('.file-upload-input').trigger( 'click' )">Add
-              Image</button>
-            <div class="image-upload-wrap">
-              <input class="file-upload-input" type='file' onchange="readURL(this);" accept="image/*" />
-              <div class="drag-text">
-                <h3>Drag and drop a file or select add Image</h3>
+        <div id="insideImage" class="image-btn-and-dragger">
+          <form action="/uploadSensorImage" method="POST" enctype="multipart/form-data">
+            <div class="file-field input-field">
+              <div>
+                <span>Choose Image</span>
+                <input name="img" type="file" required>
               </div>
             </div>
-          </div>
-          <div class="file-upload-content">
-            <img class="file-upload-image" src="#" alt="your image" />
-            <div class="image-title-wrap">
-              <button type="button" onclick="removeUpload()" class="remove-image">Remove
-                <button type="button" class="remove-image">Upload</button>
-            </div>
-          </div>
-        </div>
-        <div id="imageButtons">
-          <button onclick="slowAddSensorForm()">Add Sensor</button>
-          <button>Edit Sensor</button>
-          <button>Delete Sensor</button>
+            <button type="submit" class="remove-image">Upload</button>
+          </form>
+          <br>
+          <img src="<%= typeof file != 'undefined' ? file : '' %>" class="responsive-img">
         </div>
       </div>
-
-
-      <!----------------------------------------Footer------------------------------->
-      <footer>
-        <div id="socialIcons">
-          <ul>
-            <li><a href=""><i class="fab fa-instagram"></i></a></li>
-            <li><a href=""><i class="fab fa-github"></i></a></li>
-            <li><a href=""><i class="far fa-envelope"></i></a></li>
-            <li><a href=""><i class="fab fa-twitter"></i></a></li>
-          </ul>
-        </div>
-      </footer>
-
+      <div id="imageButtons">
+        <button onclick="slowAddSensorForm()">Add Sensor</button>
+        <button>Edit Sensor</button>
+        <button>Delete Sensor</button>
+      </div>
     </div>
 
 
+    <!----------------------------------------Footer------------------------------->
+    <footer>
+      <div id="socialIcons">
+        <ul>
+          <li><a href=""><i class="fab fa-instagram"></i></a></li>
+          <li><a href=""><i class="fab fa-github"></i></a></li>
+          <li><a href=""><i class="far fa-envelope"></i></a></li>
+          <li><a href=""><i class="fab fa-twitter"></i></a></li>
+        </ul>
+      </div>
+    </footer>
 
-    <!-- This is used to Upload and Remove the image of inside map -->
-    <script>
-      function readURL(input) {
-        if (input.files && input.files[0]) {
-
-          var reader = new FileReader();
-
-          reader.onload = function (e) {
-            $('.image-btn-and-dragger').hide();
-            // $('.file-upload-btn').hide();
-            $('.file-upload-content').show();
-
-            $('.file-upload-image').attr('src', e.target.result);
-
-
-            $('.image-title').html(input.files[0].name);
-          };
-
-          reader.readAsDataURL(input.files[0]);
-
-        } else {
-          removeUpload();
-        }
-      }
-
-      function removeUpload() {
-        $('.file-upload-input').replaceWith($('.file-upload-input').clone());
-        $('.file-upload-content').hide();
-        $('.image-btn-and-dragger').show();
-        $('.file-upload-image').attr('src', "#");
-        // $('.file-upload-btn').show();
-      }
-      $('.image-upload-wrap').bind('dragover', function () {
-        $('.image-upload-wrap').addClass('image-dropping');
-      });
-      $('.image-upload-wrap').bind('dragleave', function () {
-        $('.image-upload-wrap').removeClass('image-dropping');
-      });
-
-    </script>
-
+    </div>
 
     <script>
       function slowAddSensorForm() {

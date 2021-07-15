@@ -246,3 +246,8 @@
   transition: all .2s ease;
   cursor: pointer;
 }
+
+input[type="file"] {
+  outline: none;
+  border: none;
+}
