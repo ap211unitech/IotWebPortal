@@ -2,13 +2,12 @@ const express = require("express");
 const route = express.Router();
 const request = require("request");
 const API_DATA = require("../models/API_DATA");
+const auth = require("../config/auth");
 
 //@Route    GET /dashboard
 //@desc     Get Data of sensors and saving to Database
 //@access   Public
-
-// Dashboard
-route.get("/", async (req, res) => {
+route.get("/", auth, async (req, res) => {
   try {
     const optionss = {
       uri: `http://my-json-server.typicode.com/ap211unitech/JSON-Fake-API/data`,

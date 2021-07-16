@@ -1,6 +1,7 @@
 const express = require("express");
 const route = express.Router();
 const auth = require("../config/auth");
+const Dashboard = require("../models/Dashboard");
 
 // Login Page 
 route.get('/login', auth, (req, res) => {
@@ -20,11 +21,25 @@ route.get('/register', auth, (req, res) => {
 })
 
 
-route.get("/dashboard", auth, (req, res) => {
+route.get("/dashboard", auth, async (req, res) => {
   if (!req.user) {
     return res.redirect('/login')
   }
-  return res.status(200).render("dashboard.ejs");
+  try {
+    const myDashboardData = await Dashboard.findOne({ user: req.user._id }).select('-_id -user');
+    if (myDashboardData) {
+      return res.status(200).render("dashboard.ejs", {
+        images: myDashboardData.image
+      });
+    }
+    return res.status(200).render("dashboard.ejs", {
+      images: null
+    });
+  }
+  catch (err) {
+    console.log(err)
+    return res.status(500).json({ msg: 'Internal Server Error' });
+  }
 
 });
 
