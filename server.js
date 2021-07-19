@@ -4,7 +4,7 @@ const ConnectDB = require("./config/connect");
 const expressEjslayouts = require("express-ejs-layouts");
 const path = require("path");
 
-
+// Cookies
 const cookieparser = require('cookie-parser');
 app.use(cookieparser());
 
@@ -24,9 +24,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/", require("./routes/viewRoutes")); // Dashbord
 
 // Server Routes
-app.use('/', require("./routes/users")); // Login / Signup / Logour Routes
+app.use('/', require("./routes/users")); // Login / Signup / Logout Routes
 app.use("/call_data", require("./routes/dashboard"));
 app.use('/uploadSensorImage', require("./routes/upload"));
+app.use('/addGeolocation', require("./routes/addGeolocation"));
+app.use('/addSensor', require("./routes/sensor"));
+
 
 app.get("*", (req, res) => {
   return res.redirect("/dashboard");

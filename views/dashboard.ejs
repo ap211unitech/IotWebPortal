@@ -16,22 +16,24 @@
         <form action="">
           <div style="padding: 5px;">
             <label for="lname">Sensor Name:</label><br>
-            <input type="text" id="sensor-name-form" name="sensor-name-form" placeholder="Name" autocomplete="off">
+            <input required type="text" id="sensor-name-form" name="sensor-name-form" placeholder="Name"
+              autocomplete="off">
           </div>
           <div style="display: grid; grid-template-columns: 50% 50%;">
             <div style="padding: 5px;">
               <label for="fname">Latitude&deg; :</label><br>
-              <input type="number" step="any" id="latitude" name="latitude" placeholder="Latitude" autocomplete="off">
+              <input required type="number" step="any" id="latitude" name="latitude" placeholder="Latitude"
+                autocomplete="off">
             </div>
             <div style="padding: 5px;">
               <label for="lname">Longitude&deg; :</label><br>
-              <input type="number" step="any" id="longitude" name="longitude" placeholder="Longitude">
+              <input required type="number" step="any" id="longitude" name="longitude" placeholder="Longitude">
             </div>
           </div>
           <div style="display: grid; grid-template-columns: 50% 50%;">
             <div style="padding: 5px;">
               <label for="fname">Sensor Id:</label><br>
-              <input style="color: #222;" type="text" id="sensor-id" name="sensor-id" value="ACJ143" readonly>
+              <input style="color: #222;" type="text" id="sensor-id" name="sensor-id" value="" readonly>
               <p style="color: white; font-size: 0.6rem; font-family: 'Montserrat', sans-serif;">&#42;Sensor ID cannot
                 be
                 changed</p>
@@ -65,7 +67,7 @@
 
       </div>
       <div style="margin: 18px 0px">
-        <a href="geolocation/geolocation.html"><i class="fas fa-plus"></i> Add New</a>
+        <a href="/addGeolocation"><i class="fas fa-plus"></i> Add New</a>
       </div>
     </div>
 
@@ -126,30 +128,26 @@
 
       </div>
 
-      <div id="sensors_data">
-        <div id="mainSensorsDiv">
-          <div class="loader"></div>
-        </div>
+      <!-- <div> -->
+      <!-- <div id="sensors-cards"> -->
+      <div id="mainSensorsDiv">
+        <div class="loader"></div>
       </div>
+      <!-- </div> -->
+      <!-- </div> -->
 
-
-
-      <!-- <div id="leftFooter">
-      <p>Currently In Development Phase |
-        Indian Institute of
-        Technology Jodhpur</p>
-    </div> -->
 
       <!-- This coloumns contains the image of inside map as well buttons to contral them -->
       <div id="data">
-        <% if (images){ %>
-          <% images.forEach(img=> { %>
-            <img width="600" height="400" src=<%-img.name %> alt="" srcset="">
-            <% }); %>
+        <div>
+          <% if (images){ %>
+            <% images.forEach(img=> { %>
+              <div style="margin: 40px;">
+                <img id="inside-map" style="max-width: 90%; max-height: 90%;" src=<%-img.name %> imageid=<%-img._id %> alt="image" srcset="">
+              </div>
+              <% }); %>
 
-              <% } else{ %>
-
-                <div>
+                <% } else{ %>
                   <form id="insideImage" action="/uploadSensorImage" method="POST" enctype="multipart/form-data">
                     <div class="image-btn-and-dragger">
                       <button class="file-upload-btn" type="button"
@@ -171,15 +169,31 @@
                       </div>
                     </div>
                   </form>
-                </div>
+                  <% } %>
+        </div>
 
-                <div id="imageButtons">
-                  <button onclick="slowAddSensorForm()">Add Sensor</button>
-                  <button>Edit Sensor</button>
-                  <button>Delete Sensor</button>
-                </div>
-                <% } %>
+        <div id="imageButtons">
+          <button onclick="addSensorBtn()">Add Sensor</button>
+          <button>Edit Sensor</button>
+          <button>Delete Sensor</button>
+          <div id="coords"></div>
+        </div>
       </div>
+
+      <h1>Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum architecto voluptate molestiae quas et illo
+        consequatur. Fuga tempore adipisci iste voluptatem officiis fugiat ipsam placeat eos, earum quibusdam vero quas,
+        maiores vel inventore quam ea, numquam ad? Repellat ea aut error, accusamus suscipit tempora dolores quibusdam,
+        harum, accusantium minima rerum molestias doloribus? Aliquid praesentium eum id labore sint quisquam soluta esse
+        expedita ipsum rerum impedit, nulla officia nemo nostrum et autem, nesciunt voluptatum veniam, earum quae nisi
+        non mollitia repudiandae ducimus! Pariatur, quas porro? Ratione eius dolorum repellat, possimus minima earum,
+        quisquam tempora illum eaque distinctio asperiores beatae sunt eos sapiente officia ex iste aliquam totam
+        numquam amet? Iusto itaque cupiditate quod praesentium labore eveniet rem? Possimus accusantium, praesentium
+        quas nobis voluptas dolor incidunt natus earum illo deserunt, sed eaque obcaecati. Dignissimos qui dolores quam
+        perspiciatis voluptatem nostrum aliquam cumque. Ab modi nobis dignissimos temporibus at nisi, iste sequi
+        voluptatibus voluptates accusamus mollitia aut similique in fuga atque cumque, ipsa doloremque! Praesentium
+        nesciunt velit, labore amet possimus excepturi itaque eligendi dolorum consequatur nostrum culpa harum
+        laudantium neque fugiat obcaecati sapiente deleniti repudiandae at pariatur tempore id. Repellendus est non
+        autem accusamus quaerat ut ad, a ipsa adipisci rem! Deleniti, minima!</h1>
 
       <!----------------------------------------Footer------------------------------->
       <footer>
@@ -194,81 +208,6 @@
       </footer>
 
     </div>
-
-
-    <!-- This is used to Upload and Remove the image of inside map -->
-    <script>
-      function readURL(input) {
-        if (input.files && input.files[0]) {
-
-          var reader = new FileReader();
-
-          reader.onload = function (e) {
-            $('.image-btn-and-dragger').hide();
-            // $('.file-upload-btn').hide();
-            $('.file-upload-content').show();
-
-            $('.file-upload-image').attr('src', e.target.result);
-
-
-            $('.image-title').html(input.files[0].name);
-          };
-
-          reader.readAsDataURL(input.files[0]);
-
-        } else {
-          removeUpload();
-        }
-      }
-
-      function removeUpload() {
-        $('.file-upload-input').replaceWith($('.file-upload-input').clone());
-        $('.file-upload-content').hide();
-        $('.image-btn-and-dragger').show();
-        $('.file-upload-image').attr('src', "#");
-        // $('.file-upload-btn').show();
-      }
-      $('.image-upload-wrap').bind('dragover', function () {
-        $('.image-upload-wrap').addClass('image-dropping');
-      });
-      $('.image-upload-wrap').bind('dragleave', function () {
-        $('.image-upload-wrap').removeClass('image-dropping');
-      });
-
-    </script>
-
-
-
-    <script>
-      function slowAddSensorForm() {
-        $('#add-sensor-top-slider').slideDown('slow');
-        // $("#add-sensor-top-slider").css({ opacity: '1' });
-        $("#left-coloumn").css({ opacity: '0.4' });
-        $("#right-coloumn").css({ opacity: '0.4' });
-      }
-      function closeSlider() {
-        $('#add-sensor-top-slider').slideUp('slow');
-        $("#left-coloumn").css({ opacity: '1' });
-        $("#right-coloumn").css({ opacity: '1' });
-      }
-
-      // It takes the slider form exactly in the center of the frame.
-      var w = (screen.width) / 2 - $("#add-sensor-top-slider").width() / 2;
-      var len = w.toString() + "px";
-      document.getElementById('add-sensor-top-slider').style.left = len;
-
-
-
-      // Closses the slider, when we click outside that div/
-      $(document).mouseup(function (e) {
-        var container = $("#add-sensor-top-slider");
-        if (!container.is(e.target) && container.has(e.target).length === 0) {
-          container.slideUp("slow");
-          $("#left-coloumn").css({ opacity: '1' });
-          $("#right-coloumn").css({ opacity: '1' });
-        }
-      });
-    </script>
 
 
     <script src="/js/dashboard.js"></script>

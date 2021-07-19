@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const DashboardSchema = new mongoose.Schema({
+const ImageSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user'
@@ -19,6 +19,6 @@ const DashboardSchema = new mongoose.Schema({
     }
 });
 
-const Dasboard = mongoose.model('dashboard', DashboardSchema);
+const Image = mongoose.model('image', ImageSchema);
 
-module.exports = Dasboard;
+module.exports = Image;

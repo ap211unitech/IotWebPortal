@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const multer = require("multer");
 const path = require("path");
-const Dashborad = require("../models/Dashboard");
+const ImageSchema = require("../models/Image");
 const mongoose = require("mongoose");
 const auth = require("../config/auth");
 
@@ -61,7 +61,7 @@ router.post('/', auth, async (req, res) => {
                     all_files.push({ name: req.files[key][0].path.slice(7) });
                 }
                 try {
-                    const data = new Dashborad({
+                    const data = new ImageSchema({
                         image: all_files,
                         user: req.user._id
                     })

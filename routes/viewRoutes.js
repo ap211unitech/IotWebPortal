@@ -1,7 +1,7 @@
 const express = require("express");
 const route = express.Router();
 const auth = require("../config/auth");
-const Dashboard = require("../models/Dashboard");
+const ImageSchema = require("../models/Image");
 
 // Login Page 
 route.get('/login', auth, (req, res) => {
@@ -20,13 +20,22 @@ route.get('/register', auth, (req, res) => {
   return res.redirect('/dashboard');
 })
 
+// Add Geolocation Page
+route.get('/addGeolocation', auth, async (req, res) => {
+  if (!req.user) {
+    return res.redirect('/login')
+  }
+  return res.status(200).render('Geolocation.ejs');
+})
 
+
+// Dashboard Page
 route.get("/dashboard", auth, async (req, res) => {
   if (!req.user) {
     return res.redirect('/login')
   }
   try {
-    const myDashboardData = await Dashboard.findOne({ user: req.user._id }).select('-_id -user');
+    const myDashboardData = await ImageSchema.findOne({ user: req.user._id }).select('-user');
     if (myDashboardData) {
       return res.status(200).render("dashboard.ejs", {
         images: myDashboardData.image

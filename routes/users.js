@@ -33,7 +33,7 @@ router.post('/login', async (req, res) => {
                 httpOnly: true,
                 secure: true
             });
-            return res.status(201).json({
+            return res.status(200).json({
                 status: 200,
                 msg: 'User Logged in'
             });
