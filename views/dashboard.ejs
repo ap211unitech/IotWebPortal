@@ -13,7 +13,7 @@
       </div>
       <div id="add-sensor-form">
         <h1>Add Sensor</h1>
-        <form action="">
+        <form>
           <div style="padding: 5px;">
             <label for="lname">Sensor Name:</label><br>
             <input required type="text" id="sensor-name-form" name="sensor-name-form" placeholder="Name"
@@ -41,7 +41,7 @@
             <div style="padding: 5px;">
               <label for="lname">Category:</label><br>
               <select id="sensor-categories" name="sensor-categories">
-                <option value="numerical">Numerical</option>
+                <option value="numerical" selected>Numerical</option>
                 <option value="categorical">Categorical</option>
                 <option value="alphabetical">Alphabetical</option>
                 <option value="audi">Audi</option>
@@ -137,13 +137,14 @@
       <!-- </div> -->
 
 
-      <!-- This coloumns contains the image of inside map as well buttons to contral them -->
+      <!-- Image Uploading / Showing Image if in database-->
       <div id="data">
         <div>
           <% if (images){ %>
             <% images.forEach(img=> { %>
               <div style="margin: 40px;">
-                <img id="inside-map" style="max-width: 90%; max-height: 90%;" src=<%-img.name %> imageid=<%-img._id %> alt="image" srcset="">
+                <img id="inside-map" style="max-width: 90%; max-height: 90%;" src=<%-img.name %> imageid=<%-img._id %>
+                  alt="image" srcset="">
               </div>
               <% }); %>
 
@@ -211,3 +212,5 @@
 
 
     <script src="/js/dashboard.js"></script>
+
+ 

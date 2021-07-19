@@ -204,6 +204,7 @@ function addSensorBtn() {
 
 // });
 
+let ratio = {};
 
 $(function () {
   $image = $('#inside-map');
@@ -224,6 +225,8 @@ $(function () {
       var width_ratio = (ev.pageX - imgPos[0]) / ($image.width());
       var height_ratio = (ev.pageY - imgPos[1]) / ($image.height());
 
+      ratio["hRatio"] = height_ratio;
+      ratio["vRatio"] = width_ratio;
       console.log(height_ratio + " , " + width_ratio);
 
       $(".marker").remove();    // Removes the previous marker, when we select a new marker.
@@ -251,3 +254,49 @@ $(function () {
   });
 
 });
+
+
+// API calling when user clicks Add Sensor button on popUp
+document.querySelector("#add-sensor-btn").addEventListener('click', addSensorAPICall);
+
+async function addSensorAPICall(e) {
+  e.preventDefault();
+  try {
+    const imageId = $("#inside-map").attr("imageid");
+    const sensorName = document.getElementById("sensor-name-form").value;
+    const latitude = document.getElementById("latitude").value;
+    const longitude = document.getElementById("longitude").value;
+    const sensorId = document.getElementById("sensor-id").value;
+    const e = document.getElementById("sensor-categories");
+    const category = e.options[e.selectedIndex].text;
+
+    const formData = {
+      imageId,
+      sensorName,
+      latitude,
+      longitude,
+      sensorId,
+      category,
+      hRatio: ratio.hRatio,
+      vRatio: ratio.vRatio
+    };
+
+    const settings = {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData)
+    };
+    let response = await fetch("/addSensor", settings);
+    let data = await response.json();
+    console.log(data)
+    window.location.replace("/dashboard");
+
+  } catch (err) {
+    console.log(err);
+    alert('Something went wrong...');
+  }
+}
+
