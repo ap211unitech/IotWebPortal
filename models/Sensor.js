@@ -7,43 +7,51 @@ const SensorSchema = new mongoose.Schema({
     },
     sensor: [
         {
-            image: {
+            geolocation: {
                 type: mongoose.Schema.Types.ObjectId,
                 required: true
             },
-            sensorDetail: [
+            data: [
                 {
-                    sensorId: {
-                        type: String,
+                    image: {
+                        type: mongoose.Schema.Types.ObjectId,
                         required: true
                     },
-                    sensorName: {
-                        type: String,
-                        required: true
-                    },
-                    imageCoordinates:
-                    {
-                        hRatio: {
-                            type: Number,
-                            required: true
-                        },
-                        vRatio: {
-                            type: Number,
-                            required: true
+                    sensorDetail: [
+                        {
+                            sensorId: {
+                                type: String,
+                                required: true
+                            },
+                            sensorName: {
+                                type: String,
+                                required: true
+                            },
+                            imageCoordinates:
+                            {
+                                hRatio: {
+                                    type: Number,
+                                    required: true
+                                },
+                                vRatio: {
+                                    type: Number,
+                                    required: true
+                                }
+                            },
+                            category: {
+                                type: String,
+                                required: true
+                            },
+                            latitude: {
+                                type: Number,
+                                required: true
+                            },
+                            longitude: {
+                                type: Number,
+                                required: true
+                            }
                         }
-                    },
-                    category: {
-                        type: String,
-                        required: true
-                    },
-                    latitude: {
-                        type: Number,
-                        required: true
-                    },
-                    longitude: {
-                        type: Number,
-                        required: true
-                    }
+                    ]
                 }
             ]
         }
