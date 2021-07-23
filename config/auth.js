@@ -29,8 +29,8 @@ const jwt = require('jsonwebtoken');
 // const jwtsecret = config.get("jwtsecret");
 
 const auth = (req, res, next) => {
-    // const token = req.headers['token'];
-    const token = req.cookies.token;
+    const token = req.headers['token'];
+    // const token = req.cookies.token;
 
     //Check if token is not avaliable
     if (!token) {

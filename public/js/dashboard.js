@@ -52,6 +52,7 @@ const giveTemplate = (data) => {
     div.className = "location_card";
     div.tabIndex = 1;
     div.id = id;
+    div.locationid = `${id}`;
 
     const state = location[0];
     const place = location[1];
@@ -254,6 +255,19 @@ $(function () {
   });
 
 });
+
+// Getting geolocations
+async function getGeolocation() {
+  try {
+    let Geolocations = await fetch('/getGeolocations');
+    console.log(Geolocations);
+  } catch (err) {
+    console.log(err);
+    alert('Something went wrong...');
+  }
+}
+
+getGeolocation();
 
 
 // API calling when user clicks Add Sensor button on popUp

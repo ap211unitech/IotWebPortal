@@ -27,7 +27,7 @@ app.use("/", require("./routes/viewRoutes")); // Dashbord
 app.use('/', require("./routes/users")); // Login / Signup / Logout Routes
 app.use("/call_data", require("./routes/dashboard"));
 app.use('/uploadSensorImage', require("./routes/upload"));
-app.use('/addGeolocation', require("./routes/addGeolocation"));
+app.use('/', require("./routes/addGeolocation"));
 app.use('/', require("./routes/sensor"));
 
 
