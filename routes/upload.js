@@ -43,8 +43,8 @@ function checkFileType(file, cb) {
 }
 
 
-//Post an article
-router.post('/', auth, async (req, res) => {
+//Post an image
+router.post('/uploadSensorImage', auth, async (req, res) => {
     upload(req, res, async (err) => {
         if (err) {
             return res.json({
@@ -60,21 +60,55 @@ router.post('/', auth, async (req, res) => {
                 for (const key in req.files) {
                     all_files.push({ name: req.files[key][0].path.slice(7) });
                 }
+
                 try {
+                    const findUser = await ImageSchema.findOne({ user: req.user._id });
+
+                    if (findUser && findUser.image && findUser.image.length > 0) {
+                        const newData = {
+                            name: all_files[0].name,
+                            geolocation: req.body.geolocation
+                        }
+                        findUser.image.unshift(newData);
+                        await findUser.save();
+                    }
                     const data = new ImageSchema({
-                        image: all_files,
-                        user: req.user._id
+                        user: req.user._id,
+                        image: {
+                            name: all_files[0].name,
+                            geolocation: req.body.geolocation
+                        }
                     })
                     await data.save();
                     return res.status(200).redirect('/dashboard');
 
                 } catch (err) {
+                    console.log(err)
                     return res.status(500).json({ msg: 'Internal Server Error' });
                 }
             }
         }
     });
 });
+
+// Fetch using geolocation
+router.post('/getImageUsingGeolocation', auth, async (req, res) => {
+    try {
+        const findUser = await ImageSchema.findOne({ user: req.user._id });
+        if (!findUser) {
+            return res.status(400).json({ msg: 'User not found...', status: 400 });
+        }
+        if (findUser.image.length == 0) {
+            return res.status(400).json({ msg: 'Image not found...', status: 400 })
+        }
+        const geolocation = findUser.image.filter(elm => elm.geolocation == req.body.geolocation);
+        return res.status(200).json(geolocation);
+
+    } catch (err) {
+        console.log(err)
+        return res.status(500).json({ msg: 'Internal Server Error' });
+    }
+})
 
 
 module.exports = router;

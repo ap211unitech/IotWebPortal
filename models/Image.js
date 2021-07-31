@@ -7,6 +7,11 @@ const ImageSchema = new mongoose.Schema({
     },
     image: [
         {
+            geolocation: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'geolocations',
+                required: true
+            },
             name: {
                 type: String,
                 required: true

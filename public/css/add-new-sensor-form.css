@@ -1,4 +1,5 @@
 #add-sensor-top-slider {
+    /* max-width: 500px; */
     padding: 5px;
     background-color: #f96332;
     border: solid 1px white;
@@ -9,7 +10,7 @@
 }
 
 #add-sensor-form h1 {
-    margin: 10px 0px 0px 20px;
+    margin: 5px 0px 0px 20px;
     color: white;
     font-family: 'Montserrat', sans-serif;
 }
@@ -17,7 +18,7 @@
 #add-sensor-form form {
     border: 1px solid white;
     margin: 5px 20px 20px 20px;
-    padding: 10px;
+    padding: 5px;
 }
 
 #add-sensor-form-cross-btn {
@@ -36,6 +37,10 @@
     margin: 4px 0px;
     font-family: 'Montserrat', sans-serif;
     color: #c0c0c0;
+    /* color: white; */
+    /* background-color: #f96332; */
+    border: none;
+    /* border-bottom: 2px solid white; */
 }
 
 #add-sensor-form input[type=text], select, input[type=number]:focus {
@@ -52,11 +57,22 @@
     border: 1px solid white;
     color: white;
     background: none;
-    padding: 5px 22px;
-    margin: 5px;
+    padding: 3px 32px;
+    margin: 5px 10px 5px 5px;
+    /* width: 100%; */
     cursor: pointer;
     font-family: 'Montserrat', sans-serif;
     transition: 0.3s;
+}
+
+.addSensor-location-categories {
+    display: grid; 
+    grid-template-columns: 33% 33% 34%;
+}
+
+.add-sensor-form-remaining {
+    display: grid; 
+    grid-template-columns: 28% 28% 28% 16%;
 }
 
 #add-sensor-btn:hover {

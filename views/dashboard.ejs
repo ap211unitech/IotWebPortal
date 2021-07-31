@@ -12,32 +12,22 @@
         <a id="add-sensor-form-cross-btn" href="#" onclick="closeSlider()"><i class="fas fa-times"></i></a>
       </div>
       <div id="add-sensor-form">
-        <h1>Add Sensor</h1>
+        <!-- <h1>Add Sensor</h1> -->
         <form>
+          <!-- <div style="display: grid; grid-template-columns: 50% 50%;"> -->
           <div style="padding: 5px;">
             <label for="lname">Sensor Name:</label><br>
-            <input required type="text" id="sensor-name-form" name="sensor-name-form" placeholder="Name"
-              autocomplete="off">
+            <input required type="text" id="sensor-name-form" name="sensor-name-form" autocomplete="off">
           </div>
-          <div style="display: grid; grid-template-columns: 50% 50%;">
+
+          <!-- </div> -->
+          <div class="addSensor-location-categories">
+
             <div style="padding: 5px;">
-              <label for="fname">Latitude&deg; :</label><br>
-              <input required type="number" step="any" id="latitude" name="latitude" placeholder="Latitude"
-                autocomplete="off">
+              <label for="lname">Location Name:</label><br>
+              <input required type="text" id="sensor-location-form" name="sensor-location-form" autocomplete="off">
             </div>
-            <div style="padding: 5px;">
-              <label for="lname">Longitude&deg; :</label><br>
-              <input required type="number" step="any" id="longitude" name="longitude" placeholder="Longitude">
-            </div>
-          </div>
-          <div style="display: grid; grid-template-columns: 50% 50%;">
-            <div style="padding: 5px;">
-              <label for="fname">Sensor Id:</label><br>
-              <input style="color: #222;" type="text" id="sensor-id" name="sensor-id" value="" readonly>
-              <p style="color: white; font-size: 0.6rem; font-family: 'Montserrat', sans-serif;">&#42;Sensor ID cannot
-                be
-                changed</p>
-            </div>
+
             <div style="padding: 5px;">
               <label for="lname">Category:</label><br>
               <select id="sensor-categories" name="sensor-categories">
@@ -47,12 +37,66 @@
                 <option value="audi">Audi</option>
               </select>
             </div>
+
+            <div style="padding: 5px;">
+              <label for="lname">Sensor Type:</label></label><br>
+              <select id="sensor-types" name="sensor-types">
+                <option value="numerical" selected>Temperature</option>
+                <option value="categorical">Humidity</option>
+                <option value="alphabetical">Light Intensity</option>
+                <option value="alphabetical">Heart Beat</option>
+                <option value="alphabetical">Snow</option>
+                <option value="alphabetical">Gas Station</option>
+                <option value="alphabetical">Gas Measure</option>
+                <option value="alphabetical">Garbage</option>
+                <option value="audi">Audi</option>
+              </select>
+            </div>
           </div>
-          <button id="add-sensor-btn" type="submit">Add</button>
+          <div class="add-sensor-form-remaining">
+            <div style="padding: 5px;">
+              <label for="fname">Sensor Id:</label><br>
+              <input style="color: white;" type="text" id="sensor-id" name="sensor-id" value="" readonly>
+              <p style="color: white; font-size: 0.6rem; font-family: 'Montserrat', sans-serif;">&#42;Sensor ID cannot
+                be
+                changed</p>
+            </div>
+            <div style="padding: 5px;">
+              <label for="fname">Latitude&deg; :</label><br>
+              <input required type="number" step="any" id="latitude" name="latitude" autocomplete="off">
+            </div>
+            <div style="padding: 5px;">
+              <label for="lname">Longitude&deg; :</label><br>
+              <input required type="number" step="any" id="longitude" name="longitude">
+            </div>
+            <div style="padding: 5px;">
+              <label style="visibility: hidden;">NOT</label><br>
+              <button id="add-sensor-btn" type="submit">Add</button>
+            </div>
+          </div>
+
+
+          <!-- <div style="display: grid; grid-template-columns: 66% 34%;">
+            
+            
+          </div> -->
+
         </form>
       </div>
     </div>
 
+    <!-- Create New Users Based on Heirarchy -->
+    <div id="createUser">
+      <form action="" style="display: flex;">
+        <!-- <label for="email">Email</label><br> -->
+        <div style="margin: 2px;">
+          <input type="email" name="email" autocomplete="off" placeholder="Enter Email Address">
+        </div>
+        <div style="margin: 2px;">
+          <button type="submit">Add User</button>
+        </div>
+      </form>
+    </div>
 
     <!-- Left Coloumn containing the dufferent geo locations -->
     <div id="left-coloumn">
@@ -113,7 +157,7 @@
             <ul>
               <li><a href="#"><i class="fa fa-home" aria-hidden="true"></i></a></li>
               <li><a href="#"><i class="fas fa-sign-in-alt"></i></li>
-              <li><a href="#"><i class="fas fa-user-plus"></i></a></li>
+              <li><a href="#" onclick="showCreateUserForm()"><i class="fas fa-user-plus"></i></a></li>
               <li><a href="#"><i class="fa fa-briefcase" aria-hidden="true"></i></a></li>
             </ul>
           </div>
@@ -124,61 +168,70 @@
       <!-------------------------------------Center Body--------------------------->
 
       <!-- It contains the current selected location -->
-      <div id="currentLocation">
+      <!-- <div id="currentLocation">
 
-      </div>
+      </div> -->
 
       <!-- <div> -->
       <!-- <div id="sensors-cards"> -->
-      <div id="mainSensorsDiv">
+      <!-- <div id="mainSensorsDiv">
         <div class="loader"></div>
-      </div>
+      </div> -->
       <!-- </div> -->
       <!-- </div> -->
 
 
       <!-- Image Uploading / Showing Image if in database-->
       <div id="data">
-        <div>
-          <% if (images){ %>
-            <% images.forEach(img=> { %>
-              <div style="margin: 40px;">
-                <img id="inside-map" style="max-width: 90%; max-height: 90%;" src=<%-img.name %> imageid=<%-img._id %>
-                  alt="image" srcset="">
-              </div>
-              <% }); %>
 
-                <% } else{ %>
-                  <form id="insideImage" action="/uploadSensorImage" method="POST" enctype="multipart/form-data">
-                    <div class="image-btn-and-dragger">
-                      <button class="file-upload-btn" type="button"
-                        onclick="$('.file-upload-input').trigger( 'click' )">Add
-                        Image</button>
-                      <div class="image-upload-wrap">
-                        <input class="file-upload-input" name="img" type='file' onchange="readURL(this);"
-                          accept="image/*" required />
-                        <div class="drag-text">
-                          <h3>Drag and drop a file or select add Image</h3>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="file-upload-content">
-                      <img class="file-upload-image" src="#" alt="your image" />
-                      <div class="image-title-wrap">
-                        <button type="button" onclick="removeUpload()" class="remove-image">Remove
-                          <button type="submit" class="remove-image">Upload</button>
-                      </div>
-                    </div>
-                  </form>
-                  <% } %>
-        </div>
 
         <div id="imageButtons">
-          <button onclick="addSensorBtn()">Add Sensor</button>
+          <button id="addSensor-btn" onclick="addSensorBtn()">Add Sensor</button>
           <button>Edit Sensor</button>
           <button>Delete Sensor</button>
-          <div id="coords"></div>
+          <div id="coords">0, 0</div>
         </div>
+
+
+        <div>
+          <!-- <% if (images){ %> -->
+          <img id="inside-map" alt="img" src="/img/static-img.jpg">
+          <!-- <% images.forEach(img=> { %>
+                <img id="inside-map" src=<%-img.name %> imageid=<%-img._id %>
+                  alt="image" srcset="">
+              <% }); %> -->
+
+          <!-- <% } else{ %> -->
+
+          <!-- <% } %> -->
+
+
+          <form id="insideImage" style="display: none;" action="/uploadSensorImage" method="POST"
+            enctype="multipart/form-data">
+            <input type="hidden" name="geolocation" id="geolocation-form">
+            <div class="image-btn-and-dragger">
+              <button class="file-upload-btn" type="button" onclick="$('.file-upload-input').trigger( 'click' )">Add
+                Image</button>
+              <div class="image-upload-wrap">
+                <input class="file-upload-input" name="img" type='file' onchange="readURL(this);" accept="image/*"
+                  required />
+                <div class="drag-text">
+                  <h3>Drag and drop a file or select add Image</h3>
+                </div>
+              </div>
+            </div>
+            <div class="file-upload-content">
+              <img class="file-upload-image" src="#" alt="your image" />
+              <div class="image-title-wrap">
+                <button type="button" onclick="removeUpload()" class="remove-image">Remove
+                  <button type="submit" class="remove-image">Upload</button>
+              </div>
+            </div>
+          </form>
+
+        </div>
+
+
       </div>
 
       <h1>Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum architecto voluptate molestiae quas et illo
@@ -210,7 +263,11 @@
 
     </div>
 
+    <script>
+      $(document).ready(function () {
+        $("#coords").css({ 'min-width': ($("#addSensor-btn").width() + 'px') });
+      });
+    </script>
+
 
     <script src="/js/dashboard.js"></script>
-
- 

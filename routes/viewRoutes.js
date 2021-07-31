@@ -34,6 +34,8 @@ route.get("/dashboard", auth, async (req, res) => {
   if (!req.user) {
     return res.redirect('/login')
   }
+  // return res.status(200).render('dashboard.ejs');
+  // return res.redirect('/dashboard');
   try {
     const myDashboardData = await ImageSchema.findOne({ user: req.user._id }).select('-user');
     if (myDashboardData) {

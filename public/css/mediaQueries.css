@@ -144,6 +144,22 @@
     .nav-items a {
         font-size: 1.7rem;
     }
+    #imageButtons {
+        display: grid;
+        grid-template-columns: 50% 50%;
+        margin: 20px;
+        /* padding: 20px; */
+    }
+
+    #imageButtons button {
+        margin: 20px;
+    }
+    #coords {
+        margin: 20px;
+    }
+    #add-sensor-form form {
+        margin: 5px;
+    }
 }
 
 @media screen and (max-width: 600px) and (min-width: 450px) {
@@ -202,6 +218,27 @@
     #insideImage {
         margin: 30px 20px;
     }
+    #imageButtons {
+        display: grid;
+        grid-template-columns: 50% 50%;
+        margin: 20px;
+    }
+    #imageButtons button {
+        margin: 20px;
+    }
+    #coords {
+        margin: 20px;
+    }
+    #add-sensor-form form {
+        margin: 5px;
+    }
+    .addSensor-location-categories {
+        grid-template-columns: 50% 50%;
+    }
+    .add-sensor-form-remaining {
+        grid-template-columns: 50% 50%;
+    }
+    
 }
 
 @media screen and (max-width: 450px) and (min-width: 300px) {
@@ -260,11 +297,34 @@
     .nav-items a {
         font-size: 1.7rem;
     }
+    #imageButtons {
+        display: grid;
+        grid-template-columns: 50% 50%;
+        margin: 20px;
+    }
+    #imageButtons button {
+        margin: 5px;
+    }
+    #coords {
+        margin: 5px;
+    }
+    #add-sensor-form form {
+        margin: 5px;
+    }
+    .addSensor-location-categories {
+        grid-template-columns: 50% 50%;
+    }
+    .add-sensor-form-remaining {
+        grid-template-columns: 50% 50%;
+    }
 }
 
 @media screen and (max-width: 300px) and (min-width: 100px) {
     .nav-items {
         grid-template-columns: 10% 90%;
+    }
+    #data {
+        margin: 10px;
     }
     #sensor-cards {
         display: grid;
@@ -306,5 +366,25 @@
     }
     #menu {
         width: 230px;
+    }
+    #imageButtons {
+        display: grid;
+        grid-template-columns: 50% 50%;
+        margin: 20px;
+    }
+    #imageButtons button {
+        margin: 5px;
+    }
+    #coords {
+        margin: 5px;
+    }
+    #add-sensor-form form {
+        margin: 5px;
+    }
+    .addSensor-location-categories {
+        grid-template-columns: 50% 50%;
+    }
+    .add-sensor-form-remaining {
+        grid-template-columns: 50% 50%;
     }
 }

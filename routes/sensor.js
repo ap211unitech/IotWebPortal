@@ -157,10 +157,29 @@ router.post('/addSensor', auth, async (req, res) => {
 
 })
 
+// @ Get Sesnor Details for a geolcation
+router.post('/getSensorgeolocation', auth, async (req, res) => {
+    try {
+        const geolocationId = req.body.geolocation;
+        const findSensor = await Sensor.findOne({ user: req.user._id });
+
+        if (!findSensor) {
+            return res.status(200).json({ msg: 'No user found', status: 400 })
+        }
+
+        const allSensor = findSensor.sensor;
+        const sensorForGeolocation = allSensor.filter(elm => elm.geolocation.toString() == geolocationId);
+        return res.status(200).json(sensorForGeolocation);
+    } catch (err) {
+        console.log(err)
+        return res.status(500).json({ msg: 'Internal Server Error' });
+    }
+})
+
 // @ Get Sesnor Details for a user
 router.get('/getSensor', auth, async (req, res) => {
     try {
-        const findSensor = await Sensor.find({ user: req.user._id });
+        const findSensor = await Sensor.findOne({ user: req.user._id });
         return res.status(200).json(findSensor);
     } catch (err) {
         console.log(err)
