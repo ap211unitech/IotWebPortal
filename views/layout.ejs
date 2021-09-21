@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+    integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+
+
+   <!-- Import Mapbox GL JS  -->
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v2.4.1/mapbox-gl.js'></script>
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.4.1/mapbox-gl.css' rel='stylesheet' />
+  <!-- Import jQuery -->
+  <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+
+  <!-- Google Fonts CDN -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lato&family=Playfair+Display&family=Roboto&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Staatliches&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"
+    integrity="sha512-AA1Bzp5Q0K1KanKKmvN/4d3IRKVlv9PYgwFPvm32nPO6QS8yH1HO7LbgB1pgiOxPtfeg5zEn2ba64MUcqJx6CA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <script class="jsbin" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+  <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
+
+
+  <!-- All CSS file that used in every page -->
+  <link rel="stylesheet" href="css/navbar.css">
+  <link rel="stylesheet" href="css/hamburgerNavbar.css">
+  <link rel="stylesheet" href="css/footer.css">
+  <link rel="stylesheet" href="css/extra.css">
+  <link rel="stylesheet" href="css/add-new-sensor-form.css">
+  <link rel="stylesheet" href="css/edit-sensor-form.css">
+  <link rel="stylesheet" href="css/loader.css">
+  <link rel="stylesheet" href="css/createUser.css">
+  <link rel="stylesheet" href="css/filters-and-searchbar.css">
+  <link rel="stylesheet" href="css/createAlertsTooltip.css">
+  
+
+  <!-- CSS File For diffrent pages -->
+  <link rel="stylesheet" href="<%- cssFile %>">
+
+  <!-- Media query file -->
+  <link rel="stylesheet" href="css/mediaQueries.css">
+
+
+  <title>IoT web portal</title>
+
+</head>
+
+<body class="<%- bodyClass %>">
+  <!---------------------------------------- CENTER BODY ---------------------------------------->
+  <%- body %>
+</body>
+
+<link rel="stylesheet" href="css/sensors-data-tooltip.css">
+
+</html>

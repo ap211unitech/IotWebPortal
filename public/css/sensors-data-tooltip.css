@@ -1,0 +1,56 @@
+.sensorsDataDiv {
+    position: absolute;
+    font-family: 'Montserrat', sans-serif;
+    padding: 5px 10px;
+    display: none;
+    min-width: 250px;
+    background: white;
+    z-index: 101;
+}
+.sensorsDataDiv hr {
+    border: 1px solid #f96332;
+    background: #f96332;
+    /* color: #f96332; */
+}
+#sensorNameTooltip {
+    font-size: 1.3rem;
+    margin: 5px 0px;
+}
+#sensorLocationTooltip {
+    color: #a9a9a9;
+    font-size: 0.7rem;
+    margin: 5px 10px;
+}
+#sensorIdTooltip {
+    color: #a9a9a9;
+    /* float: left; */
+    font-size: 0.7rem;
+    margin: 5px 0px;
+}
+#sensorWeightTooltip {
+    font-size: 2.4rem;
+    font-weight: bold;
+}
+#sensorTimeTooltip {
+    color: #a9a9a9;
+    font-size: 0.7rem;
+    margin: 5px 0px;
+}
+#editBtnTooltip {
+    font-size: 0.75rem;
+    color: #696969;
+    margin: 5px 0px;
+    cursor: pointer;
+}
+#deleteBtnTooltip {
+    font-size: 0.75rem;
+    color: #696969;
+    margin: 5px;
+    cursor: pointer;
+}
+#createAlertBtn {
+    font-size: 0.75rem;
+    color: #696969;
+    margin: 5px;
+    cursor: pointer;
+}

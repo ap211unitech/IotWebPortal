@@ -1,0 +1,5 @@
+{
+  "MongoURI-Production": "mongodb+srv://test:test@cluster0.inmn3.mongodb.net/project?retryWrites=true&w=majority",
+  "MongoURI": "mongodb://127.0.0.1:27017/IotWebPortal"
+}
+
