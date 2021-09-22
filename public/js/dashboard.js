@@ -763,7 +763,7 @@ function applyFilter(el) {
 function applyFilterForWeight() {
   var img = document.getElementById("inside-map")
   if (img.style.display == "none") {
-    alert("Currently Filters are only applicable to Image Map");
+    // alert("Currently Filters are only applicable to Image Map");
     return;
   }
   if(sensors_data == null) return;
