@@ -133,35 +133,36 @@ function checkedFunc(el) {
 }
 
 // Calling API
-// async function getRefreshData() {
-//   try {
-//     let response = await fetch("/call_data");
-//     let data = await response.json();
-//     // getGeolocation();
-//   } catch (err) {
-//     console.log(err);
-//   }
-// }
+async function getRefreshData() {
+  try {
+    // let response = await fetch("/call_data");
+    // let data = await response.json();
+    $(".permanentMarker").remove();
+    getLiveSensorData();
+    applyFilterForWeight();
+    // showAllTheSensorsOnImageMap(sensors_data);
+    sensors_data.forEach((data) => {
+      data.data.forEach((data) => {
+        data.sensorDetail.forEach((res) => {
+          showDataOfSensorUsingSensor(res);
+        });
+      });
+    });
+    // getGeolocation();
+  } catch (err) {
+    console.log(err);
+  }
+}
 
 
 // Getting Refresh Data in every 2 minutes
-// getRefreshData();
-
 getLiveSensorData();
+getRefreshData();
+
 
 setInterval(() => {
-  // getRefreshData();
-  $(".permanentMarker").remove();
-  getLiveSensorData();
-  showAllTheSensorsOnImageMap(sensors_data);
-  sensors_data.forEach((data) => {
-    data.data.forEach((data) => {
-      data.sensorDetail.forEach((res) => {
-        showDataOfSensorUsingSensor(res);
-      });
-    });
-  });
-}, 10 * 1000);
+  getRefreshData();
+}, 5 * 1000);
 
 // Get Live Sensor Data
 async function getLiveSensorData() {
@@ -416,15 +417,13 @@ function showSensorsAccordingToWeightOfThatType(low, high, sensorType) {
   sensors_data.forEach((data) => {
     data.data.forEach((data) => {
       data.sensorDetail.forEach((res) => {
+        let liveSensorData = getSensorLiveWeightUsingSensorID(res.sensorId);
         if (filter) {
-          // console.log("Here");
-          let liveSensorData = getLiveSensorData(res.sensorId);
           if (liveSensorData.weight >= low && liveSensorData.weight < high && res.sensorType == sensorType) {
-            // console.log("Here");
             showSensor(res);
           }
         } else {
-          if (liveSensorData.weight >= low && liveSensorData.weight < high) {
+          if (liveSensorData.distance >= low && liveSensorData.distance < high) {
             showSensor(res);
           }
         }
@@ -537,7 +536,8 @@ async function getSensorDetail(geolocation_id) {
       return;
     }
 
-    showAllTheSensorsOnImageMap(sensors_data);
+    // showAllTheSensorsOnImageMap(sensors_data);
+    applyFilterForWeight();
 
   } catch (err) {
     console.log(err);
@@ -766,6 +766,7 @@ function applyFilterForWeight() {
     alert("Currently Filters are only applicable to Image Map");
     return;
   }
+  if(sensors_data == null) return;
   var box25 = document.getElementById("25");
   var box50 = document.getElementById("50");
   var box75 = document.getElementById("75");
@@ -784,14 +785,13 @@ function applyFilterForWeight() {
       showSensorsAccordingToWeightOfThatType(0, 25, val);
     }
     if (box50.checked == true) {
-      // alert("MC");
       showSensorsAccordingToWeightOfThatType(25, 50, val);
     }
     if (box75.checked == true) {
       showSensorsAccordingToWeightOfThatType(50, 75, val);
     }
     if (box100.checked == true) {
-      showSensorsAccordingToWeightOfThatType(75, 1000, val);
+      showSensorsAccordingToWeightOfThatType(75, 10000, val);
     }
   }
 }
@@ -1063,16 +1063,12 @@ async function showDataOfSensor(el) {
 
 
 async function showDataOfSensorUsingSensor(currSensorData) {
-
   var sensorId = currSensorData.sensorId;
-
   var sensorLiveData = getSensorLiveWeightUsingSensorID(sensorId);
   var sensorLiveWeight = sensorLiveData.distance;
   var sensorLiveTime = sensorLiveData.time;
-
   $("#sensorWeightTooltip").html(sensorLiveWeight);
   $("#sensorTimeTooltip").html('<i class="far fa-clock"></i> ' + new Date(sensorLiveTime).toDateString() + ' | ' + new Date(sensorLiveTime).toLocaleTimeString());
-
 }
 
 
