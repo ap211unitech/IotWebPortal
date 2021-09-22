@@ -183,6 +183,7 @@ async function getLiveSensorData() {
 
 function getSensorLiveWeightUsingSensorID(sensorId) {
   let mainData;
+  if(liveSensorData == null) return;
   liveSensorData.forEach((data) => {
     if (data.id == sensorId) {
       // alert(data.distance);
@@ -222,8 +223,14 @@ function showSensor(res) {
   var vRatio = res.imageCoordinates.vRatio;
   var sensorSymbol = showThatSymbolOfSensor(res.sensorType);
 
+
   var sensorLiveData = getSensorLiveWeightUsingSensorID(res.sensorId);
-  var sensorLiveWeight = sensorLiveData.distance;
+  var sensorLiveWeight;
+  if (sensorLiveData == null) {
+    sensorLiveWeight = "x"
+  } else {
+    sensorLiveWeight = sensorLiveData.distance;
+  }
   // alert(sensorLiveWeight);
 
 
@@ -766,7 +773,7 @@ function applyFilterForWeight() {
     // alert("Currently Filters are only applicable to Image Map");
     return;
   }
-  if(sensors_data == null) return;
+  if (sensors_data == null) return;
   var box25 = document.getElementById("25");
   var box50 = document.getElementById("50");
   var box75 = document.getElementById("75");
@@ -1018,14 +1025,22 @@ async function showDataOfSensor(el) {
 
   var sensorLiveData = getSensorLiveWeightUsingSensorID(sensorId);
 
-  var sensorLiveWeight = sensorLiveData.distance;
-  var sensorLiveTime = sensorLiveData.time;
+  var sensorLiveWeight;
+  if (sensorLiveData == null) {
+    sensorLiveWeight = "x"
+  } else {
+    sensorLiveWeight = sensorLiveData.distance;
+  }
+  var sensorLiveTime = (sensorLiveData == null ||sensorLiveData.time == null) ? "" : sensorLiveData.time;
+
   $("#sensorNameTooltip").html(sensorName);
   $("#sensorIdTooltip").html("Id: " + sensorId);
   $("#sensorLocationTooltip").html('<i class="fas fa-map-marker-alt"></i> ' + sensorLocation);
   $("#sensorWeightTooltip").html(sensorLiveWeight);
   // $("#sensorTimeTooltip").html('<i class="far fa-clock"></i> ' + "5:44PM | 21st May 2021");
-  $("#sensorTimeTooltip").html('<i class="far fa-clock"></i> ' + new Date(sensorLiveTime).toDateString() + ' | ' + new Date(sensorLiveTime).toLocaleTimeString());
+  const date = sensorLiveTime == "x" ? "No date found" : new Date(sensorLiveTime).toDateString();
+  const time = sensorLiveTime == "x" ? "No time found" : new Date(sensorLiveTime).toLocaleTimeString()
+  $("#sensorTimeTooltip").html('<i class="far fa-clock"></i> ' + date + ' | ' + time);
 
   // Anchor Tag to Edit the Sensor
   var editBtn = document.getElementById("editBtnTooltip");
@@ -1065,10 +1080,18 @@ async function showDataOfSensor(el) {
 async function showDataOfSensorUsingSensor(currSensorData) {
   var sensorId = currSensorData.sensorId;
   var sensorLiveData = getSensorLiveWeightUsingSensorID(sensorId);
-  var sensorLiveWeight = sensorLiveData.distance;
-  var sensorLiveTime = sensorLiveData.time;
+  // var sensorLiveData = getSensorLiveWeightUsingSensorID(res.sensorId);
+  var sensorLiveWeight;
+  if (sensorLiveData == null) {
+    sensorLiveWeight = "x"
+  } else {
+    sensorLiveWeight = sensorLiveData.distance;
+  }
+  var sensorLiveTime = (sensorLiveData == null || sensorLiveData.time == null) ? "" : sensorLiveData.time;
   $("#sensorWeightTooltip").html(sensorLiveWeight);
-  $("#sensorTimeTooltip").html('<i class="far fa-clock"></i> ' + new Date(sensorLiveTime).toDateString() + ' | ' + new Date(sensorLiveTime).toLocaleTimeString());
+  const date = sensorLiveTime == "x" ? "No date found" : new Date(sensorLiveTime).toDateString();
+  const time = sensorLiveTime == "x" ? "No time found" : new Date(sensorLiveTime).toLocaleTimeString()
+  $("#sensorTimeTooltip").html('<i class="far fa-clock"></i> ' + date + ' | ' + time);
 }
 
 
