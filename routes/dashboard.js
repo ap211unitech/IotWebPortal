@@ -14,8 +14,8 @@ route.get("/liveSensorDataUsingAPI", auth, async (req, res) => {
       uri: `http://my-json-server.typicode.com/ap211unitech/JSON-Fake-API/data`,
       method: "GET",
       headers: {
-        "user-agent": "node.js"
-      }
+        "user-agent": "node.js",
+      },
     };
     request(optionss, async (err, response, body) => {
       if (err) console.error(err);
@@ -30,7 +30,7 @@ route.get("/liveSensorDataUsingAPI", auth, async (req, res) => {
 
         // Finding if this query (exactly) is already present or not
         const findData = await API_DATA.findOne({
-          $and: [{ id }, { time_of_reading }, { weight }, { location }]
+          $and: [{ id }, { time_of_reading }, { weight }, { location }],
         });
 
         // If not present , then Save it to Database
@@ -39,7 +39,7 @@ route.get("/liveSensorDataUsingAPI", auth, async (req, res) => {
             id,
             location,
             time_of_reading,
-            weight
+            weight,
           });
           await newData.save();
         }
@@ -56,30 +56,28 @@ route.get("/liveSensorDataUsingAPI", auth, async (req, res) => {
 });
 
 route.post("/liveSensorData", async (req, res) => {
-  res.json({ msg: 'Got the temp data, thanks..!!' });
+  res.json({ msg: "Got the temp data, thanks..!!" });
 
   const main = [];
   let content = JSON.parse(`${JSON.stringify(req.body)}`.slice(1, -4));
   const arr = content.split("|");
-  arr.forEach(elm => {
+  arr.forEach((elm) => {
     let obj = JSON.parse(elm.replace(/'/gi, `"`));
     obj["time"] = new Date().toISOString();
     main.push(obj);
   });
 
-  fs.writeFile('public/temp.json', JSON.stringify(main), function (err) {
+  fs.writeFile("public/temp.json", JSON.stringify(main), function (err) {
     if (err) throw err;
-    console.log('Saved!');
+    console.log("Saved!");
   });
 
   // console.log(JSON.stringify(req.body));
-})
+});
 
-route.get('/getLiveSensorData', async (req, res) => {
-  const data = fs.readFileSync("public/temp.json", 'utf8');
-
-  return res.json(JSON.parse(data));
-
-
-})
+route.get("/getLiveSensorData", async (req, res) => {
+  const data = fs.readFileSync("public/temp.json", "utf8");
+  if (data) return res.json(JSON.parse(data));
+  return res.json(null);
+});
 module.exports = route;

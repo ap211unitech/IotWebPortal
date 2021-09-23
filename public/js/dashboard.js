@@ -1,6 +1,6 @@
 // All the required Global Variables-
 let mainLocationsDiv = document.getElementById("mainLocationsDiv");
-let navbarLocationsDiv = document.getElementById('navbarLocationsDiv');
+let navbarLocationsDiv = document.getElementById("navbarLocationsDiv");
 let geolocation_id = "";
 let sensors_data;
 let global_del_image_id = "";
@@ -8,44 +8,46 @@ let ratio = {};
 let edit_ratio = {};
 var addSensorBtnClicked = false;
 var imgPos = [];
-let image;  // Global Variable to store image informtion. 
+let image; // Global Variable to store image informtion.
 let liveSensorData;
-$('#geoMap').fadeOut('fast');
-
+let idOfSensorWhichIsClicked = null;
+$("#geoMap").fadeOut("fast");
 
 // Add New User
-document.querySelector("#createUserForm-submit-btn").addEventListener('click', addNewUser);
+document
+  .querySelector("#createUserForm-submit-btn")
+  .addEventListener("click", addNewUser);
 async function addNewUser(e) {
   e.preventDefault();
   try {
     const email = document.getElementById("createUserForm-email").value;
 
     if (!email) {
-      alert('Please enter a email address');
+      alert("Please enter a email address");
       return;
     }
 
     const me = await myDetails();
     let obj = {
-      'admin': 'orghead',
-      'orghead': 'user'
-    }
+      admin: "orghead",
+      orghead: "user",
+    };
 
     let formData = {
       email,
-      type: obj[me.type]
+      type: obj[me.type],
     };
 
-    console.log(formData)
+    console.log(formData);
     // return
 
     const settings = {
-      method: 'POST',
+      method: "POST",
       headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
+        Accept: "application/json",
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(formData)
+      body: JSON.stringify(formData),
     };
     let response = await fetch("/addUser", settings);
     let data = await response.json();
@@ -53,38 +55,35 @@ async function addNewUser(e) {
     if (data.status == 400) {
       alert(data.msg);
       return;
-    }
-    else {
+    } else {
       alert(`User Created successfully of type ${data.type}`);
       return;
     }
   } catch (err) {
     console.log(err);
-    alert('Something went wrong...');
+    alert("Something went wrong...");
   }
 }
 
 // Logout User
-document.querySelector("#logoutUser").addEventListener('click', logout);
+document.querySelector("#logoutUser").addEventListener("click", logout);
 async function logout() {
   try {
     const settings = {
-      method: 'GET',
+      method: "GET",
       headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
+        Accept: "application/json",
+        "Content-Type": "application/json",
       },
     };
-    const myAllDetails = await fetch('/logout', settings);
+    const myAllDetails = await fetch("/logout", settings);
     // const response = await myAllDetails.json();
     window.location.reload();
   } catch (err) {
     console.log(err);
-    alert('Something went wrong...');
+    alert("Something went wrong...");
   }
 }
-
-
 
 // Settings for diffrent type of users
 async function settingsForDiffrentUser() {
@@ -92,11 +91,9 @@ async function settingsForDiffrentUser() {
     const currentUser = await myDetails();
     if (currentUser.type == "admin") {
       console.log("ADMIN");
-    }
-    else if (currentUser.type == "orghead") {
+    } else if (currentUser.type == "orghead") {
       console.log("ORG HEAD");
-    }
-    else if (currentUser.type == "user") {
+    } else if (currentUser.type == "user") {
       document.getElementById("addSensor-btn").style.display = "none";
       document.getElementById("add-new-btn").style.display = "none";
       document.getElementById("create-user-btn").style.display = "none";
@@ -104,22 +101,21 @@ async function settingsForDiffrentUser() {
     }
   } catch (err) {
     console.log(err);
-    alert('Something went wrong...');
+    alert("Something went wrong...");
   }
 }
 
 settingsForDiffrentUser();
 
-
-
 // MapBox API-
-mapboxgl.accessToken = 'pk.eyJ1IjoiYXJ5YW4wMTQxIiwiYSI6ImNrc21zbzJwaTBhMTYyb3A3MWpsd2M3eWQifQ.vH9l7ustzfMTQxOAcpfDww';
+mapboxgl.accessToken =
+  "pk.eyJ1IjoiYXJ5YW4wMTQxIiwiYSI6ImNrc21zbzJwaTBhMTYyb3A3MWpsd2M3eWQifQ.vH9l7ustzfMTQxOAcpfDww";
 
 var map = new mapboxgl.Map({
-  container: 'geoMap',
-  style: 'mapbox://styles/mapbox/streets-v11',
-  center: [75.778885, 26.922070],
-  zoom: 10
+  container: "geoMap",
+  style: "mapbox://styles/mapbox/streets-v11",
+  center: [75.778885, 26.92207],
+  zoom: 10,
 });
 
 // To check weather the Hamburger Nav is clicked or not-
@@ -132,19 +128,23 @@ function checkedFunc(el) {
   }
 }
 
-// Calling API
-async function getRefreshData() {
+// Refreshing the data in every 5sec-
+function getRefreshData() {
   try {
     // let response = await fetch("/call_data");
     // let data = await response.json();
     $(".permanentMarker").remove();
+    if(sensors_data == null) {
+      return;
+    }
+    // console.log(sensors_data, "TMKB");
+
     getLiveSensorData();
     applyFilterForWeight();
-    // showAllTheSensorsOnImageMap(sensors_data);
     sensors_data.forEach((data) => {
       data.data.forEach((data) => {
         data.sensorDetail.forEach((res) => {
-          showDataOfSensorUsingSensor(res);
+          updateDataOfSensorInTooltip(res);
         });
       });
     });
@@ -153,12 +153,9 @@ async function getRefreshData() {
     console.log(err);
   }
 }
-
-
-// Getting Refresh Data in every 2 minutes
+getGeolocation();
 getLiveSensorData();
 getRefreshData();
-
 
 setInterval(() => {
   getRefreshData();
@@ -167,23 +164,27 @@ setInterval(() => {
 // Get Live Sensor Data
 async function getLiveSensorData() {
   const settings = {
-    method: 'GET',
+    method: "GET",
     headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
+      Accept: "application/json",
+      "Content-Type": "application/json",
     },
   };
-  let response = await fetch('/getLiveSensorData', settings);
+  let response = await fetch("/getLiveSensorData", settings);
   let data = await response.json();
   console.log(data);
+  if (data == null) {
+    liveSensorData = [];
+    return;
+  }
+
   liveSensorData = data;
   return;
 }
 
-
-function getSensorLiveWeightUsingSensorID(sensorId) {
+function getSensorLiveDataUsingSensorID(sensorId) {
   let mainData;
-  if(liveSensorData == null) return;
+  if (liveSensorData.length == 0 || liveSensorData == null) return null;
   liveSensorData.forEach((data) => {
     if (data.id == sensorId) {
       // alert(data.distance);
@@ -194,27 +195,25 @@ function getSensorLiveWeightUsingSensorID(sensorId) {
   return mainData;
 }
 
-
-
-
 // Show sensors color according to the weight-
 function sensorColorByWeight(weight) {
   if (weight < 25) {
     // Green
-    return "rgb(0, 255, 127)"
+    return "rgb(0, 255, 127)";
   }
   if (weight >= 25 && weight < 50) {
     // Yellow
-    return "rgb(255,255,49)"
+    return "rgb(255,255,49)";
   }
   if (weight >= 50 && weight < 75) {
     // Orange
-    return "rgb(255,69,0)"
+    return "rgb(255,69,0)";
   }
   if (weight >= 75) {
     // Red
-    return "rgb(220, 20, 60)"
+    return "rgb(220, 20, 60)";
   }
+  return "rgb(255, 255, 255)";
 }
 
 // Show a particular sensor on the image map-
@@ -223,24 +222,28 @@ function showSensor(res) {
   var vRatio = res.imageCoordinates.vRatio;
   var sensorSymbol = showThatSymbolOfSensor(res.sensorType);
 
-
-  var sensorLiveData = getSensorLiveWeightUsingSensorID(res.sensorId);
+  var sensorLiveData = getSensorLiveDataUsingSensorID(res.sensorId);
   var sensorLiveWeight;
   if (sensorLiveData == null) {
-    sensorLiveWeight = "x"
+    sensorLiveWeight = "x";
   } else {
     sensorLiveWeight = sensorLiveData.distance;
   }
   // alert(sensorLiveWeight);
 
+  var top = hRatio * $image.height() + imgPos[1];
+  var left = vRatio * $image.width() + imgPos[0];
 
-  var top = hRatio * ($image.height()) + imgPos[1];
-  var left = vRatio * ($image.width()) + imgPos[0];
-
-  $('body').append(
-    $('<div title="Click for more info" onclick="showDataOfSensor(this)" id="' + res._id + '" class="permanentMarker">' + sensorSymbol + '</div>').css({
-      top: top - 29 + 'px',
-      left: left - 11 + 'px',
+  $("body").append(
+    $(
+      '<div title="Click for more info" onclick="showDataOfSensor(this)" id="' +
+        res._id +
+        '" class="permanentMarker">' +
+        sensorSymbol +
+        "</div>"
+    ).css({
+      top: top - 29 + "px",
+      left: left - 11 + "px",
       color: sensorColorByWeight(sensorLiveWeight),
     })
   );
@@ -258,8 +261,6 @@ function showAllTheSensorsOnImageMap(data) {
   });
 }
 
-
-
 // Function to show all the sensors on the Geo Map-
 function showAllTheSensorsOnGeoMap(data) {
   // console.log(data);
@@ -267,7 +268,7 @@ function showAllTheSensorsOnGeoMap(data) {
     return;
   }
   if (data[0] == null) return;
-  $('.geoMarker').remove();
+  $(".geoMarker").remove();
   data.forEach((data) => {
     data.data.forEach((data) => {
       data.sensorDetail.forEach((res) => {
@@ -280,10 +281,8 @@ function showAllTheSensorsOnGeoMap(data) {
 
         console.log(lat + " " + lon);
 
-
-
-        var el = document.createElement('p');
-        el.className = 'geoMarker';
+        var el = document.createElement("p");
+        el.className = "geoMarker";
         el.innerHTML = sensorSymbol;
         el.style.color = sensorColorByWeight(87);
         // el.id = res._id;
@@ -294,7 +293,7 @@ function showAllTheSensorsOnGeoMap(data) {
         // Add marker
         new mapboxgl.Marker({
           element: el,
-          anchor: 'bottom',
+          anchor: "bottom",
         })
           .setLngLat([lon, lat])
           .addTo(map);
@@ -317,20 +316,13 @@ function showAllTheSensorsOnGeoMap(data) {
     easing: function (t) {
       return t;
     },
-    essential: true
+    essential: true,
   });
-
-
 }
-
-
-
-
-
 
 // Function which can give the hRatio & vRatio of the image-
 function giveCoorsToImage() {
-  $image = $('#inside-map');
+  $image = $("#inside-map");
   if (image == null) {
     return;
   }
@@ -338,48 +330,47 @@ function giveCoorsToImage() {
     $image.offset().left,
     $image.offset().top,
     $image.offset().left + $image.outerWidth(),
-    $image.offset().top + $image.outerHeight()
+    $image.offset().top + $image.outerHeight(),
   ];
 
   $image.mousemove(function (e) {
-    $('#coords').html((e.pageX - imgPos[0]).toFixed(0) + ', ' + (e.pageY - imgPos[1]).toFixed(0));
+    $("#coords").html(
+      (e.pageX - imgPos[0]).toFixed(0) + ", " + (e.pageY - imgPos[1]).toFixed(0)
+    );
   });
 
   $image.click(function (ev) {
     if (addSensorBtnClicked == true) {
-
-      var width_ratio = (ev.pageX - imgPos[0]) / ($image.width());
-      var height_ratio = (ev.pageY - imgPos[1]) / ($image.height());
+      var width_ratio = (ev.pageX - imgPos[0]) / $image.width();
+      var height_ratio = (ev.pageY - imgPos[1]) / $image.height();
 
       ratio["hRatio"] = height_ratio;
       ratio["vRatio"] = width_ratio;
       console.log(height_ratio + " , " + width_ratio);
 
-      $(".marker").remove();    // Removes the previous marker, when we select a new marker.
+      $(".marker").remove(); // Removes the previous marker, when we select a new marker.
 
-      $('body').append(
-        $('<div class="marker"><i class="fas fa-map-marker-alt"></i></div>').css({
-          position: 'absolute',
-          top: (ev.pageY - 29) + 'px',
-          left: (ev.pageX - 11) + 'px',
-          fontSize: '1.8rem',
-          color: 'red',
+      $("body").append(
+        $(
+          '<div class="marker"><i class="fas fa-map-marker-alt"></i></div>'
+        ).css({
+          position: "absolute",
+          top: ev.pageY - 29 + "px",
+          left: ev.pageX - 11 + "px",
+          fontSize: "1.8rem",
+          color: "red",
         })
       );
       showAddSensorForm();
     }
-
   });
   $image.mouseenter(function () {
-    $("html").css({ "cursor": "crosshair" });
+    $("html").css({ cursor: "crosshair" });
   });
   $image.mouseleave(function () {
-    $("html").css({ "cursor": "default" });
+    $("html").css({ cursor: "default" });
   });
 }
-
-
-
 
 // Show different sensor symbols according to their type-
 function showThatSymbolOfSensor(text) {
@@ -396,11 +387,13 @@ function showThatSymbolOfSensor(text) {
   if (text == "Bacteria") return '<i class="fas fa-bacteria"></i>';
   if (text == "Animals") return '<i class="fab fa-sticker-mule"></i>';
   if (text == "Location") return '<i class="fas fa-map-marker-alt"></i>';
-  if (text == "Charging Station") return '<i class="fas fa-charging-station"></i>';
+  if (text == "Charging Station")
+    return '<i class="fas fa-charging-station"></i>';
   if (text == "Water") return '<i class="fas fa-water"></i>';
   if (text == "Tint") return '<i class="fas fa-tint"></i>';
   // if (text == "Ultrasonic Sensor") return '<i class="fas fa-tint"></i>';
-  if (text == "Ultrasonic Sensor") return '<i class="fas fa-satellite-dish"></i>';
+  if (text == "Ultrasonic Sensor")
+    return '<i class="fas fa-satellite-dish"></i>';
 }
 
 // Function to show only a particular type of sensor on the image map-
@@ -416,21 +409,30 @@ function showThatTypeOfSensor(sensorType) {
   });
 }
 
-
-
 // Function to show sensor only for a particular weight-
 function showSensorsAccordingToWeightOfThatType(low, high, sensorType) {
-  var filter = (sensorType == "All Sensors") ? false : true;
+  var filter = sensorType == "All Sensors" ? false : true;
   sensors_data.forEach((data) => {
     data.data.forEach((data) => {
       data.sensorDetail.forEach((res) => {
-        let liveSensorData = getSensorLiveWeightUsingSensorID(res.sensorId);
+        let sensorLiveData = getSensorLiveDataUsingSensorID(res.sensorId);
+        if (sensorLiveData == null) {
+          // showSensor(res);
+          return;
+        }
         if (filter) {
-          if (liveSensorData.weight >= low && liveSensorData.weight < high && res.sensorType == sensorType) {
+          if (
+            sensorLiveData.distance >= low &&
+            sensorLiveData.distance < high &&
+            res.sensorType == sensorType
+          ) {
             showSensor(res);
           }
         } else {
-          if (liveSensorData.distance >= low && liveSensorData.distance < high) {
+          if (
+            sensorLiveData.distance >= low &&
+            sensorLiveData.distance < high
+          ) {
             showSensor(res);
           }
         }
@@ -439,23 +441,21 @@ function showSensorsAccordingToWeightOfThatType(low, high, sensorType) {
   });
 }
 
-
 async function getGeolocationUserByGeoId(geoId) {
   try {
     const settings = {
-      method: 'POST',
+      method: "POST",
       headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
+        Accept: "application/json",
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ id: geoId })
+      body: JSON.stringify({ id: geoId }),
     };
 
-    const response = await fetch('/getUserIdbyGeoId', settings);
+    const response = await fetch("/getUserIdbyGeoId", settings);
     const data = await response.json();
-    console.log(data)
+    console.log(data);
     return data;
-
   } catch (err) {
     console.log(err);
   }
@@ -464,7 +464,6 @@ async function getGeolocationUserByGeoId(geoId) {
 // Get sensors detail of user
 async function getSensorDetail(geolocation_id) {
   try {
-
     // Get Geolocation User Details
     let geoUser = (await getGeolocationUserByGeoId(geolocation_id)).user;
     let currentuser = await myDetails();
@@ -478,74 +477,75 @@ async function getSensorDetail(geolocation_id) {
 
     // console.log(geoUser)
     const settings = {
-      method: 'POST',
+      method: "POST",
       headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
+        Accept: "application/json",
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ geolocation: geolocation_id, user: geoUser })
+      body: JSON.stringify({ geolocation: geolocation_id, user: geoUser }),
     };
 
-    const response = await fetch('/getSensorgeolocation', settings);
+    const response = await fetch("/getSensorgeolocation", settings);
     const data = await response.json();
     sensors_data = data;
 
-    console.log(sensors_data, "sensor data")
+    console.log(sensors_data, "sensor data");
 
-    $('#inside-map').attr("src", "/img/loader.gif");
-    const findImage = await fetch('/getImageUsingGeolocation', settings);
+    $("#inside-map").attr("src", "/img/loader.gif");
+    const findImage = await fetch("/getImageUsingGeolocation", settings);
     const Image = await findImage.json();
     image = Image;
     console.log(Image, "image data");
 
     // If image is not found, then show the add image option.
 
-
     if (Image.length == 0 || Image.status == 400) {
       if (currentuser.type == "user") {
-        $('#insideImage').css({ 'display': 'none' });
-        $('#inside-map').css({ 'display': 'block' });
-        $('#inside-map').attr({ 'src': 'https://icoconvert.com/images/noimage2.png' });
-        $('#geoMap').css({ 'display': 'none' });
-        $('.permanentMarker').remove();
+        $("#insideImage").css({ display: "none" });
+        $("#inside-map").css({ display: "block" });
+        $("#inside-map").attr({
+          src: "https://icoconvert.com/images/noimage2.png",
+        });
+        $("#geoMap").css({ display: "none" });
+        $(".permanentMarker").remove();
         return;
       } else {
-        $('#insideImage').css({ 'display': 'block' });
-        $('#inside-map').css({ 'display': 'none' });
-        $('#inside-map').attr({ 'src': 'https://icoconvert.com/images/noimage2.png' });
-        $('#geoMap').css({ 'display': 'none' });
-        $('.permanentMarker').remove();
+        $("#insideImage").css({ display: "block" });
+        $("#inside-map").css({ display: "none" });
+        $("#inside-map").attr({
+          src: "https://icoconvert.com/images/noimage2.png",
+        });
+        $("#geoMap").css({ display: "none" });
+        $(".permanentMarker").remove();
         return;
       }
     }
     global_del_image_id = Image[0]._id;
 
+    $("#insideImage").css({ display: "none" });
+    $("#inside-map").css({ display: "block" });
+    $("#geoMap").css({ display: "none" });
+    $("#inside-map").attr("src", Image[0].name);
+    $("#inside-map").attr("imageid", Image[0]._id);
 
-    $('#insideImage').css({ 'display': 'none' });
-    $('#inside-map').css({ 'display': 'block' });
-    $('#geoMap').css({ 'display': 'none' });
-    $('#inside-map').attr("src", Image[0].name);
-    $('#inside-map').attr("imageid", Image[0]._id);
-
-    giveCoorsToImage()
+    giveCoorsToImage();
 
     // giveCoorsToImage();
 
     // console.log(Image)
     // If sensor data is not found, then only show the uploaded image.
     if (data.status == 400) {
-      console.log(data, "HERE")
-      $('#insideImage').css({ 'display': 'none' });
-      $('#inside-map').css({ 'display': 'block' });
-      $('#inside-map').attr("src", Image[0].name);
-      $('#inside-map').attr("imageid", Image[0]._id);
+      console.log(data, "HERE");
+      $("#insideImage").css({ display: "none" });
+      $("#inside-map").css({ display: "block" });
+      $("#inside-map").attr("src", Image[0].name);
+      $("#inside-map").attr("imageid", Image[0]._id);
 
       return;
     }
 
     // showAllTheSensorsOnImageMap(sensors_data);
     applyFilterForWeight();
-
   } catch (err) {
     console.log(err);
     // alert('Something went wrong...');
@@ -560,19 +560,18 @@ async function deleteGeolocation(geoId) {
 
   // @Arjun Porwal - Write Backend Here
   const settings = {
-    method: 'DELETE',
+    method: "DELETE",
     headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
+      Accept: "application/json",
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify({ geoId: geoId, user: geoUser })
+    body: JSON.stringify({ geoId: geoId, user: geoUser }),
   };
-  let response = await fetch('/deleteGeolocation', settings);
+  let response = await fetch("/deleteGeolocation", settings);
   let data = await response.json();
   window.location.reload();
   // return;
 }
-
 
 // Getting geolocations
 async function getGeolocation() {
@@ -588,30 +587,32 @@ async function getGeolocation() {
 
     // @ If currentUser is admin, he will get all geolocations in db
     // @ If currentUser is orghead, he will get geolocations created by him
-    // @ If currentUser is user, he will get geolocations created by his parent (any orghead) 
+    // @ If currentUser is user, he will get geolocations created by his parent (any orghead)
 
     const settings = {
-      method: 'POST',
+      method: "POST",
       headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
+        Accept: "application/json",
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ parent: parentId })
+      body: JSON.stringify({ parent: parentId }),
     };
-    $("#loaderGeolocations").css({ 'display': 'block' });
-    let response = await fetch('/getGeolocations', settings);
+    $("#loaderGeolocations").css({ display: "block" });
+    let response = await fetch("/getGeolocations", settings);
     let data = await response.json();
-    $("#loaderGeolocations").css({ 'display': 'none' });
+    $("#loaderGeolocations").css({ display: "none" });
 
     // If parent User is admin/orghead
     if (currentUser.type == "admin" || currentUser.type == "orghead") {
       if (data.status === 404) {
-        $('#insideImage').css({ 'display': 'none' });
-        $('#inside-map').css({ 'display': 'block' });
-        $('#inside-map').attr({ 'src': 'https://icoconvert.com/images/noimage2.png' });
-        $('#geoMap').css({ 'display': 'none' });
-        $('.permanentMarker').remove();
-        alert('Add a geolocation');
+        $("#insideImage").css({ display: "none" });
+        $("#inside-map").css({ display: "block" });
+        $("#inside-map").attr({
+          src: "https://icoconvert.com/images/noimage2.png",
+        });
+        $("#geoMap").css({ display: "none" });
+        $(".permanentMarker").remove();
+        alert("Add a geolocation");
         return;
       }
     }
@@ -619,12 +620,14 @@ async function getGeolocation() {
     // If parent User is admin/orghead
     if (currentUser.type == "user") {
       if (data.status === 404) {
-        $('#insideImage').css({ 'display': 'none' });
-        $('#inside-map').css({ 'display': 'block' });
-        $('#inside-map').attr({ 'src': 'https://icoconvert.com/images/noimage2.png' });
-        $('#geoMap').css({ 'display': 'none' });
-        $('.permanentMarker').remove();
-        alert('There is no such geolocation created by your org head..');
+        $("#insideImage").css({ display: "none" });
+        $("#inside-map").css({ display: "block" });
+        $("#inside-map").attr({
+          src: "https://icoconvert.com/images/noimage2.png",
+        });
+        $("#geoMap").css({ display: "none" });
+        $(".permanentMarker").remove();
+        alert("There is no such geolocation created by your org head..");
         return;
       }
     }
@@ -633,7 +636,6 @@ async function getGeolocation() {
     $("#geolocation-form").val(geolocation_id);
     console.log(geolocation_id);
     getSensorDetail(geolocation_id);
-
 
     $("#geolocation").val(geolocation_id);
 
@@ -650,21 +652,24 @@ async function getGeolocation() {
       var div2 = document.createElement("div");
       div2.innerHTML = `<h3>${place}</h3><p>${state}</p>`;
 
-      var div3 = document.createElement("div");
-      div3.id = "deleteGeolocationBtn";
-      div3.style.margin = "auto";
-      div3.innerHTML = `<h2><i class="fas fa-trash"></i></h2>`;
+      if (currentUser.type == "admin" || currentUser.type == "orghead") {
+        var div3 = document.createElement("div");
+        div3.id = "deleteGeolocationBtn";
+        div3.style.margin = "auto";
+        div3.innerHTML = `<h2><i class="fas fa-trash"></i></h2>`;
+  
+        div3.onclick = function () {
+          geolocation_id = res._id;
+          deleteGeolocation(geolocation_id);
+        };
+      }
 
-      div3.onclick = function () {
-        geolocation_id = res._id;
-        deleteGeolocation(geolocation_id);
-      };
 
       div.appendChild(div2);
       div.appendChild(div3);
 
       div.onclick = function () {
-        $('.permanentMarker').remove();
+        $(".permanentMarker").remove();
         geolocation_id = res._id;
         $("#geolocation-form").val(geolocation_id);
         getSensorDetail(geolocation_id);
@@ -672,13 +677,12 @@ async function getGeolocation() {
       mainLocationsDiv.appendChild(div);
     });
 
-
     // Setting Geolocations For Hamburger Navbar-
     data.allGeoLocations.forEach((res) => {
       var div = document.createElement("div");
       div.className = "location_card";
       div.tabIndex = 1;
-      div.id = "hamNav" + res._id;     // This is done, to prevent same id's for two div's.  
+      div.id = "hamNav" + res._id; // This is done, to prevent same id's for two div's.
       div.locationid = `${res._id}`;
 
       const state = res.location;
@@ -687,23 +691,24 @@ async function getGeolocation() {
       var div2 = document.createElement("div");
       div2.innerHTML = `<h3>${place}</h3><p>${state}</p>`;
 
-      var div3 = document.createElement("div");
-      div3.id = "deleteGeolocationBtn";
-      div3.style.margin = "auto";
-      div3.innerHTML = `<h2><i class="fas fa-trash"></i></h2>`;
-
-      div3.onclick = function () {
-        geolocation_id = res._id;
-        deleteGeolocation(geolocation_id);
-      };
-
-      div.appendChild(div2);
+      if (currentUser.type == "admin" || currentUser.type == "orghead") {
+        var div3 = document.createElement("div");
+        div3.id = "deleteGeolocationBtn";
+        div3.style.margin = "auto";
+        div3.innerHTML = `<h2><i class="fas fa-trash"></i></h2>`;
+  
+        div3.onclick = function () {
+          geolocation_id = res._id;
+          deleteGeolocation(geolocation_id);
+        };
+      }
+      
       div.appendChild(div3);
 
       // div.innerHTML = `<h3>${place}</h3><p>${state}</p>`;
 
       div.onclick = function () {
-        $('.permanentMarker').remove();
+        $(".permanentMarker").remove();
         geolocation_id = res._id;
         $("#geolocation-form").val(geolocation_id);
         // $("#check").checked = false;
@@ -712,47 +717,42 @@ async function getGeolocation() {
 
       navbarLocationsDiv.appendChild(div);
     });
-
-
   } catch (err) {
     console.log(err);
-    alert('Something went wrong...');
+    alert("Something went wrong...");
   }
 }
 
-getGeolocation();
+// getGeolocation();
 
 // Function to show ImageMap and Remove GeoMap-
 function showImageMap() {
   // if(image.length == 0) {
   //   return;
   // }
-  $('.permanentMarker').remove();
-  $('#insideImage').css({ 'display': 'none' });
-  $('#inside-map').fadeIn('fast');
+  $(".permanentMarker").remove();
+  $("#insideImage").css({ display: "none" });
+  $("#inside-map").fadeIn("fast");
   // $('#geoMap').fadeOut('fast');
-  $('#geoMap').css({ 'display': 'none' });
+  $("#geoMap").css({ display: "none" });
   showAllTheSensorsOnImageMap(sensors_data);
 }
-
-
 
 // Function to show GeoMap and Remove Image Map-
 function showGeoMap() {
   // $('#insideImage').fadeOut('fast');
-  $('#insideImage').css({ 'display': 'none' });
+  $("#insideImage").css({ display: "none" });
   // $('#inside-map').fadeOut('fast');
-  $('#inside-map').css({ 'display': 'none' });
-  $('#geoMap').fadeIn('fast');
-  $('.permanentMarker').remove();
+  $("#inside-map").css({ display: "none" });
+  $("#geoMap").fadeIn("fast");
+  $(".permanentMarker").remove();
   showAllTheSensorsOnGeoMap(sensors_data);
 }
-
 
 // Filter Funtions-
 function applyFilter(el) {
   var val = el.value;
-  var img = document.getElementById("inside-map")
+  var img = document.getElementById("inside-map");
   // Does not apply filters when Geo Map is open-
   if (img.style.display == "none") {
     alert("Currently Filters are only applicable to Image Map");
@@ -764,11 +764,10 @@ function applyFilter(el) {
   } else {
     showThatTypeOfSensor(val);
   }
-
 }
 
 function applyFilterForWeight() {
-  var img = document.getElementById("inside-map")
+  var img = document.getElementById("inside-map");
   if (img.style.display == "none") {
     // alert("Currently Filters are only applicable to Image Map");
     return;
@@ -779,7 +778,12 @@ function applyFilterForWeight() {
   var box75 = document.getElementById("75");
   var box100 = document.getElementById("100");
   var val = document.getElementById("filter-sensor-types").value;
-  if (box25.checked == false && box50.checked == false && box75.checked == false && box100.checked == false) {
+  if (
+    box25.checked == false &&
+    box50.checked == false &&
+    box75.checked == false &&
+    box100.checked == false
+  ) {
     // showAllTheSensorsOnImageMap(sensors_data);
     if (val == "All Sensors") {
       showAllTheSensorsOnImageMap(sensors_data);
@@ -803,8 +807,6 @@ function applyFilterForWeight() {
   }
 }
 
-
-
 // setTimeout(() => {
 //   getSensorDetail();
 // }, 3000);
@@ -812,49 +814,44 @@ function applyFilterForWeight() {
 // Many Functionalities
 function readURL(input) {
   if (input.files && input.files[0]) {
-
     var reader = new FileReader();
 
     reader.onload = function (e) {
-      $('.image-btn-and-dragger').hide();
+      $(".image-btn-and-dragger").hide();
       // $('.file-upload-btn').hide();
-      $('.file-upload-content').show();
+      $(".file-upload-content").show();
 
-      $('.file-upload-image').attr('src', e.target.result);
+      $(".file-upload-image").attr("src", e.target.result);
 
-
-      $('.image-title').html(input.files[0].name);
+      $(".image-title").html(input.files[0].name);
     };
 
     reader.readAsDataURL(input.files[0]);
-
   } else {
     removeUpload();
   }
 }
 
 function removeUpload() {
-  $('.file-upload-input').replaceWith($('.file-upload-input').clone());
-  $('.file-upload-content').hide();
-  $('.image-btn-and-dragger').show();
-  $('.file-upload-image').attr('src', "#");
+  $(".file-upload-input").replaceWith($(".file-upload-input").clone());
+  $(".file-upload-content").hide();
+  $(".image-btn-and-dragger").show();
+  $(".file-upload-image").attr("src", "#");
   // $('.file-upload-btn').show();
 }
-$('.image-upload-wrap').bind('dragover', function () {
-  $('.image-upload-wrap').addClass('image-dropping');
+$(".image-upload-wrap").bind("dragover", function () {
+  $(".image-upload-wrap").addClass("image-dropping");
 });
-$('.image-upload-wrap').bind('dragleave', function () {
-  $('.image-upload-wrap').removeClass('image-dropping');
+$(".image-upload-wrap").bind("dragleave", function () {
+  $(".image-upload-wrap").removeClass("image-dropping");
 });
-
-
 
 function create_UUID() {
   var dt = new Date().getTime();
-  var uuid = 'xxxxx'.replace(/[xy]/g, function (c) {
+  var uuid = "xxxxx".replace(/[xy]/g, function (c) {
     var r = (dt + Math.random() * 16) % 16 | 0;
     dt = Math.floor(dt / 16);
-    return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    return (c == "x" ? r : (r & 0x3) | 0x8).toString(16);
   });
   return uuid;
 }
@@ -874,37 +871,32 @@ function getSensorDetailUsingSensorID(sensor_id) {
   return currSensorData;
 }
 
-
-
 function showAddSensorForm() {
   $("#sensor-id").attr("value", create_UUID());
-  $('#add-sensor-top-slider').slideDown('slow');
-  $("#left-coloumn").css({ opacity: '0.4' });
-  $("#right-coloumn").css({ opacity: '0.4' });
+  $("#add-sensor-top-slider").slideDown("slow");
+  $("#left-coloumn").css({ opacity: "0.4" });
+  $("#right-coloumn").css({ opacity: "0.4" });
 }
 
 function showCreateUserForm() {
-  $('#createUser').slideToggle('slow');
+  $("#createUser").slideToggle("slow");
 }
-
 
 function createAlert(sensorData) {
   // if(sensors_data.length == 0 || image.length == 0) return;
   // $('#inside-map').css({ opacity: '0.5' });
-  $('#emailAlertsTooltip').slideDown('slow');
-
+  $("#emailAlertsTooltip").slideDown("slow");
 }
 
-
 function showEditSensorForm(sensor_id) {
-  $('#edit-sensor-top-slider').slideDown('slow');
-  $("#left-coloumn").css({ opacity: '0.4' });
-  $("#right-coloumn").css({ opacity: '0.4' });
+  $("#edit-sensor-top-slider").slideDown("slow");
+  $("#left-coloumn").css({ opacity: "0.4" });
+  $("#right-coloumn").css({ opacity: "0.4" });
   var sensor_details = getSensorDetailUsingSensorID(sensor_id);
   edit_ratio = {
     hRatio: sensor_details.imageCoordinates.hRatio,
-    vRatio: sensor_details.imageCoordinates.vRatio
-  }
+    vRatio: sensor_details.imageCoordinates.vRatio,
+  };
   $("#edit-sensor-name-form").val(sensor_details.sensorName);
   $("#edit-sensor-location-form").val(sensor_details.location);
   $("#edit-sensor-id").val(sensor_details.sensorId);
@@ -922,34 +914,36 @@ async function deleteSensor(sensor_id) {
   const geoUser = (await getGeolocationUserByGeoId(geolocation)).user;
 
   const obj = {
-    sensorId, geolocation, imageID, geoUser
-  }
+    sensorId,
+    geolocation,
+    imageID,
+    geoUser,
+  };
   // console.log(obj)
   // return
   deleteSensorAPICall(obj);
 }
 
 function closeSlider() {
-  $('#add-sensor-top-slider').slideUp('slow');
-  $("#left-coloumn").css({ opacity: '1' });
-  $("#right-coloumn").css({ opacity: '1' });
-  $('#inside-map').css({ opacity: '1' });
+  $("#add-sensor-top-slider").slideUp("slow");
+  $("#left-coloumn").css({ opacity: "1" });
+  $("#right-coloumn").css({ opacity: "1" });
+  $("#inside-map").css({ opacity: "1" });
   addSensorBtnClicked = false;
   $(".marker").remove();
 }
 
 function closeEditSensorForm() {
-  $('#edit-sensor-top-slider').slideUp('slow');
-  $("#left-coloumn").css({ opacity: '1' });
-  $("#right-coloumn").css({ opacity: '1' });
+  $("#edit-sensor-top-slider").slideUp("slow");
+  $("#left-coloumn").css({ opacity: "1" });
+  $("#right-coloumn").css({ opacity: "1" });
 }
 
 function centerDivUsingID(div_id) {
-  var w = (screen.width) / 2 - $("#" + div_id).width() / 2;
+  var w = screen.width / 2 - $("#" + div_id).width() / 2;
   var len = w.toString() + "px";
   document.getElementById(div_id).style.left = len;
 }
-
 
 // It takes the ADD SENSOR form exactly in the center of the frame.
 centerDivUsingID("add-sensor-top-slider");
@@ -963,84 +957,105 @@ centerDivUsingID("createUser");
 // It takes the CREATE ALERT form exactly in the center of the frame.
 centerDivUsingID("emailAlertsTooltip");
 
-
 // Closses the slider, when we click outside that div and outside the image.
 $(document).mouseup(function (e) {
   var container = $("#add-sensor-top-slider");
-  var mapImage = $('#inside-map');
-  var createUserForm = $('#createUser');
-  var sensorDataTooltip = $('.sensorsDataDiv');
-  var permanentMarkers = $('.permanentMarker');
-  var edit_sensor_top_slider = $('#edit-sensor-top-slider');
-  var emailAlertsTooltip = $('#emailAlertsTooltip');
-  if (!container.is(e.target) && container.has(e.target).length === 0 && !mapImage.is(e.target) && mapImage.has(e.target).length === 0) {
+  var mapImage = $("#inside-map");
+  var createUserForm = $("#createUser");
+  var sensorDataTooltip = $(".sensorsDataDiv");
+  var permanentMarkers = $(".permanentMarker");
+  var edit_sensor_top_slider = $("#edit-sensor-top-slider");
+  var emailAlertsTooltip = $("#emailAlertsTooltip");
+  if (
+    !container.is(e.target) &&
+    container.has(e.target).length === 0 &&
+    !mapImage.is(e.target) &&
+    mapImage.has(e.target).length === 0
+  ) {
     closeSlider();
   }
-  if (!createUserForm.is(e.target) && createUserForm.has(e.target).length === 0) {
-    createUserForm.slideUp('slow');
+  if (
+    !createUserForm.is(e.target) &&
+    createUserForm.has(e.target).length === 0
+  ) {
+    createUserForm.slideUp("slow");
   }
-  if (!sensorDataTooltip.is(e.target) && sensorDataTooltip.has(e.target).length === 0 && !permanentMarkers.is(e.target) && permanentMarkers.has(e.target).length === 0) {
+  if (
+    !sensorDataTooltip.is(e.target) &&
+    sensorDataTooltip.has(e.target).length === 0 &&
+    !permanentMarkers.is(e.target) &&
+    permanentMarkers.has(e.target).length === 0
+  ) {
     // removeDataOfSensor();
-    $('.sensorsDataDiv').fadeOut('slow');
+    $(".sensorsDataDiv").fadeOut("slow");
   }
-  if (!edit_sensor_top_slider.is(e.target) && edit_sensor_top_slider.has(e.target).length === 0) {
+  if (
+    !edit_sensor_top_slider.is(e.target) &&
+    edit_sensor_top_slider.has(e.target).length === 0
+  ) {
     closeEditSensorForm();
   }
-  if (!emailAlertsTooltip.is(e.target) && emailAlertsTooltip.has(e.target).length === 0) {
-    $('#emailAlertsTooltip').slideUp('slow');
+  if (
+    !emailAlertsTooltip.is(e.target) &&
+    emailAlertsTooltip.has(e.target).length === 0
+  ) {
+    $("#emailAlertsTooltip").slideUp("slow");
   }
 });
-
-
 
 function addSensorBtn() {
   if (image.length == 0) {
     return;
   }
   // if(sensors_data==null) return;
-  $('#inside-map').css({ opacity: '0.5' });
+  $("#inside-map").css({ opacity: "0.5" });
   addSensorBtnClicked = true;
   // $('body').css({overflow: "hidden" });
 }
 
-
-
-
-
-
-
-
 async function showDataOfSensor(el) {
-  let currSensorData = getSensorDetailUsingSensorID(el.id)
+  idOfSensorWhichIsClicked = el.id;
+  let currSensorData = getSensorDetailUsingSensorID(el.id);
   var hRatio = currSensorData.imageCoordinates.hRatio;
   var vRatio = currSensorData.imageCoordinates.vRatio;
   var sensorName = currSensorData.sensorName;
   var sensorId = currSensorData.sensorId;
   var sensorLocation = currSensorData.location;
 
+  var top = hRatio * $image.height() + imgPos[1];
+  var left = vRatio * $image.width() + imgPos[0];
 
-  var top = hRatio * ($image.height()) + imgPos[1];
-  var left = vRatio * ($image.width()) + imgPos[0];
-
-
-  var sensorLiveData = getSensorLiveWeightUsingSensorID(sensorId);
+  var sensorLiveData = getSensorLiveDataUsingSensorID(sensorId);
 
   var sensorLiveWeight;
   if (sensorLiveData == null) {
-    sensorLiveWeight = "x"
+    sensorLiveWeight = "x";
   } else {
     sensorLiveWeight = sensorLiveData.distance;
   }
-  var sensorLiveTime = (sensorLiveData == null ||sensorLiveData.time == null) ? "" : sensorLiveData.time;
+  var sensorLiveTime =
+    sensorLiveData == null || sensorLiveData.time == null
+      ? "x"
+      : sensorLiveData.time;
 
   $("#sensorNameTooltip").html(sensorName);
   $("#sensorIdTooltip").html("Id: " + sensorId);
-  $("#sensorLocationTooltip").html('<i class="fas fa-map-marker-alt"></i> ' + sensorLocation);
+  $("#sensorLocationTooltip").html(
+    '<i class="fas fa-map-marker-alt"></i> ' + sensorLocation
+  );
   $("#sensorWeightTooltip").html(sensorLiveWeight);
   // $("#sensorTimeTooltip").html('<i class="far fa-clock"></i> ' + "5:44PM | 21st May 2021");
-  const date = sensorLiveTime == "x" ? "No date found" : new Date(sensorLiveTime).toDateString();
-  const time = sensorLiveTime == "x" ? "No time found" : new Date(sensorLiveTime).toLocaleTimeString()
-  $("#sensorTimeTooltip").html('<i class="far fa-clock"></i> ' + date + ' | ' + time);
+  const date =
+    sensorLiveTime == "x"
+      ? "Invalid date"
+      : new Date(sensorLiveTime).toDateString();
+  const time =
+    sensorLiveTime == "x"
+      ? "Invalid time"
+      : new Date(sensorLiveTime).toLocaleTimeString();
+  $("#sensorTimeTooltip").html(
+    '<i class="far fa-clock"></i> ' + date + " | " + time
+  );
 
   // Anchor Tag to Edit the Sensor
   var editBtn = document.getElementById("editBtnTooltip");
@@ -1067,38 +1082,52 @@ async function showDataOfSensor(el) {
     document.getElementById("lower-border").style.marginBottom = "15px";
   }
 
-  $('.sensorsDataDiv').css({
-    'left': left + "px",
-    'top': top + "px"
-  })
+  $(".sensorsDataDiv").css({
+    left: left + "px",
+    top: top + "px",
+  });
 
-  $('.sensorsDataDiv').fadeIn('slow');
-
+  $(".sensorsDataDiv").fadeIn("slow");
 }
 
+async function updateDataOfSensorInTooltip(currSensorData) {
 
-async function showDataOfSensorUsingSensor(currSensorData) {
+  if(idOfSensorWhichIsClicked == null || idOfSensorWhichIsClicked != currSensorData._id) {
+    // alert("Not Updated!");
+    return;
+  }
+
   var sensorId = currSensorData.sensorId;
-  var sensorLiveData = getSensorLiveWeightUsingSensorID(sensorId);
+  var sensorLiveData = getSensorLiveDataUsingSensorID(sensorId);
   // var sensorLiveData = getSensorLiveWeightUsingSensorID(res.sensorId);
   var sensorLiveWeight;
   if (sensorLiveData == null) {
-    sensorLiveWeight = "x"
+    sensorLiveWeight = "x";
   } else {
     sensorLiveWeight = sensorLiveData.distance;
   }
-  var sensorLiveTime = (sensorLiveData == null || sensorLiveData.time == null) ? "" : sensorLiveData.time;
+  var sensorLiveTime =
+    sensorLiveData == null || sensorLiveData.time == null
+      ? "x"
+      : sensorLiveData.time;
   $("#sensorWeightTooltip").html(sensorLiveWeight);
-  const date = sensorLiveTime == "x" ? "No date found" : new Date(sensorLiveTime).toDateString();
-  const time = sensorLiveTime == "x" ? "No time found" : new Date(sensorLiveTime).toLocaleTimeString()
-  $("#sensorTimeTooltip").html('<i class="far fa-clock"></i> ' + date + ' | ' + time);
+  const date =
+    sensorLiveTime == "x"
+      ? "Invalid date"
+      : new Date(sensorLiveTime).toDateString();
+  const time =
+    sensorLiveTime == "x"
+      ? "Invalid time"
+      : new Date(sensorLiveTime).toLocaleTimeString();
+  $("#sensorTimeTooltip").html(
+    '<i class="far fa-clock"></i> ' + date + " | " + time
+  );
 }
 
-
-
-
 // API calling for adding a new sensor when user clicks Add Sensor button on popUp
-document.querySelector("#add-sensor-btn").addEventListener('click', addSensorAPICall);
+document
+  .querySelector("#add-sensor-btn")
+  .addEventListener("click", addSensorAPICall);
 
 async function addSensorAPICall(e) {
   e.preventDefault();
@@ -1136,31 +1165,33 @@ async function addSensorAPICall(e) {
         vRatio: ratio.vRatio,
         geolocation,
         location,
-        sensorType
+        sensorType,
       };
 
       const settings = {
-        method: 'POST',
+        method: "POST",
         headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
       };
       let response = await fetch("/addSensor", settings);
       let data = await response.json();
-      console.log(data)
+      console.log(data);
       window.location.replace("/dashboard");
     }
   } catch (err) {
     console.log(err);
-    alert('Something went wrong...');
+    alert("Something went wrong...");
   }
 }
 
 // Edit Sensor
 // API calling for adding a new sensor when user clicks Add Sensor button on popUp
-document.querySelector("#edit-sensor-btn").addEventListener('click', editSensorAPICall);
+document
+  .querySelector("#edit-sensor-btn")
+  .addEventListener("click", editSensorAPICall);
 
 async function editSensorAPICall(e) {
   e.preventDefault();
@@ -1169,7 +1200,6 @@ async function editSensorAPICall(e) {
       alert("Select a Geolocation First");
       // break;
     } else {
-
       // $("#edit-sensor-name-form").val(sensor_details.sensorName);
       // $("#edit-sensor-location-form").val(sensor_details.location);
       // $("#edit-sensor-id").val(sensor_details.sensorId);
@@ -1180,7 +1210,9 @@ async function editSensorAPICall(e) {
       const sensorName = document.getElementById("edit-sensor-name-form").value;
       const latitude = document.getElementById("edit-latitude").value;
       const longitude = document.getElementById("edit-longitude").value;
-      const location = document.getElementById("edit-sensor-location-form").value;
+      const location = document.getElementById(
+        "edit-sensor-location-form"
+      ).value;
       const sensorId = document.getElementById("edit-sensor-id").value;
       let e = document.getElementById("edit-sensor-categories");
       const category = e.options[e.selectedIndex].text;
@@ -1194,9 +1226,6 @@ async function editSensorAPICall(e) {
         // alert("TMLB");
       }
 
-
-
-
       const formData = {
         imageId,
         sensorName,
@@ -1208,26 +1237,26 @@ async function editSensorAPICall(e) {
         vRatio: edit_ratio.vRatio,
         geolocation,
         location,
-        sensorType
+        sensorType,
       };
       // console.log(formData)
       // return
       const settings = {
-        method: 'POST',
+        method: "POST",
         headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
       };
       let response = await fetch("/addSensor", settings);
       let data = await response.json();
-      console.log(data)
+      console.log(data);
       window.location.replace("/dashboard");
     }
   } catch (err) {
     console.log(err);
-    alert('Something went wrong...');
+    alert("Something went wrong...");
   }
 }
 
@@ -1243,45 +1272,44 @@ async function deleteSensorAPICall(obj) {
         geolocation: obj.geolocation,
         imageId: obj.imageID,
         sensorId: obj.sensorId,
-        geoUser: obj.geoUser
-      }
+        geoUser: obj.geoUser,
+      };
       const settings = {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
       };
       let response = await fetch("/deleteSensor", settings);
       let data = await response.json();
-      console.log(data)
+      console.log(data);
       window.location.replace("/dashboard");
     }
   } catch (err) {
     console.log(err);
-    alert('Something went wrong...');
+    alert("Something went wrong...");
   }
 }
-
 
 // Get Current User
 async function myDetails() {
   try {
     const settings = {
-      method: 'GET',
+      method: "GET",
       headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
+        Accept: "application/json",
+        "Content-Type": "application/json",
       },
     };
-    const myAllDetails = await fetch('/me', settings);
+    const myAllDetails = await fetch("/me", settings);
     const response = await myAllDetails.json();
-    console.log(response)
+    console.log(response);
     return response;
   } catch (err) {
     console.log(err);
-    alert('Something went wrong...');
+    alert("Something went wrong...");
   }
 }
 
@@ -1290,24 +1318,23 @@ async function parentUser(email) {
   try {
     const formdata = { email };
     const settings = {
-      method: 'POST',
+      method: "POST",
       headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
+        Accept: "application/json",
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(formdata)
+      body: JSON.stringify(formdata),
     };
-    const myAllDetails = await fetch('/parentUser', settings);
+    const myAllDetails = await fetch("/parentUser", settings);
     const response = await myAllDetails.json();
-    console.log(response)
-    return (response);
+    console.log(response);
+    return response;
   } catch (err) {
     console.log(err);
-    alert('Something went wrong...');
+    alert("Something went wrong...");
   }
 }
 
-
-setTimeout(() => {
-  console.clear();
-}, 5000);
+// setTimeout(() => {
+//   console.clear();
+// }, 5000);
