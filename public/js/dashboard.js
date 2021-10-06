@@ -134,7 +134,7 @@ function getRefreshData() {
     // let response = await fetch("/call_data");
     // let data = await response.json();
     $(".permanentMarker").remove();
-    if(sensors_data == null) {
+    if (sensors_data == null) {
       return;
     }
     // console.log(sensors_data, "TMKB");
@@ -186,7 +186,7 @@ function getSensorLiveDataUsingSensorID(sensorId) {
   let mainData;
   if (liveSensorData.length == 0 || liveSensorData == null) return null;
   liveSensorData.forEach((data) => {
-    if (data.id == sensorId) {
+    if (data.sensorId == sensorId) {
       // alert(data.distance);
       mainData = data;
       return;
@@ -224,12 +224,13 @@ function showSensor(res) {
 
   var sensorLiveData = getSensorLiveDataUsingSensorID(res.sensorId);
   var sensorLiveWeight;
-  if (sensorLiveData == null) {
+  if (sensorLiveData == null || sensorLiveData.length == 0) {
     sensorLiveWeight = "x";
   } else {
-    sensorLiveWeight = sensorLiveData.distance;
+    sensorLiveWeight = sensorLiveData.data[0].data;
   }
   // alert(sensorLiveWeight);
+  // console.log(sensorLiveWeight,"Weight")
 
   var top = hRatio * $image.height() + imgPos[1];
   var left = vRatio * $image.width() + imgPos[0];
@@ -245,6 +246,11 @@ function showSensor(res) {
       top: top - 29 + "px",
       left: left - 11 + "px",
       color: sensorColorByWeight(sensorLiveWeight),
+      // fill: "black",
+      // position: "relative",
+      // width: "60%",
+      // height: "100%",
+      // backgroundColor: "blue",
     })
   );
 }
@@ -657,13 +663,12 @@ async function getGeolocation() {
         div3.id = "deleteGeolocationBtn";
         div3.style.margin = "auto";
         div3.innerHTML = `<h2><i class="fas fa-trash"></i></h2>`;
-  
+
         div3.onclick = function () {
           geolocation_id = res._id;
           deleteGeolocation(geolocation_id);
         };
       }
-
 
       div.appendChild(div2);
       div.appendChild(div3);
@@ -696,13 +701,13 @@ async function getGeolocation() {
         div3.id = "deleteGeolocationBtn";
         div3.style.margin = "auto";
         div3.innerHTML = `<h2><i class="fas fa-trash"></i></h2>`;
-  
+
         div3.onclick = function () {
           geolocation_id = res._id;
           deleteGeolocation(geolocation_id);
         };
       }
-      
+
       div.appendChild(div3);
 
       // div.innerHTML = `<h3>${place}</h3><p>${state}</p>`;
@@ -1031,12 +1036,12 @@ async function showDataOfSensor(el) {
   if (sensorLiveData == null) {
     sensorLiveWeight = "x";
   } else {
-    sensorLiveWeight = sensorLiveData.distance;
+    sensorLiveWeight = sensorLiveData.data[0].data;
   }
   var sensorLiveTime =
-    sensorLiveData == null || sensorLiveData.time == null
+    sensorLiveData == null || sensorLiveData.data[0].time == null
       ? "x"
-      : sensorLiveData.time;
+      : sensorLiveData.data[0].time;
 
   $("#sensorNameTooltip").html(sensorName);
   $("#sensorIdTooltip").html("Id: " + sensorId);
@@ -1091,8 +1096,10 @@ async function showDataOfSensor(el) {
 }
 
 async function updateDataOfSensorInTooltip(currSensorData) {
-
-  if(idOfSensorWhichIsClicked == null || idOfSensorWhichIsClicked != currSensorData._id) {
+  if (
+    idOfSensorWhichIsClicked == null ||
+    idOfSensorWhichIsClicked != currSensorData._id
+  ) {
     // alert("Not Updated!");
     return;
   }
@@ -1104,12 +1111,12 @@ async function updateDataOfSensorInTooltip(currSensorData) {
   if (sensorLiveData == null) {
     sensorLiveWeight = "x";
   } else {
-    sensorLiveWeight = sensorLiveData.distance;
+    sensorLiveWeight = sensorLiveData.data[0].data;
   }
   var sensorLiveTime =
-    sensorLiveData == null || sensorLiveData.time == null
+    sensorLiveData == null
       ? "x"
-      : sensorLiveData.time;
+      : sensorLiveData.data[0].time;
   $("#sensorWeightTooltip").html(sensorLiveWeight);
   const date =
     sensorLiveTime == "x"

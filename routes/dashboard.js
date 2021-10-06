@@ -3,6 +3,7 @@ const route = express.Router();
 const request = require("request");
 const API_DATA = require("../models/API_DATA");
 const auth = require("../config/auth");
+const LiveData = require("../models/LiveData");
 const fs = require("fs");
 
 //@Route    GET /dashboard
@@ -67,17 +68,42 @@ route.post("/liveSensorData", async (req, res) => {
     main.push(obj);
   });
 
+  main.forEach(async (elm) => {
+    let findSensor = await LiveData.findOne({ sensorId: elm.id });
+    if (findSensor) {
+      if (findSensor.data.length >= 15) {
+        findSensor.data.pop();
+      }
+      findSensor.data.unshift({
+        time: elm.time,
+        data: elm.data,
+      });
+      await findSensor.save();
+    } else {
+      const newSensor = new LiveData({
+        sensorId: elm.id,
+        data: [
+          {
+            time: elm.time,
+            data: elm.data,
+          },
+        ],
+      });
+      await newSensor.save();
+    }
+  });
+
   fs.writeFile("public/temp.json", JSON.stringify(main), function (err) {
     if (err) throw err;
     console.log("Saved!");
   });
-
-  // console.log(JSON.stringify(req.body));
 });
 
 route.get("/getLiveSensorData", async (req, res) => {
-  const data = fs.readFileSync("public/temp.json", "utf8");
-  if (data) return res.json(JSON.parse(data));
-  return res.json(null);
+  const data = await LiveData.find();
+  return res.status(200).json(data);
+  // const data = fs.readFileSync("public/temp.json", "utf8");
+  // if (data) return res.json(JSON.parse(data));
+  // return res.json(null);
 });
 module.exports = route;
