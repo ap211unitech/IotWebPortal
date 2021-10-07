@@ -208,10 +208,11 @@
       <h1 id="sensorWeightTooltip"></h1>
       <p id="sensorTimeTooltip"></p>
       <hr id="lower-border">
-      <div style="display: flex;">
+      <div id="justRandom" style="display: flex;">
         <p id="editBtnTooltip" title="Edit Sensor Info"><i class="fas fa-edit"></i></p>
         <p id="deleteBtnTooltip" title="Delete Sensor"><i class="fas fa-trash-alt"></i></p>
         <p id="createAlertBtn" title="Create Alert"><i class="fas fa-bell"></i></p>
+        <p id="exportSingleSensorData" title="Download Data"> <i class="fas fa-download"></i></p>
       </div>
     </div>
 
@@ -283,7 +284,7 @@
                 <li id="logoutUser"><a href="#" title="Logout"><i class="fas fa-power-off"></i></li>
                 <li id="create-user-btn"><a href="#" title="Create New User" onclick="showCreateUserForm()"><i
                       class="fas fa-user-plus"></i></a></li>
-                <li><a href="#"><i class="fa fa-briefcase" aria-hidden="true"></i></a></li>
+                <li><a id="exportAllSensorDataBtn" title="Export All Sensor Data" onclick="exportData()" href="#"><i class="fas fa-download"></i></a></li>
               </ul>
             </div>
             <!-- <button id="createAlertBtn" onclick="createAlertBtn()">Create Alert</button> -->

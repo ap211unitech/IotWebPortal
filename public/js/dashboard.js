@@ -428,16 +428,16 @@ function showSensorsAccordingToWeightOfThatType(low, high, sensorType) {
         }
         if (filter) {
           if (
-            sensorLiveData.distance >= low &&
-            sensorLiveData.distance < high &&
+            sensorLiveData.data[0].data >= low &&
+            sensorLiveData.data[0].data < high &&
             res.sensorType == sensorType
           ) {
             showSensor(res);
           }
         } else {
           if (
-            sensorLiveData.distance >= low &&
-            sensorLiveData.distance < high
+            sensorLiveData.data[0].data >= low &&
+            sensorLiveData.data[0].data < high
           ) {
             showSensor(res);
           }
@@ -914,6 +914,7 @@ async function deleteSensor(sensor_id) {
   var sensorId = sensor_id;
   var geolocation = geolocation_id;
   var imageID = global_del_image_id;
+  var sensorIdUUID = getSensorDetailUsingSensorID(sensor_id).sensorId;
 
   // Get Geolocation User Details
   const geoUser = (await getGeolocationUserByGeoId(geolocation)).user;
@@ -923,6 +924,7 @@ async function deleteSensor(sensor_id) {
     geolocation,
     imageID,
     geoUser,
+    sensorIdUUID,
   };
   // console.log(obj)
   // return
@@ -1079,6 +1081,13 @@ async function showDataOfSensor(el) {
     createAlert(currSensorData);
   };
 
+  var exportSingleSensorData = document.getElementById(
+    "exportSingleSensorData"
+  );
+  exportSingleSensorData.onclick = function () {
+    exportData(currSensorData);
+  };
+
   const currentUser = await myDetails();
   if (currentUser.type == "user") {
     document.getElementById("editBtnTooltip").style.display = "none";
@@ -1093,6 +1102,58 @@ async function showDataOfSensor(el) {
   });
 
   $(".sensorsDataDiv").fadeIn("slow");
+}
+
+async function exportData(sensorData = sensors_data) {
+  let settings = {};
+  if(sensorData === sensors_data) {
+    //For all Sensors-
+    allSensorsIds = [];
+    sensorData.forEach((data) => {
+      data.data.forEach((data) => {
+        data.sensorDetail.forEach((res) => {
+          allSensorsIds.push(res.sensorId);
+        });
+      });
+    });
+    // allSensorsIds.forEach((data) => {
+    //   console.log(data);
+    // });
+    // return;
+    settings = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ type: "all", sensorId: allSensorsIds }),
+    };
+
+  } else {
+    // Only for Single Sensor-
+    settings = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ type: "single", sensorId: sensorData.sensorId }),
+    };
+  }
+
+  await fetch("/exportdata", settings);
+  // const exportedData = await response.json();
+  // console.log(exportedData, "Exported Data");
+
+  var element = document.createElement('a');
+  element.setAttribute('href', 'temp.json');
+  element.setAttribute('download', 'temp.json');
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
+
 }
 
 async function updateDataOfSensorInTooltip(currSensorData) {
@@ -1114,9 +1175,7 @@ async function updateDataOfSensorInTooltip(currSensorData) {
     sensorLiveWeight = sensorLiveData.data[0].data;
   }
   var sensorLiveTime =
-    sensorLiveData == null
-      ? "x"
-      : sensorLiveData.data[0].time;
+    sensorLiveData == null ? "x" : sensorLiveData.data[0].time;
   $("#sensorWeightTooltip").html(sensorLiveWeight);
   const date =
     sensorLiveTime == "x"
@@ -1279,6 +1338,7 @@ async function deleteSensorAPICall(obj) {
         geolocation: obj.geolocation,
         imageId: obj.imageID,
         sensorId: obj.sensorId,
+        sensorIdUUID: obj.sensorIdUUID,
         geoUser: obj.geoUser,
       };
       const settings = {

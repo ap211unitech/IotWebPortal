@@ -36,21 +36,10 @@
     font-size: 0.7rem;
     margin: 5px 0px;
 }
-#editBtnTooltip {
-    font-size: 0.75rem;
+
+#justRandom p{
+    font-size: 0.90rem;
     color: #696969;
-    margin: 5px 0px;
-    cursor: pointer;
-}
-#deleteBtnTooltip {
-    font-size: 0.75rem;
-    color: #696969;
-    margin: 5px;
-    cursor: pointer;
-}
-#createAlertBtn {
-    font-size: 0.75rem;
-    color: #696969;
-    margin: 5px;
+    margin: 5px 2px;
     cursor: pointer;
 }

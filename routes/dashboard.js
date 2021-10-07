@@ -71,7 +71,7 @@ route.post("/liveSensorData", async (req, res) => {
   main.forEach(async (elm) => {
     let findSensor = await LiveData.findOne({ sensorId: elm.id });
     if (findSensor) {
-      if (findSensor.data.length >= 15) {
+      if (findSensor.data.length >= 50) {
         findSensor.data.pop();
       }
       findSensor.data.unshift({
@@ -106,4 +106,36 @@ route.get("/getLiveSensorData", async (req, res) => {
   // if (data) return res.json(JSON.parse(data));
   // return res.json(null);
 });
+
+// Export File for a Sensor ID
+route.post("/exportdata", async (req, res) => {
+  const body = req.body;
+  if (body.type == "all") {
+    let data = [];
+    body.sensorId.forEach(async (elm) => {
+      const a = await LiveData.findOne({ sensorId: elm });
+      if (a != null) {
+        data.push(a);
+        fs.writeFileSync("public/temp.json", JSON.stringify(data));
+      }
+    });
+
+    fs.writeFileSync("public/temp.json", JSON.stringify(data));
+    res.download("public/temp.json");
+    return;
+  } else if (body.type == "single") {
+    const data = await LiveData.findOne({ sensorId: body.sensorId });
+    console.log(data);
+    fs.writeFile("public/temp.json", JSON.stringify(data), (err) => {
+      if (err) throw err;
+      console.log("Data written to file and downloaded...");
+    });
+    // const newData = fs.readFileSync("public/temp.json", "utf8");
+    // return res.json(JSON.parse(newData));
+    res.download("public/temp.json");
+    return;
+    // return {msg: "Data Received!"};
+  }
+});
+
 module.exports = route;
