@@ -5,6 +5,7 @@ const API_DATA = require("../models/API_DATA");
 const auth = require("../config/auth");
 const LiveData = require("../models/LiveData");
 const fs = require("fs");
+const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 
 //@Route    GET /dashboard
 //@desc     Get Data of sensors and saving to Database
@@ -58,10 +59,11 @@ route.get("/liveSensorDataUsingAPI", auth, async (req, res) => {
 
 route.post("/liveSensorData", async (req, res) => {
   res.json({ msg: "Got the temp data, thanks..!!" });
-
   const main = [];
   let content = JSON.parse(`${JSON.stringify(req.body)}`.slice(1, -4));
   const arr = content.split("|");
+
+
   arr.forEach((elm) => {
     let obj = JSON.parse(elm.replace(/'/gi, `"`));
     obj["time"] = new Date().toISOString();
@@ -71,7 +73,7 @@ route.post("/liveSensorData", async (req, res) => {
   main.forEach(async (elm) => {
     let findSensor = await LiveData.findOne({ sensorId: elm.id });
     if (findSensor) {
-      if (findSensor.data.length >= 50) {
+      if (findSensor.data.length >= 5000) {
         findSensor.data.pop();
       }
       findSensor.data.unshift({
@@ -93,48 +95,79 @@ route.post("/liveSensorData", async (req, res) => {
     }
   });
 
-  fs.writeFile("public/temp.json", JSON.stringify(main), function (err) {
-    if (err) throw err;
-    console.log("Saved!");
-  });
 });
 
 route.get("/getLiveSensorData", async (req, res) => {
   const data = await LiveData.find();
   return res.status(200).json(data);
-  // const data = fs.readFileSync("public/temp.json", "utf8");
-  // if (data) return res.json(JSON.parse(data));
-  // return res.json(null);
 });
 
 // Export File for a Sensor ID
 route.post("/exportdata", async (req, res) => {
   const body = req.body;
   if (body.type == "all") {
-    let data = [];
-    body.sensorId.forEach(async (elm) => {
-      const a = await LiveData.findOne({ sensorId: elm });
-      if (a != null) {
-        data.push(a);
-        fs.writeFileSync("public/temp.json", JSON.stringify(data));
-      }
+    const csvWriter = createCsvWriter({
+      path: "public/temp.csv",
+      header: [{ id: "timestamp", title: "timestamp" }],
     });
 
-    fs.writeFileSync("public/temp.json", JSON.stringify(data));
-    res.download("public/temp.json");
-    return;
-  } else if (body.type == "single") {
-    const data = await LiveData.findOne({ sensorId: body.sensorId });
-    console.log(data);
-    fs.writeFile("public/temp.json", JSON.stringify(data), (err) => {
-      if (err) throw err;
-      console.log("Data written to file and downloaded...");
+    body.sensorId.forEach((elm) => {
+      csvWriter.csvStringifier.header.push({ id: elm, title: elm });
     });
-    // const newData = fs.readFileSync("public/temp.json", "utf8");
-    // return res.json(JSON.parse(newData));
-    res.download("public/temp.json");
+
+    let records = [];
+
+    body.sensorId.forEach((id) => {
+      LiveData.findOne({ sensorId: id }).then((a) => {
+        if (a) {
+          a.data.forEach((elm) => {
+            let obj = {
+              timestamp: new Date(elm.time).toLocaleString(),
+              [id]: elm.data,
+            };
+            records.push(obj);
+          });
+        }
+      });
+    });
+
+    setTimeout(() => {
+      console.log(records, "HERERRER");
+      csvWriter
+        .writeRecords(records) // returns a promise
+        .then(() => {
+          console.log("...Done");
+        });
+      res.download("public/temp.csv");
+      return;
+    }, 1000);
+  } else if (body.type == "single") {
+    const { data } = await LiveData.findOne({ sensorId: body.sensorId });
+    const csvWriter = createCsvWriter({
+      path: "public/temp.csv",
+      header: [
+        { id: "timestamp", title: "timestamp" },
+        { id: [body.sensorId], title: [body.sensorId] },
+      ],
+    });
+
+    const records = [];
+
+    data.forEach((elm) => {
+      let obj = {
+        timestamp: new Date(elm.time).toLocaleString(),
+        [body.sensorId]: elm.data,
+      };
+      records.push(obj);
+    });
+
+    csvWriter
+      .writeRecords(records) // returns a promise
+      .then(() => {
+        console.log("...Done");
+      });
+    res.download("public/temp.csv");
     return;
-    // return {msg: "Data Received!"};
   }
 });
 

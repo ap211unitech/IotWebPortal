@@ -197,6 +197,9 @@ function getSensorLiveDataUsingSensorID(sensorId) {
 
 // Show sensors color according to the weight-
 function sensorColorByWeight(weight) {
+  if(weight=="x") {
+    return "rgb(255, 255, 255)";
+  }
   if (weight < 25) {
     // Green
     return "rgb(0, 255, 127)";
@@ -213,7 +216,7 @@ function sensorColorByWeight(weight) {
     // Red
     return "rgb(220, 20, 60)";
   }
-  return "rgb(255, 255, 255)";
+  return "#007FFF";
 }
 
 // Show a particular sensor on the image map-
@@ -1144,8 +1147,8 @@ async function exportData(sensorData = sensors_data) {
   // console.log(exportedData, "Exported Data");
 
   var element = document.createElement('a');
-  element.setAttribute('href', 'temp.json');
-  element.setAttribute('download', 'temp.json');
+  element.setAttribute('href', 'temp.csv');
+  element.setAttribute('download', 'temp.csv');
 
   element.style.display = 'none';
   document.body.appendChild(element);
