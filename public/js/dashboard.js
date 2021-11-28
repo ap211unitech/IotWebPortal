@@ -11,6 +11,7 @@ var imgPos = [];
 let image; // Global Variable to store image informtion.
 let liveSensorData;
 let idOfSensorWhichIsClicked = null;
+var allGlobalGeolocations = null;
 $("#geoMap").fadeOut("fast");
 
 // Add New User
@@ -97,6 +98,8 @@ async function settingsForDiffrentUser() {
       document.getElementById("addSensor-btn").style.display = "none";
       document.getElementById("add-new-btn").style.display = "none";
       document.getElementById("create-user-btn").style.display = "none";
+      document.getElementById("exportAllSensorDataBtn").style.display = "none";
+
       console.log("USER");
     }
   } catch (err) {
@@ -106,17 +109,6 @@ async function settingsForDiffrentUser() {
 }
 
 settingsForDiffrentUser();
-
-// MapBox API-
-mapboxgl.accessToken =
-  "pk.eyJ1IjoiYXJ5YW4wMTQxIiwiYSI6ImNrc21zbzJwaTBhMTYyb3A3MWpsd2M3eWQifQ.vH9l7ustzfMTQxOAcpfDww";
-
-var map = new mapboxgl.Map({
-  container: "geoMap",
-  style: "mapbox://styles/mapbox/streets-v11",
-  center: [75.778885, 26.92207],
-  zoom: 10,
-});
 
 // To check weather the Hamburger Nav is clicked or not-
 function checkedFunc(el) {
@@ -141,6 +133,13 @@ function getRefreshData() {
 
     getLiveSensorData();
     applyFilterForWeight();
+    if (
+      sensors_data == null ||
+      sensors_data[0] == null ||
+      sensors_data[0].data[0].sensorDetail.length == 0
+    ) {
+      return;
+    }
     sensors_data.forEach((data) => {
       data.data.forEach((data) => {
         data.sensorDetail.forEach((res) => {
@@ -160,6 +159,18 @@ getRefreshData();
 setInterval(() => {
   getRefreshData();
 }, 5 * 1000);
+
+// MapBox API-
+mapboxgl.accessToken =
+  "pk.eyJ1IjoiYXJ5YW4wMTQxIiwiYSI6ImNrc21zbzJwaTBhMTYyb3A3MWpsd2M3eWQifQ.vH9l7ustzfMTQxOAcpfDww";
+
+var map = new mapboxgl.Map({
+  container: "geoMap",
+  style: "mapbox://styles/mapbox/streets-v11",
+  // Coordinates of IIT Jodhpur.
+  center: [73.1135, 26.471],
+  zoom: 10,
+});
 
 // Get Live Sensor Data
 async function getLiveSensorData() {
@@ -184,7 +195,7 @@ async function getLiveSensorData() {
 
 function getSensorLiveDataUsingSensorID(sensorId) {
   let mainData;
-  if (liveSensorData.length == 0 || liveSensorData == null) return null;
+  if (liveSensorData == null || liveSensorData.length == 0) return null;
   liveSensorData.forEach((data) => {
     if (data.sensorId == sensorId) {
       // alert(data.distance);
@@ -197,7 +208,7 @@ function getSensorLiveDataUsingSensorID(sensorId) {
 
 // Show sensors color according to the weight-
 function sensorColorByWeight(weight) {
-  if(weight=="x") {
+  if (weight == "x") {
     return "rgb(255, 255, 255)";
   }
   if (weight < 25) {
@@ -209,14 +220,14 @@ function sensorColorByWeight(weight) {
     return "rgb(255,255,49)";
   }
   if (weight >= 50 && weight < 75) {
-    // Orange
-    return "rgb(255,69,0)";
+    // Blue
+    return "#007FFF";
   }
   if (weight >= 75) {
     // Red
     return "rgb(220, 20, 60)";
   }
-  return "#007FFF";
+  return "#FFB400";
 }
 
 // Show a particular sensor on the image map-
@@ -260,7 +271,13 @@ function showSensor(res) {
 
 // Function to show all the sensors on the Image Map-
 function showAllTheSensorsOnImageMap(data) {
-  if (data == null) return;
+  if (
+    data == null ||
+    data[0] == null ||
+    data[0].data[0].sensorDetail.length == 0
+  ) {
+    return;
+  }
   data.forEach((data) => {
     data.data.forEach((data) => {
       data.sensorDetail.forEach((res) => {
@@ -270,52 +287,56 @@ function showAllTheSensorsOnImageMap(data) {
   });
 }
 
-// Function to show all the sensors on the Geo Map-
-function showAllTheSensorsOnGeoMap(data) {
-  // console.log(data);
-  if (data == null) {
-    return;
+// Function to get the geolocation by using the geolocation id-
+function getGeolocationByGeoID(geoID) {
+  var currentGeolocation = null;
+  if(allGlobalGeolocations==null) {
+    alert("Add a geolocation.");
+    return null;
   }
-  if (data[0] == null) return;
-  $(".geoMarker").remove();
-  data.forEach((data) => {
-    data.data.forEach((data) => {
-      data.sensorDetail.forEach((res) => {
-        var lat = res.latitude;
-        var lon = res.longitude;
-        if (lat == "-1" || lon == "-1") {
-          return;
-        }
-        var sensorSymbol = showThatSymbolOfSensor(res.sensorType);
-
-        console.log(lat + " " + lon);
-
-        var el = document.createElement("p");
-        el.className = "geoMarker";
-        el.innerHTML = sensorSymbol;
-        el.style.color = sensorColorByWeight(87);
-        // el.id = res._id;
-        // el.onclick = function () {
-        //   showDataOfSensor(el);
-        // };
-
-        // Add marker
-        new mapboxgl.Marker({
-          element: el,
-          anchor: "bottom",
-        })
-          .setLngLat([lon, lat])
-          .addTo(map);
-      });
-    });
+  allGlobalGeolocations.allGeoLocations.forEach((data) => {
+    if (data._id == geoID) {
+      currentGeolocation = data;
+      return;
+    }
   });
+  return currentGeolocation;
+}
 
-  var lat = data[0].data[0].sensorDetail[0].latitude;
-  var lon = data[0].data[0].sensorDetail[0].longitude;
-  if (lat == -1 || lon == -1) {
+// Fly to the required first coordinate in the geo map-
+function flyToTheFirstCoordinateInTheGeoMap(geoID, sensorsData) {
+  // Coordinates of the first flying position in the geo map-
+  var lat = null;
+  var lon = null;
+  var currentGeolocation = getGeolocationByGeoID(geoID);
+  if(currentGeolocation==null) {
     return;
   }
-
+  if (currentGeolocation.latitude == -1 || currentGeolocation.longitude == -1) {
+    // No coordinates are given to the geolocation, so we have to show the coordinates of the first sensor-
+    if (
+      sensorsData == null ||
+      sensorsData[0] == null ||
+      sensorsData[0].data[0].sensorDetail.length == 0
+    ) {
+      return;
+    } else {
+      lat = sensorsData[0].data[0].sensorDetail[0].latitude;
+      lon = sensorsData[0].data[0].sensorDetail[0].longitude;
+      // Also if sensors coordinates are also not given-
+      if (lat == -1 || lon == -1) {
+        return;
+      }
+    }
+  } else {
+    lat = currentGeolocation.latitude;
+    lon = currentGeolocation.longitude;
+  }
+  if (lat == null || lon == null) {
+    // alert("Here");
+    return;
+  }
+  // Fly to the required coordinates-
   map.flyTo({
     center: [lon, lat],
     zoom: 12,
@@ -327,6 +348,51 @@ function showAllTheSensorsOnGeoMap(data) {
     },
     essential: true,
   });
+}
+// Function to show all the sensors on the Geo Map-
+function showAllTheSensorsOnGeoMap(data) {
+  $(".geoMarker").remove();
+  if (
+    data != null &&
+    data[0] != null &&
+    data[0].data[0].sensorDetail.length != 0
+  ) {
+    data.forEach((data) => {
+      data.data.forEach((data) => {
+        data.sensorDetail.forEach((res) => {
+          var lat = res.latitude;
+          var lon = res.longitude;
+          if (lat == "-1" || lon == "-1") {
+            return;
+          }
+          var sensorSymbol = showThatSymbolOfSensor(res.sensorType);
+          var sensorLiveData = getSensorLiveDataUsingSensorID(res.sensorId);
+          var sensorLiveWeight;
+          if (sensorLiveData == null || sensorLiveData.length == 0) {
+            sensorLiveWeight = "x";
+          } else {
+            sensorLiveWeight = sensorLiveData.data[0].data;
+          }
+
+          console.log(lat + " " + lon);
+
+          var el = document.createElement("p");
+          el.className = "geoMarker";
+          el.innerHTML = sensorSymbol;
+          el.style.color = sensorColorByWeight(sensorLiveWeight);
+
+          // Add marker
+          new mapboxgl.Marker({
+            element: el,
+            anchor: "bottom",
+          })
+            .setLngLat([lon, lat])
+            .addTo(map);
+        });
+      });
+    });
+  }
+  flyToTheFirstCoordinateInTheGeoMap(geolocation_id, data);
 }
 
 // Function which can give the hRatio & vRatio of the image-
@@ -407,6 +473,13 @@ function showThatSymbolOfSensor(text) {
 
 // Function to show only a particular type of sensor on the image map-
 function showThatTypeOfSensor(sensorType) {
+  if (
+    sensors_data == null ||
+    sensors_data[0] == null ||
+    sensors_data[0].data[0].sensorDetail.length == 0
+  ) {
+    return;
+  }
   sensors_data.forEach((data) => {
     data.data.forEach((data) => {
       data.sensorDetail.forEach((res) => {
@@ -421,6 +494,13 @@ function showThatTypeOfSensor(sensorType) {
 // Function to show sensor only for a particular weight-
 function showSensorsAccordingToWeightOfThatType(low, high, sensorType) {
   var filter = sensorType == "All Sensors" ? false : true;
+  if (
+    sensors_data == null ||
+    sensors_data[0] == null ||
+    sensors_data[0].data[0].sensorDetail.length == 0
+  ) {
+    return;
+  }
   sensors_data.forEach((data) => {
     data.data.forEach((data) => {
       data.sensorDetail.forEach((res) => {
@@ -636,10 +716,12 @@ async function getGeolocation() {
         });
         $("#geoMap").css({ display: "none" });
         $(".permanentMarker").remove();
-        alert("There is no such geolocation created by your org head..");
+        alert("No Geolocations Created by your head.");
         return;
       }
     }
+
+    allGlobalGeolocations = data;
 
     geolocation_id = data.allGeoLocations[0]._id;
     $("#geolocation-form").val(geolocation_id);
@@ -661,6 +743,7 @@ async function getGeolocation() {
       var div2 = document.createElement("div");
       div2.innerHTML = `<h3>${place}</h3><p>${state}</p>`;
 
+      div.appendChild(div2);
       if (currentUser.type == "admin" || currentUser.type == "orghead") {
         var div3 = document.createElement("div");
         div3.id = "deleteGeolocationBtn";
@@ -671,10 +754,9 @@ async function getGeolocation() {
           geolocation_id = res._id;
           deleteGeolocation(geolocation_id);
         };
+        div.appendChild(div3);
       }
 
-      div.appendChild(div2);
-      div.appendChild(div3);
 
       div.onclick = function () {
         $(".permanentMarker").remove();
@@ -683,6 +765,7 @@ async function getGeolocation() {
         getSensorDetail(geolocation_id);
       };
       mainLocationsDiv.appendChild(div);
+      // navbarLocationsDiv.appendChild(div);
     });
 
     // Setting Geolocations For Hamburger Navbar-
@@ -690,14 +773,14 @@ async function getGeolocation() {
       var div = document.createElement("div");
       div.className = "location_card";
       div.tabIndex = 1;
-      div.id = "hamNav" + res._id; // This is done, to prevent same id's for two div's.
-      div.locationid = `${res._id}`;
+      div.id = "HamNav" + res._id;
 
       const state = res.location;
       const place = res.name;
 
       var div2 = document.createElement("div");
       div2.innerHTML = `<h3>${place}</h3><p>${state}</p>`;
+      div.appendChild(div2);
 
       if (currentUser.type == "admin" || currentUser.type == "orghead") {
         var div3 = document.createElement("div");
@@ -709,20 +792,16 @@ async function getGeolocation() {
           geolocation_id = res._id;
           deleteGeolocation(geolocation_id);
         };
+        div.appendChild(div3);
       }
 
-      div.appendChild(div3);
-
-      // div.innerHTML = `<h3>${place}</h3><p>${state}</p>`;
 
       div.onclick = function () {
         $(".permanentMarker").remove();
         geolocation_id = res._id;
         $("#geolocation-form").val(geolocation_id);
-        // $("#check").checked = false;
         getSensorDetail(geolocation_id);
       };
-
       navbarLocationsDiv.appendChild(div);
     });
   } catch (err) {
@@ -780,7 +859,13 @@ function applyFilterForWeight() {
     // alert("Currently Filters are only applicable to Image Map");
     return;
   }
-  if (sensors_data == null) return;
+  if (
+    sensors_data == null ||
+    sensors_data[0] == null ||
+    sensors_data[0].data[0].sensorDetail.length == 0
+  ) {
+    return;
+  }
   var box25 = document.getElementById("25");
   var box50 = document.getElementById("50");
   var box75 = document.getElementById("75");
@@ -867,6 +952,13 @@ function create_UUID() {
 // It gives the complete detail of the sensor by the sensor id-
 function getSensorDetailUsingSensorID(sensor_id) {
   let currSensorData;
+  if (
+    sensors_data == null ||
+    sensors_data[0] == null ||
+    sensors_data[0].data[0].sensorDetail.length == 0
+  ) {
+    return null;
+  }
   sensors_data.forEach((data) => {
     data.data.forEach((data) => {
       data.sensorDetail.forEach((res) => {
@@ -1014,7 +1106,8 @@ $(document).mouseup(function (e) {
 });
 
 function addSensorBtn() {
-  if (image.length == 0) {
+  if (image == undefined || image == null || image.length == 0) {
+    alert("Uploaded an Image to Add Sensor.")
     return;
   }
   // if(sensors_data==null) return;
@@ -1096,7 +1189,8 @@ async function showDataOfSensor(el) {
     document.getElementById("editBtnTooltip").style.display = "none";
     document.getElementById("deleteBtnTooltip").style.display = "none";
     document.getElementById("createAlertBtn").style.display = "none";
-    document.getElementById("lower-border").style.marginBottom = "15px";
+    document.getElementById("exportSingleSensorData").style.display = "none";
+    document.getElementById("lower-border").style.marginBottom = "18px";
   }
 
   $(".sensorsDataDiv").css({
@@ -1108,8 +1202,19 @@ async function showDataOfSensor(el) {
 }
 
 async function exportData(sensorData = sensors_data) {
+  if (
+    sensors_data == null ||
+    sensors_data[0] == null ||
+    sensors_data[0].data[0].sensorDetail.length == 0
+  ) {
+    alert("Add Some Sensors to get the data.");
+    return;
+  }
+  if (sensors_data == null) {
+    
+  }
   let settings = {};
-  if(sensorData === sensors_data) {
+  if (sensorData === sensors_data) {
     //For all Sensors-
     allSensorsIds = [];
     sensorData.forEach((data) => {
@@ -1130,7 +1235,6 @@ async function exportData(sensorData = sensors_data) {
       },
       body: JSON.stringify({ type: "all", sensorId: allSensorsIds }),
     };
-
   } else {
     // Only for Single Sensor-
     settings = {
@@ -1146,17 +1250,16 @@ async function exportData(sensorData = sensors_data) {
   // const exportedData = await response.json();
   // console.log(exportedData, "Exported Data");
 
-  var element = document.createElement('a');
-  element.setAttribute('href', 'temp.csv');
-  element.setAttribute('download', 'temp.csv');
+  var element = document.createElement("a");
+  element.setAttribute("href", "temp.csv");
+  element.setAttribute("download", "temp.csv");
 
-  element.style.display = 'none';
+  element.style.display = "none";
   document.body.appendChild(element);
 
   element.click();
 
   document.body.removeChild(element);
-
 }
 
 async function updateDataOfSensorInTooltip(currSensorData) {

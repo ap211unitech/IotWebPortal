@@ -188,7 +188,7 @@
         display: none;
     }
     #right-coloumn {
-        margin-left: 10px;
+        margin-left: 0px;
     }
     #heading-text {
         display: none;
@@ -202,8 +202,8 @@
         display: block;
     }
     #menuToggle {
-        top: 17px;
-        left: 10px;
+        top: 14px;
+        left: 8px;
     }
     #menu {
         width: 240px;
@@ -213,7 +213,7 @@
         width: 80%;
     }
     .nav-items a {
-        font-size: 1.7rem;
+        font-size: 1.4rem;
     }
     #insideImage {
         margin: 30px 20px;
@@ -232,16 +232,28 @@
     #add-sensor-form form {
         margin: 5px;
     }
-    .addSensor-location-categories {
-        grid-template-columns: 50% 50%;
-    }
     .add-sensor-form-remaining {
         grid-template-columns: 50% 50%;
+    }
+    #edit-sensor-form form {
+        margin: 5px;
+    }
+    .edit-sensor-form-remaining {
+        grid-template-columns: 50% 50%;
+    }
+    #filters {
+        margin: 15px 8px 15px 8px;
     }
     #filtersDiv {
         display: grid; 
         grid-template-columns: 100%; 
-        margin: 5px;
+        /* margin: 5px; */
+    }
+    #applyFiltersSensors {
+        margin-top: 20px;
+    }
+    #applyFiltersWeights {
+        margin-top: 20px;
     }
 }
 
@@ -271,7 +283,7 @@
         display: none;
     }
     #right-coloumn {
-        margin-left: 10px;
+        margin-left: 0px;
     }
     #heading-text {
         display: none;
@@ -285,8 +297,8 @@
         display: block;
     }
     #menuToggle {
-        top: 17px;
-        left: 10px;
+        top: 12px;
+        left: 7px;
     }
     #menu {
         width: 240px;
@@ -299,7 +311,7 @@
         margin: 30px 20px;
     }
     .nav-items a {
-        font-size: 1.7rem;
+        font-size: 1.3rem;
     }
     #imageButtons {
         display: grid;
@@ -312,13 +324,24 @@
     #coords {
         margin: 5px;
     }
-    #add-sensor-form form {
-        margin: 5px;
+    #createUser form {
+        display: grid;
+        grid-template-columns: 100%;
     }
-    .addSensor-location-categories {
-        grid-template-columns: 50% 50%;
+    #createAlertTooltipForm {
+        display: grid; 
+        grid-template-columns: 100%;
+    }
+    #add-sensor-form form {
+        margin: 1px;
     }
     .add-sensor-form-remaining {
+        grid-template-columns: 50% 50%;
+    }
+    #edit-sensor-form form {
+        margin: 1px;
+    }
+    .edit-sensor-form-remaining {
         grid-template-columns: 50% 50%;
     }
     #inside-map {
@@ -326,16 +349,22 @@
         width:100%;
     }
     .permanentMarker {
-        font-size: 1.2em;
+        font-size: 1.1em;
     }
     #filters {
-        margin: 20px 10px 10px 10px;
+        margin: 45px 8px 45px 8px;
     }
     #filtersDiv {
         display: grid; 
         grid-template-columns: 100%; 
-        margin: 5px;
-        padding: 5px;
+        /* margin: 5px; */
+        /* padding: 5px; */
+    }
+    #applyFiltersSensors {
+        margin-top: 20px;
+    }
+    #applyFiltersWeights {
+        margin-top: 20px;
     }
 }
 
@@ -398,13 +427,25 @@
     #coords {
         margin: 5px;
     }
-    #add-sensor-form form {
-        margin: 5px;
+    #createUser form {
+        display: grid;
+        grid-template-columns: 100%;
     }
-    .addSensor-location-categories {
+    #createAlertTooltipForm {
+        display: grid; 
+        grid-template-columns: 100%;
+    }
+    #add-sensor-form form {
+        margin: 1px;
+    }
+    
+    .add-sensor-form-remaining {
         grid-template-columns: 50% 50%;
     }
-    .add-sensor-form-remaining {
+    #edit-sensor-form form {
+        margin: 1px;
+    }
+    .edit-sensor-form-remaining {
         grid-template-columns: 50% 50%;
     }
     #filters {

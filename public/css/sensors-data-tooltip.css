@@ -13,27 +13,28 @@
     /* color: #f96332; */
 }
 #sensorNameTooltip {
-    font-size: 1.3rem;
+    font-size: 1.15rem;
     margin: 5px 0px;
 }
 #sensorLocationTooltip {
     color: #a9a9a9;
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     margin: 5px 10px;
 }
 #sensorIdTooltip {
     color: #a9a9a9;
     /* float: left; */
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     margin: 5px 0px;
 }
 #sensorWeightTooltip {
-    font-size: 2.4rem;
+    font-size: 1.5rem;
+    margin: 5px 0px;
     font-weight: bold;
 }
 #sensorTimeTooltip {
     color: #a9a9a9;
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     margin: 5px 0px;
 }
 

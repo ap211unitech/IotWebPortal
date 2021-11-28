@@ -13,20 +13,18 @@
         <div id="add-sensor-form">
           <!-- <h1>Add Sensor</h1> -->
           <form>
-            <!-- <div style="display: grid; grid-template-columns: 50% 50%;"> -->
+            <div style="display: grid; grid-template-columns: 50% 50%;">
             <div style="padding: 5px;">
               <label for="lname">Sensor Name:</label><br>
               <input type="text" id="sensor-name-form" name="sensor-name-form" autocomplete="off" required>
             </div>
+            <div style="padding: 5px;">
+              <label for="lname">Location Name:</label><br>
+              <input type="text" id="sensor-location-form" name="sensor-location-form" autocomplete="off" required>
+            </div>
 
-            <!-- </div> -->
-            <div class="addSensor-location-categories">
-
-              <div style="padding: 5px;">
-                <label for="lname">Location Name:</label><br>
-                <input type="text" id="sensor-location-form" name="sensor-location-form" autocomplete="off" required>
-              </div>
-
+            </div>
+            <div class="addSensor-categories">
               <div style="padding: 5px;">
                 <label for="lname">Category:</label><br>
                 <select id="sensor-categories" name="sensor-categories" required>
@@ -57,13 +55,7 @@
               </div>
             </div>
             <div class="add-sensor-form-remaining">
-              <div style="padding: 5px;">
-                <label for="fname">Sensor Id:</label><br>
-                <input style="color: black;" type="text" id="sensor-id" name="sensor-id" value="" readonly>
-                <p style="color: white; font-size: 0.6rem; font-family: 'Montserrat', sans-serif;">&#42;Sensor ID cannot
-                  be
-                  changed</p>
-              </div>
+              
               <div style="padding: 5px;">
                 <label for="fname">Latitude&deg; :</label><br>
                 <input type="number" step="any" id="latitude" name="latitude" autocomplete="off" min="-90" max="90">
@@ -71,6 +63,13 @@
               <div style="padding: 5px;">
                 <label for="lname">Longitude&deg; :</label><br>
                 <input type="number" step="any" id="longitude" name="longitude" autocomplete="off" min="-180" max="180">
+              </div>
+              <div style="padding: 5px;">
+                <label for="fname">Sensor Id:</label><br>
+                <input style="color: black;" type="text" id="sensor-id" name="sensor-id" value="" readonly>
+                <p style="color: white; font-size: 0.6rem; font-family: 'Montserrat', sans-serif;">&#42;Sensor ID cannot
+                  be
+                  changed</p>
               </div>
               <div style="padding: 5px;">
                 <label style="visibility: hidden;">NOT</label><br>
@@ -82,17 +81,17 @@
       </fieldset>
     </div>
 
-    <!-- Create New Users Based on Heirarchy -->
+    <!-- Create New Users Tooltip Based on Heirarchy -->
     <div id="createUser">
       <fieldset>
         <legend>Add New User!</legend>
-        <form id="createUserForm" style="display: flex;">
+        <form id="createUserForm">
           <!-- <label for="email">Email</label><br> -->
           <div style="margin: 2px;">
             <input id="createUserForm-email" type="email" name="email" autocomplete="off"
               placeholder="Enter Email Address" required>
           </div>
-          <div style="margin: 2px;">
+          <div style="margin: 2px auto;">
             <button id="createUserForm-submit-btn" type="submit">Add User</button>
           </div>
         </form>
@@ -107,21 +106,21 @@
         <div id="edit-sensor-form">
           <!-- <h1>Add Sensor</h1> -->
           <form>
-            <!-- <div style="display: grid; grid-template-columns: 50% 50%;"> -->
+            <div style="display: grid; grid-template-columns: 50% 50%;">
             <div style="padding: 5px;">
               <label for="lname">Sensor Name:</label><br>
               <input required type="text" id="edit-sensor-name-form" name="edit-sensor-name-form" autocomplete="off"
                 required>
             </div>
+            <div style="padding: 5px;">
+              <label for="lname">Location Name:</label><br>
+              <input required type="text" id="edit-sensor-location-form" name="edit-sensor-location-form"
+                autocomplete="off" required>
+            </div>
 
-            <!-- </div> -->
-            <div class="editSensor-location-categories">
+            </div>
+            <div class="editSensor-categories">
 
-              <div style="padding: 5px;">
-                <label for="lname">Location Name:</label><br>
-                <input required type="text" id="edit-sensor-location-form" name="edit-sensor-location-form"
-                  autocomplete="off" required>
-              </div>
 
               <div style="padding: 5px;">
                 <label for="lname">Category:</label><br>
@@ -153,13 +152,7 @@
               </div>
             </div>
             <div class="edit-sensor-form-remaining">
-              <div style="padding: 5px;">
-                <label for="fname">Sensor Id:</label><br>
-                <input style="color: black;" type="text" id="edit-sensor-id" name="edit-sensor-id" value="" readonly>
-                <p style="color: white; font-size: 0.6rem; font-family: 'Montserrat', sans-serif;">&#42;Sensor ID cannot
-                  be
-                  changed</p>
-              </div>
+              
               <div style="padding: 5px;">
                 <label for="fname">Latitude&deg; :</label><br>
                 <input required type="number" step="any" id="edit-latitude" name="edit-latitude" autocomplete="off"
@@ -168,6 +161,13 @@
               <div style="padding: 5px;">
                 <label for="lname">Longitude&deg; :</label><br>
                 <input required type="number" step="any" id="edit-longitude" name="edit-longitude" required>
+              </div>
+              <div style="padding: 5px;">
+                <label for="fname">Sensor Id:</label><br>
+                <input style="color: black;" type="text" id="edit-sensor-id" name="edit-sensor-id" value="" readonly>
+                <p style="color: white; font-size: 0.6rem; font-family: 'Montserrat', sans-serif;">&#42;Sensor ID cannot
+                  be
+                  changed</p>
               </div>
               <div style="padding: 5px;">
                 <label style="visibility: hidden;">NOT</label><br>
@@ -195,6 +195,9 @@
       <div style="margin: 18px 0px">
         <a id="add-new-btn" href="/addGeolocation"><i class="fas fa-plus"></i> Add New</a>
       </div>
+      <!-- <div style="margin: 18px 0px">
+        <a id="sensor-verification-btn" href="/sensorVerification"><i class="fas fa-plus"></i> Verification</a>
+      </div> -->
     </div>
 
     <!-- Tooltip for show data of sensor -->
@@ -222,7 +225,7 @@
       <fieldset>
         <legend>Create Email Alert!</legend>
         <form>
-          <div style="display: grid; grid-template-columns: 50% 50%;">
+          <div id="createAlertTooltipForm">
             <div style="margin: 3px;">
               <label for="min-thresh">Min Threshold:</label><br>
               <input id="min-thresh" type="text" name="min-thresh" autocomplete="off" required>
@@ -299,7 +302,7 @@
       <div id="filters">
         <h2><i class="fas fa-sort-amount-down"></i> Apply Filters</h2>
         <div id="filtersDiv">
-          <div style="display: grid; grid-template-columns: 50% 50%; margin: 5px;">
+          <div id="applyFiltersWeights" style="display: grid; grid-template-columns: 50% 50%;">
             <div style="display: flex;">
               <input style="margin: 0px 5px;" type="checkbox" name="25" id="25" onchange="applyFilterForWeight()">
               <label for="25">0-25</label>
@@ -313,7 +316,7 @@
             <div style="display: flex;">
               <input style="margin: 0px 5px;" type="checkbox" name="75" id="75" onchange="applyFilterForWeight()">
               <label for="75">51-75</label>
-              <div style="width: 16px; height: 16px; border-radius: 7px; background-color: rgb(255,69,0); margin: 0px 5px;"></div>
+              <div style="width: 16px; height: 16px; border-radius: 7px; background-color: #007FFF; margin: 0px 5px;"></div>
             </div>
             <div style="display: flex;">
               <input style="margin: 0px 5px;" type="checkbox" name="100" id="100" onchange="applyFilterForWeight()">
@@ -321,7 +324,7 @@
               <div style="width: 16px; height: 16px; border-radius: 7px; background-color: rgb(220, 20, 60); margin: 0px 5px;"></div>
             </div>
           </div>
-          <div style="padding: 5px;">
+          <div id="applyFiltersSensors" style="padding: 5px;">
             <label for="lname">Sensor Type:</label><br>
             <select id="filter-sensor-types" onChange="applyFilter(this)" name="filter-sensor-types">
               <option value="All Sensors" selected>All Sensors</option>
@@ -335,7 +338,6 @@
               <option value="Gas Measure">Gas Measure</option>
               <option value="Garbage">Garbage</option>
               <option value="Pressure">Pressure</option>
-              <!-- <option value="Bacteria">Bacteria</option> -->
               <option value="Animals">Animals</option>
               <option value="Water">Water</option>
             </select>
@@ -385,21 +387,6 @@
 
 
       </div>
-
-      <!-- <h1>Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum architecto voluptate molestiae quas et illo
-        consequatur. Fuga tempore adipisci iste voluptatem officiis fugiat ipsam placeat eos, earum quibusdam vero quas,
-        maiores vel inventore quam ea, numquam ad? Repellat ea aut error, accusamus suscipit tempora dolores quibusdam,
-        harum, accusantium minima rerum molestias doloribus? Aliquid praesentium eum id labore sint quisquam soluta esse
-        expedita ipsum rerum impedit, nulla officia nemo nostrum et autem, nesciunt voluptatum veniam, earum quae nisi
-        non mollitia repudiandae ducimus! Pariatur, quas porro? Ratione eius dolorum repellat, possimus minima earum,
-        quisquam tempora illum eaque distinctio asperiores beatae sunt eos sapiente officia ex iste aliquam totam
-        numquam amet? Iusto itaque cupiditate quod praesentium labore eveniet rem? Possimus accusantium, praesentium
-        quas nobis voluptas dolor incidunt natus earum illo deserunt, sed eaque obcaecati. Dignissimos qui dolores quam
-        perspiciatis voluptatem nostrum aliquam cumque. Ab modi nobis dignissimos temporibus at nisi, iste sequi
-        voluptatibus voluptates accusamus mollitia aut similique in fuga atque cumque, ipsa doloremque! Praesentium
-        nesciunt velit, labore amet possimus excepturi itaque eligendi dolorum consequatur nostrum culpa harum
-        laudantium neque fugiat obcaecati sapiente deleniti repudiandae at pariatur tempore id. Repellendus est non
-        autem accusamus quaerat ut ad, a ipsa adipisci rem! Deleniti, minima!</h1> -->
 
       <!----------------------------------------Footer------------------------------->
       <footer>

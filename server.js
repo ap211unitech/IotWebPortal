@@ -6,6 +6,9 @@ const app = express();
 const ConnectDB = require("./config/connect");
 const expressEjslayouts = require("express-ejs-layouts");
 const path = require("path");
+// const cors=require("cors")
+
+
 
 // Cookies
 const cookieparser = require('cookie-parser');
@@ -13,6 +16,8 @@ app.use(cookieparser());
 
 //Connect Database
 ConnectDB();
+
+// app.use(cors())
 
 //Servig static files
 app.use(express.static(`${__dirname}/public`));
@@ -34,13 +39,15 @@ app.use('/', require("./routes/addGeolocation"));
 app.use('/', require("./routes/sensor"));
 app.use('/', require('./routes/addUser')); // Add User By another User
 app.use('/', require("./routes/dashboard"));
+// app.use('/', require("./routes/sensorVerification"));
 
 
 app.get("*", (req, res) => {
   return res.redirect("/dashboard");
 });
 // console.log(process.env.PORT)
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT ;
+console.log(PORT)
 app.listen(PORT, () => {
   console.log(`server running on port ${PORT}`);
 });

@@ -75,9 +75,9 @@
     transition: 0.3s;
 }
 
-.editSensor-location-categories {
+.editSensor-categories {
     display: grid; 
-    grid-template-columns: 33% 33% 34%;
+    grid-template-columns: 50% 50%;
 }
 
 .edit-sensor-form-remaining {

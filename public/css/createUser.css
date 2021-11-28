@@ -25,9 +25,8 @@
 }
 
 #createUser form {
-    /* border: 1px solid white; */
-    /* margin: 4px; */
-    /* padding: 5px; */
+    display: grid;
+    grid-template-columns: 60% 40%;
 }
 
 #createUser input[type=email] {
