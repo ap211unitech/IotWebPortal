@@ -28,6 +28,14 @@ route.get('/addGeolocation', auth, async (req, res) => {
   return res.status(200).render('Geolocation.ejs');
 })
 
+// Sensor Verification Page
+route.get('/sensorVerification', auth, async (req, res) => {
+  if (!req.user) {
+    return res.redirect('/login')
+  }
+  return res.status(200).render('sensorVerification.ejs');
+})
+
 
 // Dashboard Page
 route.get("/dashboard", auth, async (req, res) => {

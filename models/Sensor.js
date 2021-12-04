@@ -57,6 +57,18 @@ const SensorSchema = new mongoose.Schema({
                             sensorType: {
                                 type: String,
                                 required: true
+                            },
+                            minThreshold: {
+                                type: Number,
+                                default: -100000,
+                            },
+                            maxThreshold: {
+                                type: Number,
+                                default: 100000,
+                            },
+                            isVerified: {
+                                type: Boolean,
+                                default: false,    
                             }
                         }
                     ]

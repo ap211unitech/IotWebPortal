@@ -7,6 +7,12 @@ const LiveData = require("../models/LiveData");
 const fs = require("fs");
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 
+const Sensor = require("../models/Sensor");
+const Geolocations = require("../models/GeoLocations");
+const User = require("../models/User");
+const sendEmail = require("../utils/sendEmail");
+
+
 //@Route    GET /dashboard
 //@desc     Get Data of sensors and saving to Database
 //@access   Public
@@ -71,9 +77,71 @@ route.post("/liveSensorData", async (req, res) => {
   });
 
   main.forEach(async (elm) => {
+    // Searching for threshold values in Sensor Model
+    // const sensorData = await Sensor.findOne({ sensor: { data: { sensorDetail: { sensorId: elm.id } } } });
+
+    
+
+    let obj = [];
+    // Searching for threshold values in Sensor Model
+    const allData = await Sensor.find();
+    allData.forEach(a => {
+      const sensorArray = a.sensor;
+      sensorArray.forEach(b => {
+        const dataArray = b.data;
+        dataArray.forEach(c => {
+          const sensorDetailArray = c.sensorDetail;
+          sensorDetailArray.forEach(d => {
+            if (d.sensorId == elm.id) {
+              obj["minThreshold"] = d.minThreshold;
+              obj["maxThreshold"] = d.maxThreshold;
+              obj["maxThreshold"] = d.sensorName;
+              obj["parentID"] = a.user;
+              obj["geolocationID"] = b.geolocation;
+              return;
+            }
+          })
+        })
+      })
+    })
+
+
+
+    if (sensorData) {
+      const minThreshold = obj["minThreshold"];
+      const maxThreshold = obj["maxThreshold"]
+
+      const userDetails = await User.findById(obj["parentID"]);
+
+      const geolocationDetails = await Geolocations.findById(obj["geolocationID"]);
+      // const place = geolocationDetails.name;
+
+      if (elm.data < minThreshold) {
+        // Send Email
+        let store = {
+          to: userDetails.email,
+          userName: userDetails.name,
+          geolocation: geolocationDetails.name,
+          minThreshold: minThreshold,
+          currentData: elm.data,
+        }
+        sendEmail(store)
+      }
+      else if (elm.data > maxThreshold) {
+        let store = {
+          to: userDetails.email,
+          userName: userDetails.name,
+          geolocation: geolocationDetails.name,
+          maxThreshold: maxThreshold,
+          currentData: elm.data,
+        }
+        sendEmail(store)
+      }
+
+    }
     let findSensor = await LiveData.findOne({ sensorId: elm.id });
     if (findSensor) {
-      if (findSensor.data.length >= 5000) {
+      if (findSensor.data.length >= 8000) {
         findSensor.data.pop();
       }
       findSensor.data.unshift({

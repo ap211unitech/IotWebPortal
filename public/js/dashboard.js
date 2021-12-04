@@ -983,9 +983,8 @@ function showCreateUserForm() {
 }
 
 function createAlert(sensorData) {
-  // if(sensors_data.length == 0 || image.length == 0) return;
-  // $('#inside-map').css({ opacity: '0.5' });
   $("#emailAlertsTooltip").slideDown("slow");
+  // var minThreshold = 
 }
 
 function showEditSensorForm(sensor_id) {

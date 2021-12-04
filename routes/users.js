@@ -26,7 +26,7 @@ router.post('/login', async (req, res) => {
             });
         }
         const payload = { user: findUser };
-        jwt.sign(payload, 'jwtsecret', { expiresIn: 3600 }, (err, token) => {
+        jwt.sign(payload, 'jwtsecret', { expiresIn: 10800 }, (err, token) => {
             if (err) throw err;
             res.cookie('token', token, {
                 expires: new Date(
@@ -87,7 +87,7 @@ router.post('/register', async (req, res) => {
         newUser.password = await bcryptjs.hash(password, salt);
         const savedUser = await newUser.save();
         const payload = { user: savedUser };
-        jwt.sign(payload, 'jwtsecret', { expiresIn: 3600 }, (err, token) => {
+        jwt.sign(payload, 'jwtsecret', { expiresIn: 10800 }, (err, token) => {
             if (err) throw err;
             res.cookie('token', token, {
                 expires: new Date(
