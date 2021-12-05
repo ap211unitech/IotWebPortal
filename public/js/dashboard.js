@@ -982,9 +982,13 @@ function showCreateUserForm() {
   $("#createUser").slideToggle("slow");
 }
 
-function createAlert(sensorData) {
+function showCreateAlertTooltip(sensorId) {
   $("#emailAlertsTooltip").slideDown("slow");
-  // var minThreshold = 
+  let currSensorData = getSensorDetailUsingSensorID(sensorId);
+  // document.getElementById("minThreshold").value = (currSensorData.minThreshold == -100000) ? 0 : currSensorData.minThreshold;
+  // document.getElementById("maxThreshold").value = (currSensorData.maxThreshold == 100000) ? 0 : currSensorData.maxThreshold;
+  document.getElementById("minThreshold").value = currSensorData.minThreshold;
+  document.getElementById("maxThreshold").value = currSensorData.maxThreshold;
 }
 
 function showEditSensorForm(sensor_id) {
@@ -1002,6 +1006,43 @@ function showEditSensorForm(sensor_id) {
   $("#edit-latitude").val(sensor_details.latitude);
   $("#edit-longitude").val(sensor_details.longitude);
   // console.log(sensor_details);
+}
+
+async function createAlert(e) {
+  // e.preventDefault();
+  var minThreshold = document.getElementById("minThreshold").value;
+  var maxThreshold = document.getElementById("maxThreshold").value;
+  if(idOfSensorWhichIsClicked == null) {
+    alert("No sensor found");
+    return;
+  }
+  var sensorId = idOfSensorWhichIsClicked;
+  var geolocation = geolocation_id;
+  var imageID = global_del_image_id;
+  
+  if(minThreshold == "" || maxThreshold == "") {
+    alert("These fields cannot be empty.");  
+    return;
+  }
+  // if(minThreshold > maxThreshold) {
+  //   // alert("Min Value cannot be greater than the Max Value.");  
+  //   alert(minThreshold +  " " + maxThreshold);  
+  //   return;
+  // }
+  
+
+  // Get Geolocation User Details
+  const geoUser = (await getGeolocationUserByGeoId(geolocation)).user;
+
+  const obj = {
+    geolocation,
+    imageID,
+    sensorId,
+    geoUser,
+    minThreshold,
+    maxThreshold,
+  };
+  createAlertAPICall(obj);
 }
 
 async function deleteSensor(sensor_id) {
@@ -1173,7 +1214,7 @@ async function showDataOfSensor(el) {
 
   var createAlertBtn = document.getElementById("createAlertBtn");
   createAlertBtn.onclick = function () {
-    createAlert(currSensorData);
+    showCreateAlertTooltip(el.id);
   };
 
   var exportSingleSensorData = document.getElementById(
@@ -1431,8 +1472,42 @@ async function editSensorAPICall(e) {
   }
 }
 
-// Delete a sensor
 
+// API Call to Create Alert
+async function createAlertAPICall(obj) {
+  try {
+    if (geolocation_id == "") {
+      alert("Select a Geolocation First");
+      // break;
+    } else {
+      const formData = {
+        geolocation: obj.geolocation,
+        imageId: obj.imageID,
+        sensorId: obj.sensorId,
+        geoUser: obj.geoUser,
+        minThreshold: obj.minThreshold,
+        maxThreshold: obj.maxThreshold,
+      };
+      const settings = {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      };
+      let response = await fetch("/emailalert", settings);
+      let data = await response.json();
+      console.log(data);
+      window.location.replace("/dashboard");
+    }
+  } catch (err) {
+    console.log(err);
+    alert("Something went wrong...");
+  }
+}
+
+// Delete a sensor
 async function deleteSensorAPICall(obj) {
   try {
     if (geolocation_id == "") {

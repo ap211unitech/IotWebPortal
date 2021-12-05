@@ -217,8 +217,8 @@ router.post("/getSensorgeolocation", auth, async (req, res) => {
 
 
 // @ Put Threshold values in Sensor
-router.put("/emailalert", auth, async (res, res) => {
-  const { geolocation, imageId, sensorId, sensorIdUUID, maxThreshold, minThreshold } = req.body;
+router.put("/emailalert", auth, async (req, res) => {
+  const { geolocation, imageId, sensorId, geoUser, maxThreshold, minThreshold } = req.body;
   try {
     let user = null;
     if (req.user.type == "admin") {
@@ -238,28 +238,30 @@ router.put("/emailalert", auth, async (res, res) => {
       );
 
       if (findGeoLocationIndex >= 0) {
+
         // If it is already present, mean we are add new sensor for any previous image.
         const findImageIndex = findUser.sensor[
           findGeoLocationIndex
         ].data.findIndex((elm) => elm.image.toString() === imageId);
 
         if (findImageIndex >= 0) {
+
           const findSensorIndex = findUser.sensor[findGeoLocationIndex].data[
             findImageIndex
           ].sensorDetail.findIndex((elm) => elm._id.toString() === sensorId);
 
           if (findSensorIndex >= 0) {
-            findUser.sensor[findGeoLocationIndex].data[
-              findImageIndex
-            ].sensorDetail.minThreshold = minThreshold;
-
 
             findUser.sensor[findGeoLocationIndex].data[
               findImageIndex
-            ].sensorDetail.maxThreshold = maxThreshold;
+            ].sensorDetail[findSensorIndex].minThreshold = minThreshold;
+
+            findUser.sensor[findGeoLocationIndex].data[
+              findImageIndex
+            ].sensorDetail[findSensorIndex].maxThreshold = maxThreshold;
 
             await findUser.save();
-
+            
             return res.status(200).json({ msg: "Threshold value updated....", status: 200 });
           } else {
             return res

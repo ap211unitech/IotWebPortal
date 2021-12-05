@@ -77,11 +77,6 @@ route.post("/liveSensorData", async (req, res) => {
   });
 
   main.forEach(async (elm) => {
-    // Searching for threshold values in Sensor Model
-    // const sensorData = await Sensor.findOne({ sensor: { data: { sensorDetail: { sensorId: elm.id } } } });
-
-    
-
     let obj = [];
     // Searching for threshold values in Sensor Model
     const allData = await Sensor.find();
@@ -95,7 +90,7 @@ route.post("/liveSensorData", async (req, res) => {
             if (d.sensorId == elm.id) {
               obj["minThreshold"] = d.minThreshold;
               obj["maxThreshold"] = d.maxThreshold;
-              obj["maxThreshold"] = d.sensorName;
+              obj["sensorName"] = d.sensorName;
               obj["parentID"] = a.user;
               obj["geolocationID"] = b.geolocation;
               return;
@@ -105,11 +100,11 @@ route.post("/liveSensorData", async (req, res) => {
       })
     })
 
-
-
-    if (sensorData) {
+    // if (sensorData) {
+      
       const minThreshold = obj["minThreshold"];
-      const maxThreshold = obj["maxThreshold"]
+      const maxThreshold = obj["maxThreshold"];
+      const sensorName = obj["sensorName"];
 
       const userDetails = await User.findById(obj["parentID"]);
 
@@ -118,9 +113,11 @@ route.post("/liveSensorData", async (req, res) => {
 
       if (elm.data < minThreshold) {
         // Send Email
+        console.log("Here IM")
         let store = {
           to: userDetails.email,
           userName: userDetails.name,
+          sensorName: sensorName,
           geolocation: geolocationDetails.name,
           minThreshold: minThreshold,
           currentData: elm.data,
@@ -131,6 +128,7 @@ route.post("/liveSensorData", async (req, res) => {
         let store = {
           to: userDetails.email,
           userName: userDetails.name,
+          sensorName: sensorName,
           geolocation: geolocationDetails.name,
           maxThreshold: maxThreshold,
           currentData: elm.data,
@@ -138,7 +136,7 @@ route.post("/liveSensorData", async (req, res) => {
         sendEmail(store)
       }
 
-    }
+    // }
     let findSensor = await LiveData.findOne({ sensorId: elm.id });
     if (findSensor) {
       if (findSensor.data.length >= 8000) {
@@ -239,4 +237,10 @@ route.post("/exportdata", async (req, res) => {
   }
 });
 
+
+// Get all the sensors
+route.get("/getAllSensors", async (req, res) => {
+  const data = await Sensor.find();
+  return res.status(200).json(data);
+});
 module.exports = route;
