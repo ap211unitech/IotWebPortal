@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Sensor Verification</title>
+</head>
+<body>
+
+	<h1>This is Sensorrcer Verfication Page</h1>
+
+</body>
+
+<script>
+	var sensors_data = null;
+	async function getAllSensors() {
+		const settings = {
+		  method: "GET",
+		  headers: {
+		    Accept: "application/json",
+		    "Content-Type": "application/json",
+		  },
+		  // body: JSON.stringify({ geolocation: geolocation_id, user: geoUser }),
+		};
+
+		const response = await fetch("/getAllSensors", settings);
+		const data = await response.json();
+		sensors_data = data;
+		console.log(sensors_data);
+	}
+	getAllSensors();
+
+	var i = 0;
+	sensors_data.forEach((data) => {
+    	data.data.forEach((data) => {
+      		data.sensorDetail.forEach((res) => {
+        		i++;	
+      		});
+    	});
+  	});
+  	console.log(i);
+</script>
+
+</html>

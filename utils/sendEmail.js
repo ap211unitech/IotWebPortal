@@ -17,8 +17,29 @@ const sendEmail = (store) => {
     const mailOptions = {
         from: 'iitj.iotwebportal@gmail.com',
         to: store.to,
-        subject: `Regarding Update of Sensor ${store.geolocation}`,
-        text: `Message from 'req.body.email' from your portfolio\nreq.body.message`
+        subject: `Regarding Update on your ${store.sensorName} Sensor`,
+       //  text: `<h3>
+       //          Your Sensor Located at ${store.geolocation} has crossed the threshold value.
+       //          </h3>
+       //          <p> Your Threshold Value is <b>${store.minThreshold}</b> </p>
+       //          <p> Your current sensor value is <b>${store.currentData}</b> </p>
+
+       //          <p>Regards</p>
+       //          <p> Admin IoT Web Portal</p>
+
+       //          <p> <b> Note: </b> This is an auto-generated mail. DO NOT REPLY </p>
+       // `
+       text: `
+            Dear ${store.userName}
+            Your ${store.sensorName} Sensor Located at ${store.geolocation} has crossed the threshold value.
+            Your Threshold Value is ${store.minThreshold}.
+            Your Current Sensor Value is ${store.currentData}.
+
+            Regards
+            Admin IoT Web Portal
+
+            Note: This is an auto-generated mail. DO NOT REPLY.
+            `
     };
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {

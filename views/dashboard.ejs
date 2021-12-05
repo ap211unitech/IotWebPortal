@@ -1,7 +1,3 @@
-<!-- <div style="display: grid; grid-template-columns: 25% 25% 25% 25%; padding: 10px 30px; margin: 30px 0px;">
-</div> -->
-<!-- <div style="display: grid; grid-template-columns: 33% 33% 34%;">
-</div> -->
 <% bodyClass='body-class' %>
   <% cssFile='css/dashboard.css' %>
 
@@ -195,9 +191,9 @@
       <div style="margin: 18px 0px">
         <a id="add-new-btn" href="/addGeolocation"><i class="fas fa-plus"></i> Add New</a>
       </div>
-      <!-- <div style="margin: 18px 0px">
-        <a id="sensor-verification-btn" href="/sensorVerification"><i class="fas fa-plus"></i> Verification</a>
-      </div> -->
+      <div style="margin: 18px 0px">
+        <a id="sensor-verification-btn" href="/sensorVerification"><i class="fas fa-plus"></i>Verification</a>
+      </div>
     </div>
 
     <!-- Tooltip for show data of sensor -->
@@ -224,21 +220,19 @@
       <!-- <div style="border: 1px solid white; padding: 5px;"> -->
       <fieldset>
         <legend>Create Email Alert!</legend>
-        <form>
           <div id="createAlertTooltipForm">
             <div style="margin: 3px;">
-              <label for="min-thresh">Min Threshold:</label><br>
-              <input id="min-thresh" type="text" name="min-thresh" autocomplete="off" required>
+              <label for="minThreshold">Min Threshold:</label><br>
+              <input id="minThreshold" type="number" name="minThreshold" autocomplete="off" required>
             </div>
             <div style="margin: 3px;">
-              <label for="max-thresh">Max Threshold:</label><br>
-              <input id="max-thresh" type="text" name="max-thresh" autocomplete="off" required>
+              <label for="maxThreshold">Max Threshold:</label><br>
+              <input id="maxThreshold" type="number" name="maxThreshold" autocomplete="off" required>
             </div>
           </div>
           <div>
-            <button id="createAlertSubmitBtn" type="submit">Create</button>
+            <button onclick="createAlert(this)" id="createAlertSubmitBtn">Create</button>
           </div>
-        </form>
       </fieldset>
       <!-- </div> -->
     </div>
