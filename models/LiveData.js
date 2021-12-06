@@ -17,6 +17,10 @@ const LiveDataSchema = new mongoose.Schema({
       },
     },
   ],
+  lastEmailSent: {
+    type: Date,
+    default: Date.now()
+  }
 });
 
 module.exports = mongoose.model("livedata", LiveDataSchema);

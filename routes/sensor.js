@@ -293,7 +293,7 @@ router.put("/verifyTheSensor", auth, async (req, res) => {
   const { geoId, imageId, sensorId, userId, isVerified, sensorIdUUID } = req.body;
   try {
     let user = null;
-    if (req.user.type == "orghead") {
+    if (req.user.type == "admin") {
       user = userId;
     } else {
       return res.status(200).json({ msg: "Only Admins have access to verify the sensor.", status: 400 });

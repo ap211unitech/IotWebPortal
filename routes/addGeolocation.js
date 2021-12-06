@@ -93,7 +93,7 @@ router.delete('/deleteGeolocation', auth, async (req, res) => {
         await Geolocation.deleteOne({ user: user, _id: geoId });
         // Delete Image for that geolocation
         const findUserFromImage = await Image.findOne({ user });
-        if (findUser) {
+        if (findUserFromImage) {
             const ImageArray = findUserFromImage.image;
             const index = ImageArray.find(data => data.geolocation.toString() === geoId);
             findUserFromImage.image.splice(index, 1);

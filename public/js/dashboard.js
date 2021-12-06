@@ -94,11 +94,15 @@ async function settingsForDiffrentUser() {
       console.log("ADMIN");
     } else if (currentUser.type == "orghead") {
       console.log("ORG HEAD");
+      $("#sensor-verification-btn").css("display", "none");
+      $("#sensor-verification-btn-hamburger").css("display", "none");
     } else if (currentUser.type == "user") {
       document.getElementById("addSensor-btn").style.display = "none";
       document.getElementById("add-new-btn").style.display = "none";
       document.getElementById("create-user-btn").style.display = "none";
       document.getElementById("exportAllSensorDataBtn").style.display = "none";
+      $("#sensor-verification-btn").css("display", "none");
+      $("#sensor-verification-btn-hamburger").css("display", "none");
 
       console.log("USER");
     }
@@ -557,14 +561,6 @@ async function getSensorDetail(geolocation_id) {
     let geoUser = (await getGeolocationUserByGeoId(geolocation_id)).user;
     let currentuser = await myDetails();
 
-    // Checking Parent User Details
-    // const currentUser = await myDetails();
-    // let parentId = null;
-    // if (currentUser.type != "admin") {
-    //   parentId = (await parentUser(currentUser.email)).user;
-    // }
-
-    // console.log(geoUser)
     const settings = {
       method: "POST",
       headers: {
@@ -574,17 +570,18 @@ async function getSensorDetail(geolocation_id) {
       body: JSON.stringify({ geolocation: geolocation_id, user: geoUser }),
     };
 
-    const response = await fetch("/getSensorgeolocation", settings);
-    const data = await response.json();
-    sensors_data = data;
-
-    console.log(sensors_data, "sensor data");
-
     $("#inside-map").attr("src", "/img/loader.gif");
     const findImage = await fetch("/getImageUsingGeolocation", settings);
     const Image = await findImage.json();
     image = Image;
     console.log(Image, "image data");
+
+    $("#loaderSensorDiv").css("display", "block");
+    const response = await fetch("/getSensorgeolocation", settings);
+    const data = await response.json();
+    sensors_data = data;
+    console.log(sensors_data, "sensor data");
+    $("#loaderSensorDiv").css("display", "none");
 
     // If image is not found, then show the add image option.
 
@@ -1256,10 +1253,29 @@ async function showDataOfSensor(el) {
     document.getElementById("lower-border").style.marginBottom = "18px";
   }
 
-  $(".sensorsDataDiv").css({
-    left: left + "px",
-    top: top + "px",
-  });
+  var widthOfTooltip = $(".sensorsDataDiv").width();
+  var rightWidth = $( window ).width() - left;
+  var leftWidth = left;
+
+  if(rightWidth < widthOfTooltip + 10) {
+    if(rightWidth > leftWidth) {
+      $(".sensorsDataDiv").css({
+        left: left + "px",
+        top: top + "px",
+      });
+    } else {
+      $(".sensorsDataDiv").css({
+        left: (leftWidth-widthOfTooltip - 20) + "px",
+        top: top + "px",
+      }); 
+    }
+  } else {
+    $(".sensorsDataDiv").css({
+        left: left + "px",
+        top: top + "px",
+    });
+  }
+  
 
   $(".sensorsDataDiv").fadeIn("slow");
 
@@ -1267,44 +1283,93 @@ async function showDataOfSensor(el) {
   // -------------------------------------------------------------------------------------
   // indexLabel: "\u2191 highest",markerColor: "red", markerType: "triangle" }
   // , indexLabel: "\u2193 lowest",markerColor: "DarkSlateGrey", markerType: "cross" }
-  CanvasJS.addColorSet("defaultShade",
-                [
-                  "#f96332",               
-                ]);
+  makeOrUpdateLinePlot(sensorLiveData, currSensorData);
+
+}
 
 
-  dataPoints = [];
-  var itr = 1;
-  for(var itr = 1; itr<=10; itr++) {
-    obj = {y: parseInt(sensorLiveData.data[itr].data), x: new Date(sensorLiveData.data[itr].time)};
-    dataPoints.push(obj);
+function makeOrUpdateLinePlot(sensorLiveData, currSensorData) {
+  CanvasJS.addColorSet("defaultShade", ["#f96332", "pink", "green", "brown", "purple"]);
+
+  var maxValuesToDisplay = 10;
+  mainData = [];
+
+  if(sensorLiveData == null || currSensorData.isVerified==false) {
+    // No need to display the line plot.
+    // We will draw an empty graph.
+    var chart = new CanvasJS.Chart("mapPlots", {
+      animationEnabled: true,
+      colorSet: "defaultShade",
+      title:{
+        text: `No Data`,
+        fontFamily: "tahoma",
+      },
+      data: [
+        {
+          type: "line",
+          indexLabelFontSize: 15,
+          xValueType: "dateTime",
+          xValueFormatString: "DD MMM hh:mm TT",
+          dataPoints: [],
+        }
+      ],
+    });
+
+    chart.render();
+    return;
   }
+
+  if((sensorLiveData.data[0].data).indexOf(',')>=0) {
+    // Multiple Values in one sensor is found.
+    var n = 0;
+    var diffPartsWholeArray = [];
+    for(var itr = 0; itr<(sensorLiveData.data.length && maxValuesToDisplay); itr++) {
+      var diffParts = (sensorLiveData.data[itr].data).split(',');
+      n = diffParts.length;
+      diffPartsWholeArray.push(diffParts);
+    }
+    console.log(diffPartsWholeArray);
+    for(var i=0; i<n; i++) {
+      var tempObj = {
+        type: "line",
+        indexLabelFontSize: 15,
+        xValueType: "dateTime",
+        xValueFormatString: "DD MMM hh:mm TT",
+        dataPoints: [],
+      };
+      for(var itr=0; itr<maxValuesToDisplay; itr++) {
+        obj = {y: parseFloat(diffPartsWholeArray[itr][i]), x: new Date(sensorLiveData.data[itr].time)};
+        tempObj.dataPoints.push(obj);
+      }
+      mainData.push(tempObj);
+    }
+  } else {
+    var tempObj = {  
+      type: "line",
+      indexLabelFontSize: 15,
+      xValueType: "dateTime",
+      xValueFormatString: "DD MMM hh:mm TT",
+      dataPoints: [],
+    };
+    for(var itr = 0; itr<maxValuesToDisplay; itr++) {
+      obj = {y: parseFloat(sensorLiveData.data[itr].data), x: new Date(sensorLiveData.data[itr].time)};
+      tempObj.dataPoints.push(obj);
+    }
+    mainData.push(tempObj);
+  }
+
 
   var chart = new CanvasJS.Chart("mapPlots", {
     animationEnabled: true,
-    // theme: "theme2",
     colorSet: "defaultShade",
     title:{
       text: `${currSensorData.sensorType} Data`,
       fontFamily: "tahoma",
     },
-    axisY: {
-      scaleBreaks: {
-        customBreaks: [{
-          startValue: 100,
-          endValue: 400,
-        }]
-      }
-    },
-    data: [{        
-      type: "line",
-          indexLabelFontSize: 15,
-          dataPoints,
-    }]
+    data: mainData,
   });
 
   chart.render();
-
 }
 
 async function exportData(sensorData = sensors_data) {
@@ -1401,45 +1466,10 @@ async function updateDataOfSensorInTooltip(currSensorData) {
     '<i class="far fa-clock"></i> ' + date + " | " + time
   );
 
-  CanvasJS.addColorSet("defaultShade",
-                [
-                  "#f96332",               
-                ]);
-
-
-  dataPoints = [];
-  var itr = 1;
-  for(var itr = 1; itr<=10; itr++) {
-    obj = {y: parseInt(sensorLiveData.data[itr].data), x: new Date(sensorLiveData.data[itr].time)};
-    dataPoints.push(obj);
-  }
-
-  var chart = new CanvasJS.Chart("mapPlots", {
-    animationEnabled: true,
-    // theme: "theme2",
-    colorSet: "defaultShade",
-    title:{
-      text: `${currSensorData.sensorType} Data`,
-      fontFamily: "tahoma",
-    },
-    axisY: {
-      scaleBreaks: {
-        customBreaks: [{
-          startValue: 100,
-          endValue: 400,
-        }]
-      }
-    },
-    data: [{        
-      type: "line",
-          indexLabelFontSize: 15,
-          dataPoints,
-    }]
-  });
-
-  chart.render();
-
-  
+  // We will update the graph only when the last stored value is not equal to the current value.
+  // if(sensorLiveData.data[0] && sensorLiveData.data[1] && sensorLiveData.data[0].data!=sensorLiveData.data[1].data) {
+  //   makeOrUpdateLinePlot(sensorLiveData, currSensorData);
+  // }
 }
 
 // API calling for adding a new sensor when user clicks Add Sensor button on popUp

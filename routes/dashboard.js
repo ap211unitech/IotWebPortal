@@ -77,7 +77,6 @@ route.post("/liveSensorData", async (req, res) => {
   });
 
   main.forEach(async (elm) => {
-    let obj = {};
     // Searching for threshold values in Sensor Model
     const allData = await Sensor.find();
     allData.forEach(a => {
@@ -86,13 +85,69 @@ route.post("/liveSensorData", async (req, res) => {
         const dataArray = b.data;
         dataArray.forEach(c => {
           const sensorDetailArray = c.sensorDetail;
-          sensorDetailArray.forEach(d => {
+          sensorDetailArray.forEach(async d => {
             if (d.sensorId == elm.id && d.isVerified == true) {
+              let obj = {};
+
               obj["minThreshold"] = d.minThreshold;
               obj["maxThreshold"] = d.maxThreshold;
               obj["sensorName"] = d.sensorName;
               obj["parentID"] = a.user;
               obj["geolocationID"] = b.geolocation;
+              obj["sensorUUID"] = d.sensorId;
+
+              if (obj && obj!=null) {
+                const minThreshold = obj["minThreshold"];
+                const maxThreshold = obj["maxThreshold"];
+                const sensorName = obj["sensorName"];
+
+                const userDetails = await User.findById(obj["parentID"]);
+
+                const geolocationDetails = await Geolocations.findById(obj["geolocationID"]);
+
+                // Search For Sensor In liveData 
+                const sensorInLiveData = await LiveData.findOne({ sensorId: obj["sensorUUID"] });
+                var lastsent = new Date(sensorInLiveData.lastEmailSent);
+                var today = new Date();
+                var diffMs = (today - lastsent);
+                var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
+
+                if (diffMins >= 30) {
+                  if (elm.data < minThreshold) {
+                    // Send Email
+                    let store = {
+                      to: userDetails.email,
+                      userName: userDetails.name,
+                      sensorName: sensorName,
+                      geolocation: geolocationDetails.name,
+                      minThreshold: minThreshold,
+                      currentData: elm.data,
+                      flag: false,
+                    }
+                    sendEmail(store)
+                    sensorInLiveData.lastEmailSent = new Date();
+                    await sensorInLiveData.save();
+                  }
+                  else if (elm.data > maxThreshold) {
+                    let store = {
+                      to: userDetails.email,
+                      userName: userDetails.name,
+                      sensorName: sensorName,
+                      geolocation: geolocationDetails.name,
+                      maxThreshold: maxThreshold,
+                      currentData: elm.data,
+                      flag: true,
+                    }
+                    sendEmail(store)
+                    sensorInLiveData.lastEmailSent = new Date();
+                    await sensorInLiveData.save();
+                  }
+                }
+
+              }
+
+
+
               return;
             }
           })
@@ -100,41 +155,6 @@ route.post("/liveSensorData", async (req, res) => {
       })
     })
 
-    if (obj && obj!=null) {
-      const minThreshold = obj["minThreshold"];
-      const maxThreshold = obj["maxThreshold"];
-      const sensorName = obj["sensorName"];
-
-      const userDetails = await User.findById(obj["parentID"]);
-
-      const geolocationDetails = await Geolocations.findById(obj["geolocationID"]);
-      // const place = geolocationDetails.name;
-
-      if (elm.data < minThreshold) {
-        // Send Email
-        // console.log("Here IM")
-        let store = {
-          to: userDetails.email,
-          userName: userDetails.name,
-          sensorName: sensorName,
-          geolocation: geolocationDetails.name,
-          minThreshold: minThreshold,
-          currentData: elm.data,
-        }
-        sendEmail(store)
-      }
-      else if (elm.data > maxThreshold) {
-        let store = {
-          to: userDetails.email,
-          userName: userDetails.name,
-          sensorName: sensorName,
-          geolocation: geolocationDetails.name,
-          maxThreshold: maxThreshold,
-          currentData: elm.data,
-        }
-        sendEmail(store)
-      }
-    }
     let findSensor = await LiveData.findOne({ sensorId: elm.id });
     if (findSensor) {
       if (findSensor.data.length >= 8000) {
