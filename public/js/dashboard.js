@@ -238,7 +238,7 @@ function showSensor(res) {
 
   var sensorLiveData = getSensorLiveDataUsingSensorID(res.sensorId);
   var sensorLiveWeight;
-  if (sensorLiveData == null || sensorLiveData.length == 0) {
+  if (sensorLiveData == null || sensorLiveData.length == 0 || res.isVerified == false) {
     sensorLiveWeight = "x";
   } else {
     sensorLiveWeight = sensorLiveData.data[0].data;
@@ -368,7 +368,7 @@ function showAllTheSensorsOnGeoMap(data) {
           var sensorSymbol = showThatSymbolOfSensor(res.sensorType);
           var sensorLiveData = getSensorLiveDataUsingSensorID(res.sensorId);
           var sensorLiveWeight;
-          if (sensorLiveData == null || sensorLiveData.length == 0) {
+          if (sensorLiveData == null || sensorLiveData.length == 0 || res.isVerified == false) {
             sensorLiveWeight = "x";
           } else {
             sensorLiveWeight = sensorLiveData.data[0].data;
@@ -1171,13 +1171,13 @@ async function showDataOfSensor(el) {
   var sensorLiveData = getSensorLiveDataUsingSensorID(sensorId);
 
   var sensorLiveWeight;
-  if (sensorLiveData == null) {
+  if (sensorLiveData == null || currSensorData.isVerified == false) {
     sensorLiveWeight = "x";
   } else {
     sensorLiveWeight = sensorLiveData.data[0].data;
   }
   var sensorLiveTime =
-    sensorLiveData == null || sensorLiveData.data[0].time == null
+    sensorLiveData == null || sensorLiveData.data[0].time == null || currSensorData.isVerified == false
       ? "x"
       : sensorLiveData.data[0].time;
 
@@ -1186,6 +1186,29 @@ async function showDataOfSensor(el) {
   $("#sensorLocationTooltip").html(
     '<i class="fas fa-map-marker-alt"></i> ' + sensorLocation
   );
+
+  if(currSensorData.isVerified == true) {
+    var isVerifiedPara = $("#isSensorVerifiedPara");
+    isVerifiedPara.css("color", "rgb(50, 205, 50)");
+    isVerifiedPara.css("cursor", "pointer");
+    isVerifiedPara.css("margin", "auto 2px");
+    isVerifiedPara.css("fontSize", "0.9rem");
+    isVerifiedPara.prop('title', 'Verified');
+    isVerifiedPara.html(
+      '<i class="fas fa-check"></i>'
+    );
+  } else {
+    var isVerifiedPara = $("#isSensorVerifiedPara");
+    isVerifiedPara.css("color", "red");
+    isVerifiedPara.css("cursor", "pointer");
+    isVerifiedPara.css("margin", "auto 2px");
+    isVerifiedPara.css("fontSize", "0.9rem");
+    isVerifiedPara.prop('title', 'Not Verified');
+    isVerifiedPara.html(
+      '<i class="fas fa-times"></i>'
+    );
+  }
+  
   $("#sensorWeightTooltip").html(sensorLiveWeight);
   // $("#sensorTimeTooltip").html('<i class="far fa-clock"></i> ' + "5:44PM | 21st May 2021");
   const date =
@@ -1239,6 +1262,49 @@ async function showDataOfSensor(el) {
   });
 
   $(".sensorsDataDiv").fadeIn("slow");
+
+
+  // -------------------------------------------------------------------------------------
+  // indexLabel: "\u2191 highest",markerColor: "red", markerType: "triangle" }
+  // , indexLabel: "\u2193 lowest",markerColor: "DarkSlateGrey", markerType: "cross" }
+  CanvasJS.addColorSet("defaultShade",
+                [
+                  "#f96332",               
+                ]);
+
+
+  dataPoints = [];
+  var itr = 1;
+  for(var itr = 1; itr<=10; itr++) {
+    obj = {y: parseInt(sensorLiveData.data[itr].data), x: new Date(sensorLiveData.data[itr].time)};
+    dataPoints.push(obj);
+  }
+
+  var chart = new CanvasJS.Chart("mapPlots", {
+    animationEnabled: true,
+    // theme: "theme2",
+    colorSet: "defaultShade",
+    title:{
+      text: `${currSensorData.sensorType} Data`,
+      fontFamily: "tahoma",
+    },
+    axisY: {
+      scaleBreaks: {
+        customBreaks: [{
+          startValue: 100,
+          endValue: 400,
+        }]
+      }
+    },
+    data: [{        
+      type: "line",
+          indexLabelFontSize: 15,
+          dataPoints,
+    }]
+  });
+
+  chart.render();
+
 }
 
 async function exportData(sensorData = sensors_data) {
@@ -1315,13 +1381,13 @@ async function updateDataOfSensorInTooltip(currSensorData) {
   var sensorLiveData = getSensorLiveDataUsingSensorID(sensorId);
   // var sensorLiveData = getSensorLiveWeightUsingSensorID(res.sensorId);
   var sensorLiveWeight;
-  if (sensorLiveData == null) {
+  if (sensorLiveData == null || currSensorData.isVerified == false) {
     sensorLiveWeight = "x";
   } else {
     sensorLiveWeight = sensorLiveData.data[0].data;
   }
   var sensorLiveTime =
-    sensorLiveData == null ? "x" : sensorLiveData.data[0].time;
+    (sensorLiveData == null || currSensorData.isVerified == false) ? "x" : sensorLiveData.data[0].time;
   $("#sensorWeightTooltip").html(sensorLiveWeight);
   const date =
     sensorLiveTime == "x"
@@ -1334,6 +1400,46 @@ async function updateDataOfSensorInTooltip(currSensorData) {
   $("#sensorTimeTooltip").html(
     '<i class="far fa-clock"></i> ' + date + " | " + time
   );
+
+  CanvasJS.addColorSet("defaultShade",
+                [
+                  "#f96332",               
+                ]);
+
+
+  dataPoints = [];
+  var itr = 1;
+  for(var itr = 1; itr<=10; itr++) {
+    obj = {y: parseInt(sensorLiveData.data[itr].data), x: new Date(sensorLiveData.data[itr].time)};
+    dataPoints.push(obj);
+  }
+
+  var chart = new CanvasJS.Chart("mapPlots", {
+    animationEnabled: true,
+    // theme: "theme2",
+    colorSet: "defaultShade",
+    title:{
+      text: `${currSensorData.sensorType} Data`,
+      fontFamily: "tahoma",
+    },
+    axisY: {
+      scaleBreaks: {
+        customBreaks: [{
+          startValue: 100,
+          endValue: 400,
+        }]
+      }
+    },
+    data: [{        
+      type: "line",
+          indexLabelFontSize: 15,
+          dataPoints,
+    }]
+  });
+
+  chart.render();
+
+  
 }
 
 // API calling for adding a new sensor when user clicks Add Sensor button on popUp

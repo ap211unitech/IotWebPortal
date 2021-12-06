@@ -125,6 +125,20 @@ router.get('/me', auth, async (req, res) => {
     }
 })
 
+// Get all users.
+router.get('/getAllUsers', async (req, res) => {
+    try {
+        const details = await User.find().select('-__v -password');
+        return res.status(200).json(details);
+    } catch (err) {
+        console.log(err)
+        return res.status(500).json({
+            msg: 'Internal Server Error',
+            err
+        });
+    }
+})
+
 // Logout User
 router.get('/logout', auth, async (req, res) => {
     try {

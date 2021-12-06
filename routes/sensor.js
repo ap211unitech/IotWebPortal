@@ -288,6 +288,87 @@ router.put("/emailalert", auth, async (req, res) => {
 })
 
 
+// Verify the sensor by admin-
+router.put("/verifyTheSensor", auth, async (req, res) => {
+  const { geoId, imageId, sensorId, userId, isVerified, sensorIdUUID } = req.body;
+  try {
+    let user = null;
+    if (req.user.type == "orghead") {
+      user = userId;
+    } else {
+      return res.status(200).json({ msg: "Only Admins have access to verify the sensor.", status: 400 });
+    }
+
+    const findUser = await Sensor.findOne({ user });
+
+    if (findUser) {
+      // If user found in sensor database
+
+      // If it is already present, means we will search for geolocation.
+      const findGeoLocationIndex = findUser.sensor.findIndex(
+        (elm) => elm.geolocation.toString() === geoId
+      );
+
+      if (findGeoLocationIndex >= 0) {
+
+        // If it is already present, mean we are add new sensor for any previous image.
+        const findImageIndex = findUser.sensor[
+          findGeoLocationIndex
+        ].data.findIndex((elm) => elm.image.toString() === imageId);
+
+        if (findImageIndex >= 0) {
+          console.log("I'm HERE");
+
+          const findSensorIndex = findUser.sensor[findGeoLocationIndex].data[
+            findImageIndex
+          ].sensorDetail.findIndex((elm) => elm._id.toString() === sensorId);
+
+          if (findSensorIndex >= 0) {
+
+            if(isVerified == true) {
+              // We will verify the sensor to true.
+              findUser.sensor[findGeoLocationIndex].data[
+              findImageIndex
+              ].sensorDetail[findSensorIndex].isVerified = isVerified;
+            } else {
+              // We will delete the sensor, as this is declined by the admin-
+              findUser.sensor[findGeoLocationIndex].data[
+              findImageIndex
+              ].sensorDetail.splice(findSensorIndex, 1);
+
+              // Delete from LiveData Model also
+              await LiveData.deleteOne({ sensorId: sensorIdUUID });
+            }
+            
+            await findUser.save();
+            
+            return res.status(200).json({ msg: "Sensor verification updated....", status: 200 });
+          } else {
+            return res
+              .status(200)
+              .json({ msg: "Sensor not found", status: 400 });
+          }
+        } else {
+          return res
+            .status(200)
+            .json({ msg: "Image not found for such geolocation", status: 400 });
+        }
+      } else {
+        return res
+          .status(200)
+          .json({ msg: "No such geolocation found", status: 400 });
+      }
+    } else {
+      return res.status(200).json({ msg: "No user found", status: 400 });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ msg: "Internal Server Error" });
+  }
+})
+
+
+
 // @ Get Sesnor Details for a user
 router.get("/getSensor", auth, async (req, res) => {
   try {

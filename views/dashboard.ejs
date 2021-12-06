@@ -189,29 +189,35 @@
         <p id="loaderGeolocations">Loading....</p>
       </div>
       <div style="margin: 18px 0px">
-        <a id="add-new-btn" href="/addGeolocation"><i class="fas fa-plus"></i> Add New</a>
+        <a id="add-new-btn" href="/addGeolocation">Add New</a>
       </div>
       <div style="margin: 18px 0px">
-        <a id="sensor-verification-btn" href="/sensorVerification"><i class="fas fa-plus"></i>Verification</a>
+        <a id="sensor-verification-btn" href="/sensorVerification">Verification</a>
       </div>
     </div>
 
     <!-- Tooltip for show data of sensor -->
     <div class="sensorsDataDiv">
-      <h3 id="sensorNameTooltip"></h3>
-      <hr>
-      <div style="display: flex">
-        <p id="sensorIdTooltip"></p>
-        <p id="sensorLocationTooltip"></p>
-      </div>
-      <h1 id="sensorWeightTooltip"></h1>
-      <p id="sensorTimeTooltip"></p>
-      <hr id="lower-border">
-      <div id="justRandom" style="display: flex;">
-        <p id="editBtnTooltip" title="Edit Sensor Info"><i class="fas fa-edit"></i></p>
-        <p id="deleteBtnTooltip" title="Delete Sensor"><i class="fas fa-trash-alt"></i></p>
-        <p id="createAlertBtn" title="Create Alert"><i class="fas fa-bell"></i></p>
-        <p id="exportSingleSensorData" title="Download Data"> <i class="fas fa-download"></i></p>
+      <div id="sensorsDataDivGrid">
+        <div> 
+          <h3 id="sensorNameTooltip"></h3>
+          <hr>
+          <div style="display: grid; grid-template-columns: 30% 60% 10%;">
+            <p id="sensorIdTooltip"></p>
+            <p id="sensorLocationTooltip"></p>
+            <p id="isSensorVerifiedPara"></p>
+          </div>
+          <h1 id="sensorWeightTooltip"></h1>
+          <p id="sensorTimeTooltip"></p>
+          <hr id="lower-border">
+          <div id="justRandom" style="display: flex;">
+            <p id="editBtnTooltip" title="Edit Sensor Info"><i class="fas fa-edit"></i></p>
+            <p id="deleteBtnTooltip" title="Delete Sensor"><i class="fas fa-trash-alt"></i></p>
+            <p id="createAlertBtn" title="Create Alert"><i class="fas fa-bell"></i></p>
+            <p id="exportSingleSensorData" title="Download Data"> <i class="fas fa-download"></i></p>
+          </div>
+        </div>
+        <div id="mapPlots"> </div>
       </div>
     </div>
 
