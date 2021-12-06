@@ -1,42 +1,12 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Sensor Verification</title>
-</head>
-<body>
+<% bodyClass='body-class' %>
+  <% cssFile='css/dashboard.css' %>
 
-	<h1>This is Sensorrcer Verfication Page</h1>
+  	<div id="sensorVerificationMainDiv">
+  		<h1 style="margin-bottom: 15px; font-family: 'Montserrat', sans-serif;">Senser Verfication Page</h1>
+  		<a id="backBtn" href="/"><i class="fas fa-long-arrow-alt-left"></i> Go Back</a>
+  		<div id="sensorVerificationLoader"></div>
+  		<div id="sensorVerificationCards"></div>
+  		<!-- Here Cards Comes Through Javascript -->
+  	</div>
 
-</body>
-
-<script>
-	var sensors_data = null;
-	async function getAllSensors() {
-		const settings = {
-		  method: "GET",
-		  headers: {
-		    Accept: "application/json",
-		    "Content-Type": "application/json",
-		  },
-		  // body: JSON.stringify({ geolocation: geolocation_id, user: geoUser }),
-		};
-
-		const response = await fetch("/getAllSensors", settings);
-		const data = await response.json();
-		sensors_data = data;
-		console.log(sensors_data);
-	}
-	getAllSensors();
-
-	var i = 0;
-	sensors_data.forEach((data) => {
-    	data.data.forEach((data) => {
-      		data.sensorDetail.forEach((res) => {
-        		i++;	
-      		});
-    	});
-  	});
-  	console.log(i);
-</script>
-
-</html>
+ <script src="/js/sensorVerification.js"></script>

@@ -77,7 +77,7 @@ route.post("/liveSensorData", async (req, res) => {
   });
 
   main.forEach(async (elm) => {
-    let obj = [];
+    let obj = {};
     // Searching for threshold values in Sensor Model
     const allData = await Sensor.find();
     allData.forEach(a => {
@@ -87,7 +87,7 @@ route.post("/liveSensorData", async (req, res) => {
         dataArray.forEach(c => {
           const sensorDetailArray = c.sensorDetail;
           sensorDetailArray.forEach(d => {
-            if (d.sensorId == elm.id) {
+            if (d.sensorId == elm.id && d.isVerified == true) {
               obj["minThreshold"] = d.minThreshold;
               obj["maxThreshold"] = d.maxThreshold;
               obj["sensorName"] = d.sensorName;
@@ -100,8 +100,7 @@ route.post("/liveSensorData", async (req, res) => {
       })
     })
 
-    // if (sensorData) {
-      
+    if (obj && obj!=null) {
       const minThreshold = obj["minThreshold"];
       const maxThreshold = obj["maxThreshold"];
       const sensorName = obj["sensorName"];
@@ -113,7 +112,7 @@ route.post("/liveSensorData", async (req, res) => {
 
       if (elm.data < minThreshold) {
         // Send Email
-        console.log("Here IM")
+        // console.log("Here IM")
         let store = {
           to: userDetails.email,
           userName: userDetails.name,
@@ -135,8 +134,7 @@ route.post("/liveSensorData", async (req, res) => {
         }
         sendEmail(store)
       }
-
-    // }
+    }
     let findSensor = await LiveData.findOne({ sensorId: elm.id });
     if (findSensor) {
       if (findSensor.data.length >= 8000) {
