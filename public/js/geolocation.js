@@ -91,7 +91,7 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiYXJ5YW4wMTQxIiwiYSI6ImNrc21zbzJwaTBhMTYyb3A3M
 var map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/streets-v11',
-    center: [75.778885, 26.922070],
+    center: [73.1135, 26.4710],
     zoom: 10
 });
 
@@ -105,7 +105,7 @@ new mapboxgl.Marker({
     element: el,
     anchor: 'bottom',
 })
-    .setLngLat([77.1928, 28.5457])
+    .setLngLat([73.1135, 26.4710])
     .addTo(map);
 
 

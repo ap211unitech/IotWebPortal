@@ -460,7 +460,7 @@ function showThatSymbolOfSensor(text) {
   if (text == "Water") return '<i class="fas fa-water"></i>';
   if (text == "Tint") return '<i class="fas fa-tint"></i>';
   if (text == "MPU") return '<i class="fab fa-audible"></i>';
-  if (text == "Ultrasonic Sensor")
+  if (text == "Ultrasonic")
     return '<i class="fas fa-satellite-dish"></i>';
 }
 
@@ -1247,11 +1247,14 @@ async function showDataOfSensor(el) {
 
   if(currentWindowSize < widthOfTooltip + 10) {
     $("#sensorsDataDivGrid").css("grid-template-columns", "100%");
+    $("#sensorsDataDivGrid").css("max-width", (currentWindowSize-20) + "px");
     $(".sensorsDataDiv").css({
-        width: (currentWindowSize-10) + "px",
-        left: (currentWindowSize-widthOfTooltip)/2 + "px",
+        maxWidth: (currentWindowSize-40) + "px",
+        // left: (currentWindowSize-widthOfTooltip)/2 + "px",
+        margin: "0px 15px",
         top: top + "px",
     });
+    $("#mapPlots").css("height", "150px");
   } else if(currentWindowSize < 2*widthOfTooltip + 10) {
     $(".sensorsDataDiv").css({
         left: (currentWindowSize-widthOfTooltip)/2 + "px",
