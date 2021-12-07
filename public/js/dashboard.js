@@ -156,7 +156,7 @@ getRefreshData();
 
 setInterval(() => {
   getRefreshData();
-}, 5 * 1000);
+}, 10 * 1000);
 
 // MapBox API-
 mapboxgl.accessToken =
