@@ -46,7 +46,6 @@ function createMarker(lat, lon) {
         })
             .setLngLat([lon, lat])
             .addTo(map);
-        // alert(lat + "---" + lon);
 
 
         map.flyTo({
@@ -86,7 +85,7 @@ $('#longitude').donetyping(function () {
 
 
 
-//Access token yhaan dalo
+//Access token
 mapboxgl.accessToken = 'pk.eyJ1IjoiYXJ5YW4wMTQxIiwiYSI6ImNrc21zbzJwaTBhMTYyb3A3MWpsd2M3eWQifQ.vH9l7ustzfMTQxOAcpfDww';
 
 var map = new mapboxgl.Map({
@@ -97,9 +96,6 @@ var map = new mapboxgl.Map({
 });
 
 
-//const bounds = new mapboxgl.LngLatBounds();
-
-// locations.forEach((loc) => {
 // Create marker
 const el = document.createElement('div');
 el.className = 'marker';
@@ -109,18 +105,8 @@ new mapboxgl.Marker({
     element: el,
     anchor: 'bottom',
 })
-    .setLngLat([75.7489, 26.9048])
+    .setLngLat([77.1928, 28.5457])
     .addTo(map);
-
-// Add popup
-// new mapboxgl.Popup({
-//   offset: 35,
-// })
-//   .setLngLat([75.7489, 26.9048])
-//   .setHTML(`<p>Vaishali Nagar</p>`)
-//   .addTo(map);
-
-
 
 
 // It takes the slider form exactly in the center of the frame.

@@ -12,9 +12,7 @@
 
     const response = await fetch("/getAllUsers", settings);
     allUsersData = await response.json();
-    // allUsersData = data
     console.log(allUsersData);
-    // return data;   
   }
 
   async function getAllGeolocations() {
@@ -28,9 +26,7 @@
 
     const response = await fetch("/getAllGeolocations", settings);
     allGeolocationsData = await response.json();
-    // allGeolocationsData = data;
     console.log(allGeolocationsData);
-    // return data;
   }
 
   async function getAllSensors() {
@@ -45,7 +41,6 @@
     document.getElementById("sensorVerificationCards").style.display = "none";
     const response = await fetch("/getAllSensors", settings);
     allSensorsData = await response.json();
-    // allSensorsData = data;
     console.log(allSensorsData);
 
     setTimeout(function(){ extractInfo() }, 50);

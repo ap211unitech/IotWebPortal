@@ -12,59 +12,57 @@ const Geolocations = require("../models/GeoLocations");
 const User = require("../models/User");
 const sendEmail = require("../utils/sendEmail");
 
+// Fake API for testing.
+// route.get("/liveSensorDataUsingAPI", auth, async (req, res) => {
+//   try {
+//     const optionss = {
+//       uri: `http://my-json-server.typicode.com/ap211unitech/JSON-Fake-API/data`,
+//       method: "GET",
+//       headers: {
+//         "user-agent": "node.js",
+//       },
+//     };
+//     request(optionss, async (err, response, body) => {
+//       if (err) console.error(err);
+//       if (response.statusCode !== 200) {
+//         return res.status(404).json({ msg: "No Such API exists" });
+//       }
+//       body = JSON.parse(body);
 
-//@Route    GET /dashboard
-//@desc     Get Data of sensors and saving to Database
-//@access   Public
-route.get("/liveSensorDataUsingAPI", auth, async (req, res) => {
-  try {
-    const optionss = {
-      uri: `http://my-json-server.typicode.com/ap211unitech/JSON-Fake-API/data`,
-      method: "GET",
-      headers: {
-        "user-agent": "node.js",
-      },
-    };
-    request(optionss, async (err, response, body) => {
-      if (err) console.error(err);
-      if (response.statusCode !== 200) {
-        return res.status(404).json({ msg: "No Such API exists" });
-      }
-      body = JSON.parse(body);
+//       // Including Data in Database
+//       for (let data of body) {
+//         const { id, location, time_of_reading, weight } = data;
 
-      // Including Data in Database
-      for (let data of body) {
-        const { id, location, time_of_reading, weight } = data;
+//         // Finding if this query (exactly) is already present or not
+//         const findData = await API_DATA.findOne({
+//           $and: [{ id }, { time_of_reading }, { weight }, { location }],
+//         });
 
-        // Finding if this query (exactly) is already present or not
-        const findData = await API_DATA.findOne({
-          $and: [{ id }, { time_of_reading }, { weight }, { location }],
-        });
+//         // If not present , then Save it to Database
+//         if (!findData) {
+//           const newData = new API_DATA({
+//             id,
+//             location,
+//             time_of_reading,
+//             weight,
+//           });
+//           await newData.save();
+//         }
+//       }
 
-        // If not present , then Save it to Database
-        if (!findData) {
-          const newData = new API_DATA({
-            id,
-            location,
-            time_of_reading,
-            weight,
-          });
-          await newData.save();
-        }
-      }
+//       // Returning all data
+//       const allData = await API_DATA.find();
+//       return res.status(200).json(allData);
+//     });
+//   } catch (error) {
+//     console.log(error.message);
+//     return res.status(500).send("Internal Server Error");
+//   }
+// });
 
-      // Returning all data
-      const allData = await API_DATA.find();
-      return res.status(200).json(allData);
-    });
-  } catch (error) {
-    console.log(error.message);
-    return res.status(500).send("Internal Server Error");
-  }
-});
-
+// Getting Live Data From NodeMCU.
 route.post("/liveSensorData", async (req, res) => {
-  res.json({ msg: "Got the temp data, thanks..!!" });
+  res.json({ msg: "Got the data, thanks..!!" });
   const main = [];
   let content = JSON.parse(`${JSON.stringify(req.body)}`.slice(1, -4));
   const arr = content.split("|");
@@ -76,6 +74,8 @@ route.post("/liveSensorData", async (req, res) => {
     main.push(obj);
   });
 
+
+  // This part is for sending alert mails.
   main.forEach(async (elm) => {
     // Searching for threshold values in Sensor Model
     const allData = await Sensor.find();
@@ -96,58 +96,53 @@ route.post("/liveSensorData", async (req, res) => {
               obj["geolocationID"] = b.geolocation;
               obj["sensorUUID"] = d.sensorId;
 
-              if (obj && obj!=null) {
-                const minThreshold = obj["minThreshold"];
-                const maxThreshold = obj["maxThreshold"];
-                const sensorName = obj["sensorName"];
+              const minThreshold = obj["minThreshold"];
+              const maxThreshold = obj["maxThreshold"];
+              const sensorName = obj["sensorName"];
 
-                const userDetails = await User.findById(obj["parentID"]);
+              const userDetails = await User.findById(obj["parentID"]);
 
-                const geolocationDetails = await Geolocations.findById(obj["geolocationID"]);
+              const geolocationDetails = await Geolocations.findById(obj["geolocationID"]);
 
-                // Search For Sensor In liveData 
-                const sensorInLiveData = await LiveData.findOne({ sensorId: obj["sensorUUID"] });
-                var lastsent = new Date(sensorInLiveData.lastEmailSent);
-                var today = new Date();
-                var diffMs = (today - lastsent);
-                var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
+              // Search For Sensor In liveData 
+              const sensorInLiveData = await LiveData.findOne({ sensorId: obj["sensorUUID"] });
+              var lastsent = new Date(sensorInLiveData.lastEmailSent);
+              var today = new Date();
+              var diffMs = (today - lastsent);
+              var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
 
-                if (diffMins >= 30) {
-                  if (elm.data < minThreshold) {
-                    // Send Email
-                    let store = {
-                      to: userDetails.email,
-                      userName: userDetails.name,
-                      sensorName: sensorName,
-                      geolocation: geolocationDetails.name,
-                      minThreshold: minThreshold,
-                      currentData: elm.data,
-                      flag: false,
-                    }
-                    sendEmail(store)
-                    sensorInLiveData.lastEmailSent = new Date();
-                    await sensorInLiveData.save();
+              if (diffMins >= 30) {
+                if (elm.data < minThreshold) {
+                  // Send Email
+                  let store = {
+                    to: userDetails.email,
+                    userName: userDetails.name,
+                    sensorName: sensorName,
+                    geolocation: geolocationDetails.name,
+                    minThreshold: minThreshold,
+                    currentData: elm.data,
+                    flag: false,
                   }
-                  else if (elm.data > maxThreshold) {
-                    let store = {
-                      to: userDetails.email,
-                      userName: userDetails.name,
-                      sensorName: sensorName,
-                      geolocation: geolocationDetails.name,
-                      maxThreshold: maxThreshold,
-                      currentData: elm.data,
-                      flag: true,
-                    }
-                    sendEmail(store)
-                    sensorInLiveData.lastEmailSent = new Date();
-                    await sensorInLiveData.save();
-                  }
+                  sendEmail(store)
+                  sensorInLiveData.lastEmailSent = new Date();
+                  await sensorInLiveData.save();
                 }
-
+                else if (elm.data > maxThreshold) {
+                  let store = {
+                    to: userDetails.email,
+                    userName: userDetails.name,
+                    sensorName: sensorName,
+                    geolocation: geolocationDetails.name,
+                    maxThreshold: maxThreshold,
+                    currentData: elm.data,
+                    flag: true,
+                  }
+                  sendEmail(store)
+                  sensorInLiveData.lastEmailSent = new Date();
+                  await sensorInLiveData.save();
+                }
+                
               }
-
-
-
               return;
             }
           })
@@ -157,6 +152,7 @@ route.post("/liveSensorData", async (req, res) => {
 
     let findSensor = await LiveData.findOne({ sensorId: elm.id });
     if (findSensor) {
+      // Limit to store the data of single sensor in database.
       if (findSensor.data.length >= 8000) {
         findSensor.data.pop();
       }
@@ -181,6 +177,7 @@ route.post("/liveSensorData", async (req, res) => {
 
 });
 
+// Getting all data from LiveData Model.
 route.get("/getLiveSensorData", async (req, res) => {
   const data = await LiveData.find();
   return res.status(200).json(data);
@@ -216,7 +213,6 @@ route.post("/exportdata", async (req, res) => {
     });
 
     setTimeout(() => {
-      console.log(records, "HERERRER");
       csvWriter
         .writeRecords(records) // returns a promise
         .then(() => {
@@ -224,7 +220,7 @@ route.post("/exportdata", async (req, res) => {
         });
       res.download("public/temp.csv");
       return;
-    }, 1000);
+    }, 2000);
   } else if (body.type == "single") {
     const { data } = await LiveData.findOne({ sensorId: body.sensorId });
     const csvWriter = createCsvWriter({
@@ -261,4 +257,5 @@ route.get("/getAllSensors", async (req, res) => {
   const data = await Sensor.find();
   return res.status(200).json(data);
 });
+
 module.exports = route;

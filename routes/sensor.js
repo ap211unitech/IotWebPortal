@@ -4,10 +4,16 @@ const Image = require("../models/Image");
 const Sensor = require("../models/Sensor");
 const auth = require("../config/auth");
 const LiveData = require("../models/LiveData");
+const GeoLocationSchema = require("../models/GeoLocations");
 
 // @ Add / Edit sensor
 router.post("/addSensor", auth, async (req, res) => {
-  console.log(req.body);
+  let isVerified;
+  if(!req.body.isVerified) {
+    isVerified = false;
+  } else {
+    isVerified = req.body.isVerified;
+  }
   const {
     imageId,
     sensorId,
@@ -21,8 +27,20 @@ router.post("/addSensor", auth, async (req, res) => {
     location,
     sensorType,
   } = req.body;
+
+
+  const findUserFromGeolocation = await GeoLocationSchema.findById(req.body.geolocation);
+  let mainUser;
+  if (findUserFromGeolocation.user.toString() === req.user._id.toString()) {
+      mainUser = req.user._id;
+  }
+  else {
+      mainUser = findUserFromGeolocation.user.toString();
+  }
+
+
   try {
-    const findUser = await Sensor.findOne({ user: req.user._id });
+    const findUser = await Sensor.findOne({ user: mainUser });
 
     if (findUser) {
       // If user found in sensor database
@@ -57,6 +75,7 @@ router.post("/addSensor", auth, async (req, res) => {
               },
               location: location,
               sensorType: sensorType,
+              isVerified,
             };
 
             findUser.sensor[findGeoLocationIndex].data[
@@ -77,6 +96,7 @@ router.post("/addSensor", auth, async (req, res) => {
               },
               location: location,
               sensorType: sensorType,
+              isVerified,
             };
             findUser.sensor[findGeoLocationIndex].data[
               findImageIndex
@@ -100,6 +120,7 @@ router.post("/addSensor", auth, async (req, res) => {
                 },
                 location: location,
                 sensorType: sensorType,
+                isVerified,
               },
             ],
           };
@@ -126,6 +147,7 @@ router.post("/addSensor", auth, async (req, res) => {
                 },
                 location: location,
                 sensorType: sensorType,
+                isVerified,
               },
             ],
           },
@@ -153,6 +175,7 @@ router.post("/addSensor", auth, async (req, res) => {
                 },
                 location: location,
                 sensorType: sensorType,
+                isVerified,
               },
             ],
           },
@@ -160,7 +183,7 @@ router.post("/addSensor", auth, async (req, res) => {
       ];
 
       const newSensor = new Sensor({
-        user: req.user._id,
+        user: mainUser,
         sensor: sensorArray,
       });
       await newSensor.save();
@@ -172,7 +195,7 @@ router.post("/addSensor", auth, async (req, res) => {
   }
 });
 
-// @ Get Sesnor Details for a geolcation
+// @ Get Sensor Details for a geolcation
 router.post("/getSensorgeolocation", auth, async (req, res) => {
   try {
     let user;
@@ -181,24 +204,11 @@ router.post("/getSensorgeolocation", auth, async (req, res) => {
     } else {
       user = req.body.user;
     }
-    // if (req.user.type == "admin") {
-    //     user = req.body.user;
-    //     const geolocationId = req.body.geolocation;
-    //     const findSensor = await Sensor.findOne({ user: req.body.user });
-
-    //     if (!findSensor) {
-    //         return res.status(200).json({ msg: 'No user found', status: 400 })
-    //     }
-
-    //     const allSensor = findSensor.sensor;
-    //     const sensorForGeolocation = allSensor.filter(elm => elm.geolocation.toString() == geolocationId);
-    //     return res.status(200).json(sensorForGeolocation);
-    // }
 
     const geolocationId = req.body.geolocation;
     const findSensor = await Sensor.findOne({ user });
 
-    console.log(user, findSensor);
+    // console.log(user, findSensor);
 
     if (!findSensor) {
       return res.status(200).json({ msg: "No user found", status: 400 });
@@ -210,13 +220,13 @@ router.post("/getSensorgeolocation", auth, async (req, res) => {
     );
     return res.status(200).json(sensorForGeolocation);
   } catch (err) {
-    console.log(err);
-    return res.status(500).json({ msg: "Internal Server Error" });
+      console.log(err);
+      return res.status(500).json({ msg: "Internal Server Error" });
   }
 });
 
 
-// @ Put Threshold values in Sensor
+// @ Put Min/Max Threshold values in the Sensor
 router.put("/emailalert", auth, async (req, res) => {
   const { geolocation, imageId, sensorId, geoUser, maxThreshold, minThreshold } = req.body;
   try {
@@ -296,7 +306,7 @@ router.put("/verifyTheSensor", auth, async (req, res) => {
     if (req.user.type == "admin") {
       user = userId;
     } else {
-      return res.status(200).json({ msg: "Only Admins have access to verify the sensor.", status: 400 });
+      return res.status(400).json({ msg: "Only Admins have access to verify the sensor.", status: 400 });
     }
 
     const findUser = await Sensor.findOne({ user });
@@ -317,8 +327,6 @@ router.put("/verifyTheSensor", auth, async (req, res) => {
         ].data.findIndex((elm) => elm.image.toString() === imageId);
 
         if (findImageIndex >= 0) {
-          console.log("I'm HERE");
-
           const findSensorIndex = findUser.sensor[findGeoLocationIndex].data[
             findImageIndex
           ].sensorDetail.findIndex((elm) => elm._id.toString() === sensorId);

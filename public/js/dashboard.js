@@ -39,9 +39,6 @@ async function addNewUser(e) {
       type: obj[me.type],
     };
 
-    console.log(formData);
-    // return
-
     const settings = {
       method: "POST",
       headers: {
@@ -127,13 +124,10 @@ function checkedFunc(el) {
 // Refreshing the data in every 5sec-
 function getRefreshData() {
   try {
-    // let response = await fetch("/call_data");
-    // let data = await response.json();
     $(".permanentMarker").remove();
     if (sensors_data == null) {
       return;
     }
-    // console.log(sensors_data, "TMKB");
 
     getLiveSensorData();
     applyFilterForWeight();
@@ -247,8 +241,6 @@ function showSensor(res) {
   } else {
     sensorLiveWeight = sensorLiveData.data[0].data;
   }
-  // alert(sensorLiveWeight);
-  // console.log(sensorLiveWeight,"Weight")
 
   var top = hRatio * $image.height() + imgPos[1];
   var left = vRatio * $image.width() + imgPos[0];
@@ -378,8 +370,6 @@ function showAllTheSensorsOnGeoMap(data) {
             sensorLiveWeight = sensorLiveData.data[0].data;
           }
 
-          console.log(lat + " " + lon);
-
           var el = document.createElement("p");
           el.className = "geoMarker";
           el.innerHTML = sensorSymbol;
@@ -425,7 +415,6 @@ function giveCoorsToImage() {
 
       ratio["hRatio"] = height_ratio;
       ratio["vRatio"] = width_ratio;
-      console.log(height_ratio + " , " + width_ratio);
 
       $(".marker").remove(); // Removes the previous marker, when we select a new marker.
 
@@ -470,7 +459,7 @@ function showThatSymbolOfSensor(text) {
     return '<i class="fas fa-charging-station"></i>';
   if (text == "Water") return '<i class="fas fa-water"></i>';
   if (text == "Tint") return '<i class="fas fa-tint"></i>';
-  // if (text == "Ultrasonic Sensor") return '<i class="fas fa-tint"></i>';
+  if (text == "MPU") return '<i class="fab fa-audible"></i>';
   if (text == "Ultrasonic Sensor")
     return '<i class="fas fa-satellite-dish"></i>';
 }
@@ -576,7 +565,10 @@ async function getSensorDetail(geolocation_id) {
     image = Image;
     console.log(Image, "image data");
 
-    $("#loaderSensorDiv").css("display", "block");
+    // Loader for loading the sensors is only visible on big frames.
+    if($(window).width() > 1250) {
+      $("#loaderSensorDiv").css("display", "block");
+    }
     const response = await fetch("/getSensorgeolocation", settings);
     const data = await response.json();
     sensors_data = data;
@@ -616,12 +608,8 @@ async function getSensorDetail(geolocation_id) {
 
     giveCoorsToImage();
 
-    // giveCoorsToImage();
-
-    // console.log(Image)
     // If sensor data is not found, then only show the uploaded image.
     if (data.status == 400) {
-      console.log(data, "HERE");
       $("#insideImage").css({ display: "none" });
       $("#inside-map").css({ display: "block" });
       $("#inside-map").attr("src", Image[0].name);
@@ -722,7 +710,6 @@ async function getGeolocation() {
 
     geolocation_id = data.allGeoLocations[0]._id;
     $("#geolocation-form").val(geolocation_id);
-    console.log(geolocation_id);
     getSensorDetail(geolocation_id);
 
     $("#geolocation").val(geolocation_id);
@@ -996,13 +983,14 @@ function showEditSensorForm(sensor_id) {
   edit_ratio = {
     hRatio: sensor_details.imageCoordinates.hRatio,
     vRatio: sensor_details.imageCoordinates.vRatio,
+    isVerified: sensor_details.isVerified,
   };
+  $(`select[id='edit-sensor-types'] option[value=${sensor_details.sensorType}]`).attr('selected',true);
   $("#edit-sensor-name-form").val(sensor_details.sensorName);
   $("#edit-sensor-location-form").val(sensor_details.location);
   $("#edit-sensor-id").val(sensor_details.sensorId);
   $("#edit-latitude").val(sensor_details.latitude);
   $("#edit-longitude").val(sensor_details.longitude);
-  // console.log(sensor_details);
 }
 
 async function createAlert(e) {
@@ -1058,8 +1046,6 @@ async function deleteSensor(sensor_id) {
     geoUser,
     sensorIdUUID,
   };
-  // console.log(obj)
-  // return
   deleteSensorAPICall(obj);
 }
 
@@ -1253,28 +1239,46 @@ async function showDataOfSensor(el) {
     document.getElementById("lower-border").style.marginBottom = "18px";
   }
 
+  var currentWindowSize = $( window ).width()
   var widthOfTooltip = $(".sensorsDataDiv").width();
-  var rightWidth = $( window ).width() - left;
+  var rightWidth = currentWindowSize - left;
   var leftWidth = left;
 
-  if(rightWidth < widthOfTooltip + 10) {
-    if(rightWidth > leftWidth) {
-      $(".sensorsDataDiv").css({
-        left: left + "px",
-        top: top + "px",
-      });
-    } else {
-      $(".sensorsDataDiv").css({
-        left: (leftWidth-widthOfTooltip - 20) + "px",
-        top: top + "px",
-      }); 
-    }
-  } else {
+
+  if(currentWindowSize < widthOfTooltip + 10) {
+    $("#sensorsDataDivGrid").css("grid-template-columns", "100%");
     $(".sensorsDataDiv").css({
-        left: left + "px",
+        width: (currentWindowSize-10) + "px",
+        left: (currentWindowSize-widthOfTooltip)/2 + "px",
         top: top + "px",
     });
+  } else if(currentWindowSize < 2*widthOfTooltip + 10) {
+    $(".sensorsDataDiv").css({
+        left: (currentWindowSize-widthOfTooltip)/2 + "px",
+        top: top + "px",
+      });
+  } else {
+    if(rightWidth < widthOfTooltip + 10) {
+      if(rightWidth > leftWidth) {
+        $(".sensorsDataDiv").css({
+          left: left + "px",
+          top: top + "px",
+        });
+      } else {
+        $(".sensorsDataDiv").css({
+          left: (leftWidth-widthOfTooltip - 20) + "px",
+          top: top + "px",
+        }); 
+      }
+    } 
+    else {
+      $(".sensorsDataDiv").css({
+          left: left + "px",
+          top: top + "px",
+      });
+    }
   }
+  
   
 
   $(".sensorsDataDiv").fadeIn("slow");
@@ -1323,12 +1327,11 @@ function makeOrUpdateLinePlot(sensorLiveData, currSensorData) {
     // Multiple Values in one sensor is found.
     var n = 0;
     var diffPartsWholeArray = [];
-    for(var itr = 0; itr<(sensorLiveData.data.length && maxValuesToDisplay); itr++) {
+    for(var itr = 0; itr<Math.min(sensorLiveData.data.length, maxValuesToDisplay); itr++) {
       var diffParts = (sensorLiveData.data[itr].data).split(',');
       n = diffParts.length;
       diffPartsWholeArray.push(diffParts);
     }
-    console.log(diffPartsWholeArray);
     for(var i=0; i<n; i++) {
       var tempObj = {
         type: "line",
@@ -1337,7 +1340,7 @@ function makeOrUpdateLinePlot(sensorLiveData, currSensorData) {
         xValueFormatString: "DD MMM hh:mm TT",
         dataPoints: [],
       };
-      for(var itr=0; itr<maxValuesToDisplay; itr++) {
+      for(var itr=0; itr<Math.min(sensorLiveData.data.length, maxValuesToDisplay); itr++) {
         obj = {y: parseFloat(diffPartsWholeArray[itr][i]), x: new Date(sensorLiveData.data[itr].time)};
         tempObj.dataPoints.push(obj);
       }
@@ -1351,7 +1354,7 @@ function makeOrUpdateLinePlot(sensorLiveData, currSensorData) {
       xValueFormatString: "DD MMM hh:mm TT",
       dataPoints: [],
     };
-    for(var itr = 0; itr<maxValuesToDisplay; itr++) {
+    for(var itr = 0; itr<Math.min(sensorLiveData.data.length, maxValuesToDisplay); itr++) {
       obj = {y: parseFloat(sensorLiveData.data[itr].data), x: new Date(sensorLiveData.data[itr].time)};
       tempObj.dataPoints.push(obj);
     }
@@ -1395,10 +1398,7 @@ async function exportData(sensorData = sensors_data) {
         });
       });
     });
-    // allSensorsIds.forEach((data) => {
-    //   console.log(data);
-    // });
-    // return;
+
     settings = {
       method: "POST",
       headers: {
@@ -1418,8 +1418,6 @@ async function exportData(sensorData = sensors_data) {
   }
 
   await fetch("/exportdata", settings);
-  // const exportedData = await response.json();
-  // console.log(exportedData, "Exported Data");
 
   var element = document.createElement("a");
   element.setAttribute("href", "temp.csv");
@@ -1467,7 +1465,7 @@ async function updateDataOfSensorInTooltip(currSensorData) {
   );
 
   // We will update the graph only when the last stored value is not equal to the current value.
-  // if(sensorLiveData.data[0] && sensorLiveData.data[1] && sensorLiveData.data[0].data!=sensorLiveData.data[1].data) {
+  // if(sensorLiveData.data[0] && sensorLiveData.data[1] && parseInt(sensorLiveData.data[0].data)!=parseInt(sensorLiveData.data[1].data)) {
   //   makeOrUpdateLinePlot(sensorLiveData, currSensorData);
   // }
 }
@@ -1548,12 +1546,6 @@ async function editSensorAPICall(e) {
       alert("Select a Geolocation First");
       // break;
     } else {
-      // $("#edit-sensor-name-form").val(sensor_details.sensorName);
-      // $("#edit-sensor-location-form").val(sensor_details.location);
-      // $("#edit-sensor-id").val(sensor_details.sensorId);
-      // $("#edit-latitude").val(sensor_details.latitude);
-      // $("#edit-longitude").val(sensor_details.longitude);
-
       const imageId = $("#inside-map").attr("imageid");
       const sensorName = document.getElementById("edit-sensor-name-form").value;
       const latitude = document.getElementById("edit-latitude").value;
@@ -1586,9 +1578,9 @@ async function editSensorAPICall(e) {
         geolocation,
         location,
         sensorType,
+        isVerified: edit_ratio.isVerified,
       };
-      // console.log(formData)
-      // return
+
       const settings = {
         method: "POST",
         headers: {
@@ -1717,7 +1709,3 @@ async function parentUser(email) {
     alert("Something went wrong...");
   }
 }
-
-// setTimeout(() => {
-//   console.clear();
-// }, 5000);

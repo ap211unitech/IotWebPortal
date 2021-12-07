@@ -92,7 +92,6 @@ const sendEmail = (store) => {
     };
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-            // res.send('Error');
             console.log(error);
             return;
         }
