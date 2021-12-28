@@ -19,7 +19,7 @@ const LiveDataSchema = new mongoose.Schema({
   ],
   lastEmailSent: {
     type: Date,
-    default: Date.now()
+    default: new Date(2018, 15, 24, 10, 33, 30)
   }
 });
 

@@ -231,7 +231,7 @@ router.put("/emailalert", auth, async (req, res) => {
   const { geolocation, imageId, sensorId, geoUser, maxThreshold, minThreshold } = req.body;
   try {
     let user = null;
-    if (req.user.type == "admin") {
+    if (req.user.type == "admin" || req.user.type == "user") {
       user = req.body.geoUser;
     } else {
       user = req.user._id;

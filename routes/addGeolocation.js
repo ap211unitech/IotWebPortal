@@ -93,17 +93,19 @@ router.delete('/deleteGeolocation', auth, async (req, res) => {
         if (findUserFromImage) {
             const ImageArray = findUserFromImage.image;
             const index = ImageArray.find(data => data.geolocation.toString() === geoId);
-            // fs.unlinkSync((findUserFromImage.image)[index].name);
-            findUserFromImage.image.splice(index, 1);
-            await findUserFromImage.save();
-
+            // console.log("Index: ", index);
+            if(index != undefined) {
+                // fs.unlinkSync((findUserFromImage.image)[index].name);
+                findUserFromImage.image.splice(index, 1);
+                await findUserFromImage.save();
+            }
         }
         let sensorIdArr = [];
         // Delete all Sensors For that Geolocation marked on Image
         const findUserFromSensor = await Sensor.findOne({ user });
         if (findUserFromSensor) {
             const index1 = findUserFromSensor.sensor.find(data => data.geolocation.toString() === geoId);
-            if (index1) {
+            if (index1!=undefined) {
                 let obj = findUserFromSensor.sensor[index1];
                 obj.data.forEach(a => {
                     a.sensorDetail.forEach(b => {

@@ -113,6 +113,7 @@ router.post('/getImageUsingGeolocation', auth, async (req, res) => {
             return res.status(400).json({ msg: 'Image not found...', status: 400 })
         }
         const geolocation = findUser.image.filter(elm => elm.geolocation.toString() === req.body.geolocation);
+        // console.log(geolocation);
         return res.status(200).json(geolocation);
 
     } catch (err) {

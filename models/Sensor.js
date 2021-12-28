@@ -70,6 +70,13 @@ const SensorSchema = new mongoose.Schema({
                                 type: Boolean,
                                 default: false,    
                             }
+                            // list: [
+                            //     {
+                            //         user: aryn@gamil.com,
+                            //         minMax: ,
+                            //         minMax: ,
+                            //     }, 
+                            // ]
                         }
                     ]
                 }

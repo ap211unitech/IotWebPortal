@@ -231,6 +231,9 @@
     var acceptBtn = document.createElement("BUTTON");
     acceptBtn.append(document.createTextNode("Accept"));
     acceptBtn.onclick = function () {
+      if(confirm("Are you sure want to verify that sensor?") == false) {
+        return;
+      }
       var sensorId = currSensorDetail._id;
       var geoId = geolocation._id;
       var userId = user._id;
@@ -252,6 +255,9 @@
     var declineBtn = document.createElement("BUTTON");
     declineBtn.append(document.createTextNode("Decline"));
     declineBtn.onclick = function () {
+      if(confirm("Are you sure want to decline that sensor?") == false) {
+        return;
+      }
       var sensorId = currSensorDetail._id;
       var geoId = geolocation._id;
       var userId = user._id;

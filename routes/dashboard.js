@@ -11,6 +11,7 @@ const Sensor = require("../models/Sensor");
 const Geolocations = require("../models/GeoLocations");
 const User = require("../models/User");
 const sendEmail = require("../utils/sendEmail");
+const SelectUser = require("../models/SelectUser");
 
 // Fake API for testing.
 // route.get("/liveSensorDataUsingAPI", auth, async (req, res) => {
@@ -111,7 +112,13 @@ route.post("/liveSensorData", async (req, res) => {
               var diffMs = (today - lastsent);
               var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
 
-              if (diffMins >= 30) {
+              // console.log("Here");
+              if (diffMins >= 0.5) {
+                let subUsers = [];
+                if(userDetails.type != "admin") {
+                  subUsers = await SelectUser.find({user: obj["parentID"]});
+
+                }
                 if (elm.data < minThreshold) {
                   // Send Email
                   let store = {
@@ -124,8 +131,15 @@ route.post("/liveSensorData", async (req, res) => {
                     flag: false,
                   }
                   sendEmail(store)
+                  subUsers.forEach((user) => {
+                    console.log(user);
+                    store["to"] = user.email;
+                    store["userName"] = "user";
+                    sendEmail(store);
+                  })
                   sensorInLiveData.lastEmailSent = new Date();
                   await sensorInLiveData.save();
+                  console.log("Email Sent For Min Threshold");
                 }
                 else if (elm.data > maxThreshold) {
                   let store = {
@@ -138,8 +152,14 @@ route.post("/liveSensorData", async (req, res) => {
                     flag: true,
                   }
                   sendEmail(store)
+                  subUsers.forEach((user) => {
+                    store["to"] = user.email;
+                    store["userName"] = "user";
+                    sendEmail(store);
+                  })
                   sensorInLiveData.lastEmailSent = new Date();
                   await sensorInLiveData.save();
+                  console.log("Email Sent For Max Threshold");
                 }
                 
               }
