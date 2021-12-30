@@ -206,8 +206,8 @@ function showCreateUserForm() {
 
 function closeEditSensorForm() {
   $("#edit-sensor-top-slider").slideUp("slow");
-  $("#left-coloumn").css({ opacity: "1" });
-  $("#right-coloumn").css({ opacity: "1" });
+  // $("#left-coloumn").css({ opacity: "1" });
+  // $("#right-coloumn").css({ opacity: "1" });
 }
 
 function centerDivUsingID(div_id) {
@@ -255,7 +255,11 @@ $(document).mouseup(function (e) {
     !sensorDataTooltip.is(e.target) &&
     sensorDataTooltip.has(e.target).length === 0 &&
     !permanentMarkers.is(e.target) &&
-    permanentMarkers.has(e.target).length === 0
+    permanentMarkers.has(e.target).length === 0 &&
+    !emailAlertsTooltip.is(e.target) &&
+    emailAlertsTooltip.has(e.target).length === 0 &&
+    !edit_sensor_top_slider.is(e.target) &&
+    edit_sensor_top_slider.has(e.target).length === 0
   ) {
     // removeDataOfSensor();
     $(".sensorsDataDiv").fadeOut("slow");

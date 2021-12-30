@@ -772,19 +772,48 @@ function getSensorDetailUsingSensorID(sensor_id) {
   return currSensorData;
 }
 
-function showCreateAlertTooltip(sensorId) {
+async function showCreateAlertTooltip(sensorId) {
   $("#emailAlertsTooltip").slideDown("slow");
+  var mainDiv = document.getElementById("emailAlertsTooltipPreviousAlerts");
   let currSensorData = getSensorDetailUsingSensorID(sensorId);
-  // document.getElementById("minThreshold").value = (currSensorData.minThreshold == -100000) ? 0 : currSensorData.minThreshold;
-  // document.getElementById("maxThreshold").value = (currSensorData.maxThreshold == 100000) ? 0 : currSensorData.maxThreshold;
-  // document.getElementById("minThreshold").value = currSensorData.minThreshold;
-  // document.getElementById("maxThreshold").value = currSensorData.maxThreshold;
+  var alertList = currSensorData.alertList;
+
+  // Removes all the previous classes.
+  mainDiv.innerHTML = '';
+
+  var currUserMin = null;
+  var currUserMax = null;
+  let currentUser = await myDetails();
+  alertList.forEach((data, index) => {
+    if(currentUser.email == data.userEmail) {
+      currUserMin = data.min;
+      currUserMax = data.max;
+    } else {
+      var p = document.createElement('p');
+      p.style.color = "white"
+      p.style.fontFamily = "'Montserrat', sans-serif";
+      p.style.fontSize = "0.8rem";
+      p.style.margin = "3px 0px";
+      p.innerHTML = `	&#8226; Min: ${data.min} - Max: ${data.max}`;
+      mainDiv.appendChild(p);
+    }
+  })
+  if(currUserMin) {
+    document.getElementById("minThreshold").value = currUserMin;
+  } else {
+    document.getElementById("minThreshold").value = -1000;
+  }
+  if(currUserMax) {
+    document.getElementById("maxThreshold").value = currUserMax;
+  } else {
+    document.getElementById("maxThreshold").value = 1000;
+  }
 }
 
 function showEditSensorForm(sensor_id) {
   $("#edit-sensor-top-slider").slideDown("slow");
-  $("#left-coloumn").css({ opacity: "0.4" });
-  $("#right-coloumn").css({ opacity: "0.4" });
+  // $("#left-coloumn").css({ opacity: "0.4" });
+  // $("#right-coloumn").css({ opacity: "0.4" });
   var sensor_details = getSensorDetailUsingSensorID(sensor_id);
   edit_ratio = {
     hRatio: sensor_details.imageCoordinates.hRatio,

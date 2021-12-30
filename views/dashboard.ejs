@@ -226,14 +226,17 @@
       <!-- <div style="border: 1px solid white; padding: 5px;"> -->
       <fieldset>
         <legend>Create Email Alert!</legend>
+          <div id="emailAlertsTooltipPreviousAlerts">
+
+          </div>
           <div id="createAlertTooltipForm">
             <div style="margin: 3px;">
               <label for="minThreshold">Min Threshold:</label><br>
-              <input id="minThreshold" type="number" name="minThreshold" autocomplete="off" required>
+              <input id="minThreshold" type="number" name="minThreshold" value="-1000" autocomplete="off" required>
             </div>
             <div style="margin: 3px;">
               <label for="maxThreshold">Max Threshold:</label><br>
-              <input id="maxThreshold" type="number" name="maxThreshold" autocomplete="off" required>
+              <input id="maxThreshold" type="number" name="maxThreshold" value="1000" autocomplete="off" required>
             </div>
           </div>
           <div>
