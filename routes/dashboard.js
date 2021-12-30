@@ -68,107 +68,94 @@ route.post("/liveSensorData", async (req, res) => {
   let content = JSON.parse(`${JSON.stringify(req.body)}`.slice(1, -4));
   const arr = content.split("|");
 
-
   arr.forEach((elm) => {
     let obj = JSON.parse(elm.replace(/'/gi, `"`));
     obj["time"] = new Date().toISOString();
     main.push(obj);
   });
 
-
   // This part is for sending alert mails.
   main.forEach(async (elm) => {
     // Searching for threshold values in Sensor Model
     const allData = await Sensor.find();
-    allData.forEach(a => {
+    allData.forEach(async (a) => {
       const sensorArray = a.sensor;
-      sensorArray.forEach(b => {
+      sensorArray.forEach(async(b) => {
         const dataArray = b.data;
-        dataArray.forEach(c => {
+        dataArray.forEach(async(c) => {
           const sensorDetailArray = c.sensorDetail;
-          sensorDetailArray.forEach(async d => {
+          sensorDetailArray.forEach(async (d) => {
             if (d.sensorId == elm.id && d.isVerified == true) {
               let obj = {};
 
-              obj["minThreshold"] = d.minThreshold;
-              obj["maxThreshold"] = d.maxThreshold;
+              // obj["minThreshold"] = d.minThreshold;
+              // obj["maxThreshold"] = d.maxThreshold;
+              obj["alertList"] = d.alertList;
               obj["sensorName"] = d.sensorName;
               obj["parentID"] = a.user;
               obj["geolocationID"] = b.geolocation;
               obj["sensorUUID"] = d.sensorId;
 
-              const minThreshold = obj["minThreshold"];
-              const maxThreshold = obj["maxThreshold"];
+              // const minThreshold = obj["minThreshold"];
+              // const maxThreshold = obj["maxThreshold"];
               const sensorName = obj["sensorName"];
 
-              const userDetails = await User.findById(obj["parentID"]);
+              // const userDetails = await User.findById(obj["parentID"]);
 
-              const geolocationDetails = await Geolocations.findById(obj["geolocationID"]);
-
-              // Search For Sensor In liveData 
-              const sensorInLiveData = await LiveData.findOne({ sensorId: obj["sensorUUID"] });
-              var lastsent = new Date(sensorInLiveData.lastEmailSent);
-              var today = new Date();
-              var diffMs = (today - lastsent);
-              var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
+              const geolocationDetails = await Geolocations.findById(
+                obj["geolocationID"]
+              );
 
               // console.log("Here");
-              if (diffMins >= 0.5) {
-                let subUsers = [];
-                if(userDetails.type != "admin") {
-                  subUsers = await SelectUser.find({user: obj["parentID"]});
+              obj["alertList"].forEach(async (alertData, index) => {
+                var lastsent = new Date(alertData.lastEmailSent);
+                var today = new Date();
+                var diffMs = today - lastsent;
+                var diffMins = Math.round(
+                  ((diffMs % 86400000) % 3600000) / 60000
+                ); // minutes
+                if (diffMins >= 0.5) {
+                  if (elm.data < alertData.min) {
+                    // Send Email
+                    let store = {
+                      to: alertData.userEmail,
+                      userName: "user",
+                      sensorName: sensorName,
+                      geolocation: geolocationDetails.name,
+                      minThreshold: alertData.min,
+                      currentData: elm.data,
+                      flag: false,
+                    };
+                    sendEmail(store);
+                    d.alertList[index].lastEmailSent = new Date();
+                    await a.save();
+                    console.log(d);
+                    console.log("Email Sent For Min Threshold");
 
-                }
-                if (elm.data < minThreshold) {
-                  // Send Email
-                  let store = {
-                    to: userDetails.email,
-                    userName: userDetails.name,
-                    sensorName: sensorName,
-                    geolocation: geolocationDetails.name,
-                    minThreshold: minThreshold,
-                    currentData: elm.data,
-                    flag: false,
-                  }
-                  sendEmail(store)
-                  subUsers.forEach((user) => {
-                    console.log(user);
-                    store["to"] = user.email;
-                    store["userName"] = "user";
+                  } else if (elm.data > alertData.max) {
+                    let store = {
+                      to: alertData.userEmail,
+                      userName: "user",
+                      sensorName: sensorName,
+                      geolocation: geolocationDetails.name,
+                      maxThreshold: alertData.max,
+                      currentData: elm.data,
+                      flag: true,
+                    };
                     sendEmail(store);
-                  })
-                  sensorInLiveData.lastEmailSent = new Date();
-                  await sensorInLiveData.save();
-                  console.log("Email Sent For Min Threshold");
-                }
-                else if (elm.data > maxThreshold) {
-                  let store = {
-                    to: userDetails.email,
-                    userName: userDetails.name,
-                    sensorName: sensorName,
-                    geolocation: geolocationDetails.name,
-                    maxThreshold: maxThreshold,
-                    currentData: elm.data,
-                    flag: true,
+                    d.alertList[index].lastEmailSent = new Date();
+                    await a.save();
+                    console.log(d);
+                    console.log("Email Sent For Max Threshold");
                   }
-                  sendEmail(store)
-                  subUsers.forEach((user) => {
-                    store["to"] = user.email;
-                    store["userName"] = "user";
-                    sendEmail(store);
-                  })
-                  sensorInLiveData.lastEmailSent = new Date();
-                  await sensorInLiveData.save();
-                  console.log("Email Sent For Max Threshold");
                 }
-                
-              }
+              });
               return;
             }
-          })
-        })
-      })
-    })
+          });
+        });
+      });
+    });
 
     let findSensor = await LiveData.findOne({ sensorId: elm.id });
     if (findSensor) {
@@ -194,7 +181,6 @@ route.post("/liveSensorData", async (req, res) => {
       await newSensor.save();
     }
   });
-
 });
 
 // Getting all data from LiveData Model.
@@ -270,7 +256,6 @@ route.post("/exportdata", async (req, res) => {
     return;
   }
 });
-
 
 // Get all the sensors
 route.get("/getAllSensors", async (req, res) => {

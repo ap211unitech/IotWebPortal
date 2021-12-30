@@ -777,8 +777,8 @@ function showCreateAlertTooltip(sensorId) {
   let currSensorData = getSensorDetailUsingSensorID(sensorId);
   // document.getElementById("minThreshold").value = (currSensorData.minThreshold == -100000) ? 0 : currSensorData.minThreshold;
   // document.getElementById("maxThreshold").value = (currSensorData.maxThreshold == 100000) ? 0 : currSensorData.maxThreshold;
-  document.getElementById("minThreshold").value = currSensorData.minThreshold;
-  document.getElementById("maxThreshold").value = currSensorData.maxThreshold;
+  // document.getElementById("minThreshold").value = currSensorData.minThreshold;
+  // document.getElementById("maxThreshold").value = currSensorData.maxThreshold;
 }
 
 function showEditSensorForm(sensor_id) {

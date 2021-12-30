@@ -58,25 +58,14 @@ const SensorSchema = new mongoose.Schema({
                                 type: String,
                                 required: true
                             },
-                            minThreshold: {
-                                type: Number,
-                                default: -100000,
-                            },
-                            maxThreshold: {
-                                type: Number,
-                                default: 100000,
-                            },
                             isVerified: {
                                 type: Boolean,
                                 default: false,    
+                            },
+                            alertList: {
+                                type: Array,
+                                default: []
                             }
-                            // list: [
-                            //     {
-                            //         user: aryn@gamil.com,
-                            //         minMax: ,
-                            //         minMax: ,
-                            //     }, 
-                            // ]
                         }
                     ]
                 }
