@@ -36,6 +36,35 @@
         grid-template-columns: 100%;
         margin: 20px;
     }
+    #content {
+        grid-template-columns: 100%;
+        height: 80%;
+        width: 80%;
+        margin: 10px;
+    }
+    #map {
+        height: 400px;
+        width: : 100%;
+    }
+    #sensorVerificationMainDiv {
+        margin: 5px auto;
+        width: 95vw;
+    }
+    .sensorVerificationCard {
+        padding: 5px;
+        margin: 15px 0px;
+        grid-template-columns: 40% 40% 20%;
+    }
+    .grids {
+        background-color: #f96332;
+        margin-right: 10px;
+    }
+    #acceptBtn {
+        margin: 10px;
+    }
+    #declineBtn {
+        margin: 10px;
+    }
 }
 
 @media screen and (max-width: 1000px) and (min-width: 780px) {
@@ -84,6 +113,38 @@
         font-family: "Montserrat", sans-serif;
         font-size: 28px;
         color: #232b2b;
+    }
+    #sensorsDataDivGrid {
+        grid-template-columns: 100%;
+    }
+    #content {
+        grid-template-columns: 100%;
+        height: 80%;
+        width: 80%;
+        margin: 10px;
+    }
+    #map {
+        height: 400px;
+        width: : 100%;
+    }
+    #sensorVerificationMainDiv {
+        margin: 5px auto;
+        width: 99vw;
+    }
+    .sensorVerificationCard {
+        padding: 5px;
+        margin: 15px 0px;
+        grid-template-columns: 30% 40% 30%;
+    }
+    .grids {
+        background-color: #f96332;
+        margin-right: 10px;
+    }
+    #acceptBtn {
+        margin: 10px;
+    }
+    #declineBtn {
+        margin: 10px;
     }
 }
 
@@ -160,6 +221,39 @@
     #add-sensor-form form {
         margin: 5px;
     }
+    #sensorsDataDivGrid {
+        display: grid;
+        grid-template-columns: 100%;
+    }
+    #content {
+        grid-template-columns: 100%;
+        height: 90%;
+        width: 90%;
+        margin: 10px;
+    }
+    #map {
+        height: 400px;
+        width: : 100%;
+    }
+    #sensorVerificationMainDiv {
+        margin: 5px auto;
+        width: 70vw;
+    }
+    .sensorVerificationCard {
+        padding: 5px;
+        margin: 15px 0px;
+        grid-template-columns: 100%;
+    }
+    .grids {
+        background-color: #f96332;
+        margin-right: 0px;
+    }
+    #acceptBtn {
+        margin: 10px;
+    }
+    #declineBtn {
+        margin: 10px;
+    }
 }
 
 @media screen and (max-width: 600px) and (min-width: 450px) {
@@ -177,7 +271,7 @@
         margin: 30px 30px;
     }
     #navbarLocationsDiv {
-        height: 400px;
+        height: 250px;
     }
     #data {
         display: grid;
@@ -255,6 +349,38 @@
     #applyFiltersWeights {
         margin-top: 20px;
     }
+    #sensorsDataDivGrid {
+        grid-template-columns: 100%;
+    }
+    #content {
+        grid-template-columns: 100%;
+        height: 100%;
+        width: 100%;
+        margin: 10px;
+    }
+    #map {
+        height: 400px;
+        width: : 100%;
+    }
+    #sensorVerificationMainDiv {
+        margin: 5px auto;
+        width: 95vw;
+    }
+    .sensorVerificationCard {
+        padding: 5px;
+        margin: 15px 0px;
+        grid-template-columns: 100%;
+    }
+    .grids {
+        background-color: #f96332;
+        margin-right: 0px;
+    }
+    #acceptBtn {
+        margin: 10px;
+    }
+    #declineBtn {
+        margin: 10px;
+    }
 }
 
 @media screen and (max-width: 450px) and (min-width: 300px) {
@@ -272,7 +398,7 @@
         margin: 30px 30px;
     }
     #navbarLocationsDiv {
-        height: 400px;
+        height: 250px;
     }
     #data {
         display: grid;
@@ -366,6 +492,39 @@
     #applyFiltersWeights {
         margin-top: 20px;
     }
+    #sensorsDataDivGrid {
+        display: grid;
+        grid-template-columns: 100%;
+        width: 300px;
+    }
+    #content {
+        grid-template-columns: 100%;
+        height: 100%;
+        width: 100%;
+    }
+    #map {
+        height: 400px;
+        width: : 100%;
+    }
+    #sensorVerificationMainDiv {
+        margin: 5px auto;
+        width: 95vw;
+    }
+    .sensorVerificationCard {
+        padding: 5px;
+        margin: 15px 0px;
+        grid-template-columns: 100%;
+    }
+    .grids {
+        background-color: #f96332;
+        margin-right: 0px;
+    }
+    #acceptBtn {
+        margin: 10px;
+    }
+    #declineBtn {
+        margin: 10px;
+    }
 }
 
 @media screen and (max-width: 300px) and (min-width: 100px) {
@@ -455,5 +614,39 @@
         display: grid; 
         grid-template-columns: 100%; 
         margin: 5px;
+    }
+    #sensorsDataDivGrid {
+        display: grid;
+        grid-template-columns: 100%;
+    }
+    #content {
+        /*top: 50%;*/
+        /*left: 50%;*/
+        grid-template-columns: 100%;
+        height: 100%;
+        width: 100%;
+    }
+    #map {
+        height: 400px;
+        width: : 100%;
+    }
+    #sensorVerificationMainDiv {
+        margin: 5px auto;
+        width: 95vw;
+    }
+    .sensorVerificationCard {
+        padding: 5px;
+        margin: 15px 0px;
+        grid-template-columns: 100%;
+    }
+    .grids {
+        background-color: #f96332;
+        margin-right: 0px;
+    }
+    #acceptBtn {
+        margin: 10px;
+    }
+    #declineBtn {
+        margin: 10px;
     }
 }

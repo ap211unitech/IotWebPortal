@@ -27,7 +27,6 @@
                   <option value="numerical" selected>Numerical</option>
                   <option value="categorical">Categorical</option>
                   <option value="alphabetical">Alphabetical</option>
-                  <option value="audi">Audi</option>
                 </select>
               </div>
 
@@ -36,14 +35,15 @@
                 <select id="sensor-types" name="sensor-types" required>
                   <option value="Temperature" selected>Temperature</option>
                   <option value="Humidity">Humidity</option>
-                  <option value="Light Intensity">Light Intensity</option>
-                  <option value="Heart Beat">Heart Beat</option>
+                  <option value="LightIntensity">Light Intensity</option>
+                  <option value="HeartBeat">Heart Beat</option>
                   <option value="Snow">Snow</option>
-                  <option value="Gas Station">Gas Station</option>
-                  <option value="Ultrasonic Sensor">Ultrasonic Sensor</option>
-                  <option value="Gas Measure">Gas Measure</option>
+                  <option value="GasStation">Gas Station</option>
+                  <option value="Ultrasonic">Ultrasonic</option>
+                  <option value="GasMeasure">Gas Measure</option>
                   <option value="Garbage">Garbage</option>
                   <option value="Pressure">Pressure</option>
+                  <option value="MPU">MPU</option>
                   <!-- <option value="Bacteria">Bacteria</option> -->
                   <option value="Animals">Animals</option>
                   <option value="Water">Water</option>
@@ -124,7 +124,6 @@
                   <option value="numerical" selected>Numerical</option>
                   <option value="categorical">Categorical</option>
                   <option value="alphabetical">Alphabetical</option>
-                  <option value="audi">Audi</option>
                 </select>
               </div>
 
@@ -133,14 +132,15 @@
                 <select id="edit-sensor-types" name="edit-sensor-types" required>
                   <option value="Temperature" selected>Temperature</option>
                   <option value="Humidity">Humidity</option>
-                  <option value="Light Intensity">Light Intensity</option>
-                  <option value="Heart Beat">Heart Beat</option>
+                  <option value="LightIntensity">Light Intensity</option>
+                  <option value="HeartBeat">Heart Beat</option>
                   <option value="Snow">Snow</option>
-                  <option value="Gas Station">Gas Station</option>
-                  <option value="Ultrasonic Sensor">Ultrasonic Sensor</option>
-                  <option value="Gas Measure">Gas Measure</option>
+                  <option value="GasStation">Gas Station</option>
+                  <option value="Ultrasonic">Ultrasonic</option>
+                  <option value="GasMeasure">Gas Measure</option>
                   <option value="Garbage">Garbage</option>
                   <option value="Pressure">Pressure</option>
+                  <option value="MPU">MPU</option>
                   <!-- <option value="Bacteria">Bacteria</option> -->
                   <option value="Animals">Animals</option>
                   <option value="Water">Water</option>
@@ -226,14 +226,17 @@
       <!-- <div style="border: 1px solid white; padding: 5px;"> -->
       <fieldset>
         <legend>Create Email Alert!</legend>
+          <div id="emailAlertsTooltipPreviousAlerts">
+
+          </div>
           <div id="createAlertTooltipForm">
             <div style="margin: 3px;">
               <label for="minThreshold">Min Threshold:</label><br>
-              <input id="minThreshold" type="number" name="minThreshold" autocomplete="off" required>
+              <input id="minThreshold" type="number" name="minThreshold" value="-1000" autocomplete="off" required>
             </div>
             <div style="margin: 3px;">
               <label for="maxThreshold">Max Threshold:</label><br>
-              <input id="maxThreshold" type="number" name="maxThreshold" autocomplete="off" required>
+              <input id="maxThreshold" type="number" name="maxThreshold" value="1000" autocomplete="off" required>
             </div>
           </div>
           <div>
@@ -275,6 +278,12 @@
                   <div id="navbarLocationsDiv">
 
                   </div>
+                  <div style="margin: 18px 0px">
+                    <a id="add-new-btn-hamburger" href="/addGeolocation">Add New</a>
+                  </div>
+                  <div style="margin: 18px 0px">
+                    <a id="sensor-verification-btn-hamburger" href="/sensorVerification">Verification</a>
+                  </div>
                 </div>
               </ul>
             </div>
@@ -283,7 +292,7 @@
           <div style="float: right;">
             <div>
               <ul>
-                <li><a href="#"><i class="fa fa-home" aria-hidden="true"></i></a></li>
+                <li><a href="/"><i class="fa fa-home" aria-hidden="true"></i></a></li>
                 <li id="logoutUser"><a href="#" title="Logout"><i class="fas fa-power-off"></i></li>
                 <li id="create-user-btn"><a href="#" title="Create New User" onclick="showCreateUserForm()"><i
                       class="fas fa-user-plus"></i></a></li>
@@ -330,14 +339,15 @@
               <option value="All Sensors" selected>All Sensors</option>
               <option value="Temperature">Temperature</option>
               <option value="Humidity">Humidity</option>
-              <option value="Light Intensity">Light Intensity</option>
-              <option value="Heart Beat">Heart Beat</option>
+              <option value="LightIntensity">Light Intensity</option>
+              <option value="HeartBeat">Heart Beat</option>
               <option value="Snow">Snow</option>
-              <option value="Gas Station">Gas Station</option>
-              <option value="Ultrasonic Sensor">Ultrasonic Sensor</option>
-              <option value="Gas Measure">Gas Measure</option>
+              <option value="GasStation">Gas Station</option>
+              <option value="Ultrasonic">Ultrasonic</option>
+              <option value="GasMeasure">Gas Measure</option>
               <option value="Garbage">Garbage</option>
               <option value="Pressure">Pressure</option>
+              <option value="MPU">MPU</option>
               <option value="Animals">Animals</option>
               <option value="Water">Water</option>
             </select>
@@ -354,6 +364,12 @@
           <div id="coords">0, 0</div>
         </div>
 
+        <div id="loaderSensorDiv" style="display: none; position: absolute;">
+          <div style="display: flex;">
+            <div id="loaderSensor"> </div>
+            <p style="margin: auto 5px;"> Loading Sensors... </p>
+          </div>
+        </div>
         <div>
           <img id="inside-map" alt="img" src="/img/loader.gif">
 
@@ -392,10 +408,10 @@
       <footer>
         <div id="socialIcons">
           <ul>
-            <li><a href=""><i class="fab fa-instagram"></i></a></li>
-            <li><a href=""><i class="fab fa-github"></i></a></li>
-            <li><a href=""><i class="far fa-envelope"></i></a></li>
-            <li><a href=""><i class="fab fa-twitter"></i></a></li>
+            <li><a href="https://www.instagram.com/insta_iitj2019/" target="_blank"><i class="fab fa-instagram"></i></a></li>
+            <li><a href="https://github.com/aryan0141/IotWebPortal" target="_blank"><i class="fab fa-github"></i></a></li>
+            <li><a href="mailto:iitj.iotwebportal@gmail.com?cc=other@domain.com"><i class="far fa-envelope"></i></a></li>
+            <li><a href="https://www.linkedin.com/company/cse-iitj/" target="_blank"><i class="fab fa-linkedin"></i></a></li>
           </ul>
         </div>
       </footer>
@@ -410,3 +426,4 @@
 
 
     <script src="/js/dashboard.js"></script>
+    <script src="/js/extra.js"></script>

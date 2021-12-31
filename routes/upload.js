@@ -4,6 +4,7 @@ const path = require("path");
 const ImageSchema = require("../models/Image");
 const mongoose = require("mongoose");
 const auth = require("../config/auth");
+const GeoLocationSchema = require("../models/GeoLocations");
 
 const storage = multer.diskStorage({
     destination: 'public/uploads',
@@ -14,7 +15,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 1000000 },
+    limits: { fileSize: 5000000 },  // 5mb
     fileFilter: function (req, file, cb) {
         checkFileType(file, cb);
     }
@@ -62,15 +63,25 @@ router.post('/uploadSensorImage', auth, async (req, res) => {
                 }
 
                 try {
-                    const findUser = await ImageSchema.findOne({ user: req.user._id });
+                    const findUserFromGeolocation = await GeoLocationSchema.findById(req.body.geolocation);
+                    let mainUser;
+                    if (findUserFromGeolocation.user.toString() === req.user._id.toString()) {
+                        mainUser = req.user._id;
+                    }
+                    else {
+                        mainUser = findUserFromGeolocation.user.toString();
+                    }
 
-                    if (findUser && findUser.image && findUser.image.length > 0) {
+                    const findUser = await ImageSchema.findOne({ user: mainUser });
+
+                    if (findUser && findUser.image) {
                         const newData = {
                             name: all_files[0].name,
                             geolocation: req.body.geolocation
                         }
                         findUser.image.unshift(newData);
                         await findUser.save();
+                        return res.status(200).redirect('/dashboard');
                     }
                     const data = new ImageSchema({
                         user: req.user._id,
@@ -91,30 +102,9 @@ router.post('/uploadSensorImage', auth, async (req, res) => {
     });
 });
 
-// Fetch using geolocation
+// Get the image using geolocation
 router.post('/getImageUsingGeolocation', auth, async (req, res) => {
     try {
-
-        // let user;
-        // if (req.user.type == "orghead") {
-        //     user = req.user._id;
-        // }
-        // else {
-        //     user = req.body.user;
-        // }
-        // if (req.user.type == "admin") {
-        //     const findUser = await ImageSchema.findOne({ user: req.body.user });
-        //     console.log(findUser)
-        //     if (!findUser) {
-        //         return res.status(400).json({ msg: 'User not found...', status: 400 });
-        //     }
-        //     if (findUser.image.length == 0) {
-        //         return res.status(400).json({ msg: 'Image not found...', status: 400 })
-        //     }
-        //     const geolocation = findUser.image.filter(elm => elm.geolocation == req.body.geolocation);
-        //     return res.status(200).json(geolocation);
-        // }
-
         const findUser = await ImageSchema.findOne({ user: req.body.user });
         if (!findUser) {
             return res.status(400).json({ msg: 'User not found...', status: 400 });
@@ -122,8 +112,8 @@ router.post('/getImageUsingGeolocation', auth, async (req, res) => {
         if (findUser.image.length == 0) {
             return res.status(400).json({ msg: 'Image not found...', status: 400 })
         }
-        const geolocation = findUser.image.filter(elm => elm.geolocation == req.body.geolocation);
-        console.log(geolocation,"HERERERE")
+        const geolocation = findUser.image.filter(elm => elm.geolocation.toString() === req.body.geolocation);
+        // console.log(geolocation);
         return res.status(200).json(geolocation);
 
     } catch (err) {

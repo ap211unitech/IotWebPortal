@@ -14,14 +14,8 @@
 
 .sensorVerificationCard p {
 	font-size: 0.95rem;
-	/*color: #a9a9a9;*/
 	color: white;
-	/*margin: 4px 0px;*/
 	font-family: 'Montserrat', sans-serif;
-	/*background-color: #f96332;*/
-	/*border-bottom: 2px solid #f96332;*/
-	/*padding: 2px;	*/
-	/*font-weight: bold;*/
 }
 
 #acceptBtn {
@@ -88,7 +82,7 @@
 }
 
 #sensorVerificationLoader {
-	display: block;
+	display: none;
   border: 5px solid #f3f3f3;
   border-radius: 50%;
   border-top: 10px solid #f96332;

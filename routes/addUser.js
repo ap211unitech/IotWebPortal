@@ -7,7 +7,7 @@ const auth = require("../config/auth");
 route.post('/addUser', auth, async (req, res) => {
 
     const { email, type } = req.body;
-    console.log(req.body)
+
     try {
         const findUser = await SelectUser.findOne({ email });
 
@@ -33,7 +33,6 @@ route.post('/addUser', auth, async (req, res) => {
 // Get parent User for a User
 route.post("/parentUser", auth, async (req, res) => {
     const { email } = req.body;
-    console.log(req.body)
     try {
         const findUser = await SelectUser.findOne({ email });
 

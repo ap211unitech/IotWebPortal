@@ -30,7 +30,7 @@ route.get('/addGeolocation', auth, async (req, res) => {
 
 // Sensor Verification Page
 route.get('/sensorVerification', auth, async (req, res) => {
-  if (!req.user) {
+  if (!req.user || req.user.type != "admin") {
     return res.redirect('/login')
   }
   return res.status(200).render('sensorVerification.ejs');

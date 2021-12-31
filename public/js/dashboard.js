@@ -39,9 +39,6 @@ async function addNewUser(e) {
       type: obj[me.type],
     };
 
-    console.log(formData);
-    // return
-
     const settings = {
       method: "POST",
       headers: {
@@ -94,11 +91,15 @@ async function settingsForDiffrentUser() {
       console.log("ADMIN");
     } else if (currentUser.type == "orghead") {
       console.log("ORG HEAD");
+      $("#sensor-verification-btn").css("display", "none");
+      $("#sensor-verification-btn-hamburger").css("display", "none");
     } else if (currentUser.type == "user") {
       document.getElementById("addSensor-btn").style.display = "none";
       document.getElementById("add-new-btn").style.display = "none";
       document.getElementById("create-user-btn").style.display = "none";
       document.getElementById("exportAllSensorDataBtn").style.display = "none";
+      $("#sensor-verification-btn").css("display", "none");
+      $("#sensor-verification-btn-hamburger").css("display", "none");
 
       console.log("USER");
     }
@@ -123,13 +124,10 @@ function checkedFunc(el) {
 // Refreshing the data in every 5sec-
 function getRefreshData() {
   try {
-    // let response = await fetch("/call_data");
-    // let data = await response.json();
     $(".permanentMarker").remove();
     if (sensors_data == null) {
       return;
     }
-    // console.log(sensors_data, "TMKB");
 
     getLiveSensorData();
     applyFilterForWeight();
@@ -159,18 +157,6 @@ getRefreshData();
 setInterval(() => {
   getRefreshData();
 }, 5 * 1000);
-
-// MapBox API-
-mapboxgl.accessToken =
-  "pk.eyJ1IjoiYXJ5YW4wMTQxIiwiYSI6ImNrc21zbzJwaTBhMTYyb3A3MWpsd2M3eWQifQ.vH9l7ustzfMTQxOAcpfDww";
-
-var map = new mapboxgl.Map({
-  container: "geoMap",
-  style: "mapbox://styles/mapbox/streets-v11",
-  // Coordinates of IIT Jodhpur.
-  center: [73.1135, 26.471],
-  zoom: 10,
-});
 
 // Get Live Sensor Data
 async function getLiveSensorData() {
@@ -206,91 +192,10 @@ function getSensorLiveDataUsingSensorID(sensorId) {
   return mainData;
 }
 
-// Show sensors color according to the weight-
-function sensorColorByWeight(weight) {
-  if (weight == "x") {
-    return "rgb(255, 255, 255)";
-  }
-  if (weight < 25) {
-    // Green
-    return "rgb(0, 255, 127)";
-  }
-  if (weight >= 25 && weight < 50) {
-    // Yellow
-    return "rgb(255,255,49)";
-  }
-  if (weight >= 50 && weight < 75) {
-    // Blue
-    return "#007FFF";
-  }
-  if (weight >= 75) {
-    // Red
-    return "rgb(220, 20, 60)";
-  }
-  return "#FFB400";
-}
-
-// Show a particular sensor on the image map-
-function showSensor(res) {
-  var hRatio = res.imageCoordinates.hRatio;
-  var vRatio = res.imageCoordinates.vRatio;
-  var sensorSymbol = showThatSymbolOfSensor(res.sensorType);
-
-  var sensorLiveData = getSensorLiveDataUsingSensorID(res.sensorId);
-  var sensorLiveWeight;
-  if (sensorLiveData == null || sensorLiveData.length == 0 || res.isVerified == false) {
-    sensorLiveWeight = "x";
-  } else {
-    sensorLiveWeight = sensorLiveData.data[0].data;
-  }
-  // alert(sensorLiveWeight);
-  // console.log(sensorLiveWeight,"Weight")
-
-  var top = hRatio * $image.height() + imgPos[1];
-  var left = vRatio * $image.width() + imgPos[0];
-
-  $("body").append(
-    $(
-      '<div title="Click for more info" onclick="showDataOfSensor(this)" id="' +
-        res._id +
-        '" class="permanentMarker">' +
-        sensorSymbol +
-        "</div>"
-    ).css({
-      top: top - 29 + "px",
-      left: left - 11 + "px",
-      color: sensorColorByWeight(sensorLiveWeight),
-      // fill: "black",
-      // position: "relative",
-      // width: "60%",
-      // height: "100%",
-      // backgroundColor: "blue",
-    })
-  );
-}
-
-// Function to show all the sensors on the Image Map-
-function showAllTheSensorsOnImageMap(data) {
-  if (
-    data == null ||
-    data[0] == null ||
-    data[0].data[0].sensorDetail.length == 0
-  ) {
-    return;
-  }
-  data.forEach((data) => {
-    data.data.forEach((data) => {
-      data.sensorDetail.forEach((res) => {
-        showSensor(res);
-      });
-    });
-  });
-}
-
 // Function to get the geolocation by using the geolocation id-
 function getGeolocationByGeoID(geoID) {
   var currentGeolocation = null;
-  if(allGlobalGeolocations==null) {
+  if (allGlobalGeolocations == null) {
     alert("Add a geolocation.");
     return null;
   }
@@ -303,52 +208,6 @@ function getGeolocationByGeoID(geoID) {
   return currentGeolocation;
 }
 
-// Fly to the required first coordinate in the geo map-
-function flyToTheFirstCoordinateInTheGeoMap(geoID, sensorsData) {
-  // Coordinates of the first flying position in the geo map-
-  var lat = null;
-  var lon = null;
-  var currentGeolocation = getGeolocationByGeoID(geoID);
-  if(currentGeolocation==null) {
-    return;
-  }
-  if (currentGeolocation.latitude == -1 || currentGeolocation.longitude == -1) {
-    // No coordinates are given to the geolocation, so we have to show the coordinates of the first sensor-
-    if (
-      sensorsData == null ||
-      sensorsData[0] == null ||
-      sensorsData[0].data[0].sensorDetail.length == 0
-    ) {
-      return;
-    } else {
-      lat = sensorsData[0].data[0].sensorDetail[0].latitude;
-      lon = sensorsData[0].data[0].sensorDetail[0].longitude;
-      // Also if sensors coordinates are also not given-
-      if (lat == -1 || lon == -1) {
-        return;
-      }
-    }
-  } else {
-    lat = currentGeolocation.latitude;
-    lon = currentGeolocation.longitude;
-  }
-  if (lat == null || lon == null) {
-    // alert("Here");
-    return;
-  }
-  // Fly to the required coordinates-
-  map.flyTo({
-    center: [lon, lat],
-    zoom: 12,
-    bearing: 0,
-    speed: 1.4, // make the flying slow
-    curve: 1.8, // change the speed at which it zooms out
-    easing: function (t) {
-      return t;
-    },
-    essential: true,
-  });
-}
 // Function to show all the sensors on the Geo Map-
 function showAllTheSensorsOnGeoMap(data) {
   $(".geoMarker").remove();
@@ -368,13 +227,15 @@ function showAllTheSensorsOnGeoMap(data) {
           var sensorSymbol = showThatSymbolOfSensor(res.sensorType);
           var sensorLiveData = getSensorLiveDataUsingSensorID(res.sensorId);
           var sensorLiveWeight;
-          if (sensorLiveData == null || sensorLiveData.length == 0 || res.isVerified == false) {
+          if (
+            sensorLiveData == null ||
+            sensorLiveData.length == 0 ||
+            res.isVerified == false
+          ) {
             sensorLiveWeight = "x";
           } else {
             sensorLiveWeight = sensorLiveData.data[0].data;
           }
-
-          console.log(lat + " " + lon);
 
           var el = document.createElement("p");
           el.className = "geoMarker";
@@ -421,7 +282,6 @@ function giveCoorsToImage() {
 
       ratio["hRatio"] = height_ratio;
       ratio["vRatio"] = width_ratio;
-      console.log(height_ratio + " , " + width_ratio);
 
       $(".marker").remove(); // Removes the previous marker, when we select a new marker.
 
@@ -444,50 +304,6 @@ function giveCoorsToImage() {
   });
   $image.mouseleave(function () {
     $("html").css({ cursor: "default" });
-  });
-}
-
-// Show different sensor symbols according to their type-
-function showThatSymbolOfSensor(text) {
-  if (text == "Temperature") return '<i class="fas fa-temperature-high"></i>';
-  if (text == "Humidity") return '<i class="fas fa-tint"></i>';
-  if (text == "Light Intensity") return '<i class="fas fa-sun"></i>';
-  if (text == "Heart Beat") return '<i class="fas fa-heartbeat"></i>';
-  if (text == "Snow") return '<i class="fas fa-snowflake"></i>';
-  if (text == "Gas Station") return '<i class="fas fa-gas-pump"></i>';
-  if (text == "Gas Measure") return '<i class="fas fa-burn"></i>';
-  if (text == "Garbage") return '<i class="fas fa-trash-alt"></i>';
-  // if (text == "Pressure") return '<i class="fas fa-tachometer-alt"></i>';
-  if (text == "Pressure") return '<i class="fas fa-tachometer-alt"></i>';
-  if (text == "Bacteria") return '<i class="fas fa-bacteria"></i>';
-  if (text == "Animals") return '<i class="fab fa-sticker-mule"></i>';
-  if (text == "Location") return '<i class="fas fa-map-marker-alt"></i>';
-  if (text == "Charging Station")
-    return '<i class="fas fa-charging-station"></i>';
-  if (text == "Water") return '<i class="fas fa-water"></i>';
-  if (text == "Tint") return '<i class="fas fa-tint"></i>';
-  // if (text == "Ultrasonic Sensor") return '<i class="fas fa-tint"></i>';
-  if (text == "Ultrasonic Sensor")
-    return '<i class="fas fa-satellite-dish"></i>';
-}
-
-// Function to show only a particular type of sensor on the image map-
-function showThatTypeOfSensor(sensorType) {
-  if (
-    sensors_data == null ||
-    sensors_data[0] == null ||
-    sensors_data[0].data[0].sensorDetail.length == 0
-  ) {
-    return;
-  }
-  sensors_data.forEach((data) => {
-    data.data.forEach((data) => {
-      data.sensorDetail.forEach((res) => {
-        if (res.sensorType == sensorType) {
-          showSensor(res);
-        }
-      });
-    });
   });
 }
 
@@ -557,14 +373,6 @@ async function getSensorDetail(geolocation_id) {
     let geoUser = (await getGeolocationUserByGeoId(geolocation_id)).user;
     let currentuser = await myDetails();
 
-    // Checking Parent User Details
-    // const currentUser = await myDetails();
-    // let parentId = null;
-    // if (currentUser.type != "admin") {
-    //   parentId = (await parentUser(currentUser.email)).user;
-    // }
-
-    // console.log(geoUser)
     const settings = {
       method: "POST",
       headers: {
@@ -574,17 +382,21 @@ async function getSensorDetail(geolocation_id) {
       body: JSON.stringify({ geolocation: geolocation_id, user: geoUser }),
     };
 
-    const response = await fetch("/getSensorgeolocation", settings);
-    const data = await response.json();
-    sensors_data = data;
-
-    console.log(sensors_data, "sensor data");
-
     $("#inside-map").attr("src", "/img/loader.gif");
     const findImage = await fetch("/getImageUsingGeolocation", settings);
     const Image = await findImage.json();
     image = Image;
     console.log(Image, "image data");
+
+    // Loader for loading the sensors is only visible on big frames.
+    if ($(window).width() > 1250) {
+      $("#loaderSensorDiv").css("display", "block");
+    }
+    const response = await fetch("/getSensorgeolocation", settings);
+    const data = await response.json();
+    sensors_data = data;
+    console.log(sensors_data, "sensor data");
+    $("#loaderSensorDiv").css("display", "none");
 
     // If image is not found, then show the add image option.
 
@@ -619,12 +431,8 @@ async function getSensorDetail(geolocation_id) {
 
     giveCoorsToImage();
 
-    // giveCoorsToImage();
-
-    // console.log(Image)
     // If sensor data is not found, then only show the uploaded image.
     if (data.status == 400) {
-      console.log(data, "HERE");
       $("#insideImage").css({ display: "none" });
       $("#inside-map").css({ display: "block" });
       $("#inside-map").attr("src", Image[0].name);
@@ -642,6 +450,9 @@ async function getSensorDetail(geolocation_id) {
 }
 
 async function deleteGeolocation(geoId) {
+  if (confirm("Are you sure want to delete that location?") == false) {
+    return;
+  }
   // Get Geolocation User Details
   let geoUser = (await getGeolocationUserByGeoId(geoId)).user;
   let currentuser = await myDetails();
@@ -660,6 +471,65 @@ async function deleteGeolocation(geoId) {
   let data = await response.json();
   window.location.reload();
   // return;
+}
+
+function createGeolocationColoumn(res, currentUser, data, isHamburgerNavbar) {
+  var div = document.createElement("div");
+  div.className = "location_card";
+  div.tabIndex = 1;
+
+  if (isHamburgerNavbar) {
+    div.id = "HamNav" + res._id;
+  } else {
+    div.id = res._id;
+  }
+
+  const state = res.location;
+  const place = res.name;
+
+  var div2 = document.createElement("div");
+  div2.innerHTML = `<h3>${place}</h3><p>${state}</p>`;
+
+  div.appendChild(div2);
+  if (currentUser.type == "admin" || currentUser.type == "orghead") {
+    var div3 = document.createElement("div");
+    div3.className = "deleteGeolocationBtn";
+    div3.title = "Delete Geolocation";
+    div3.style.margin = "auto";
+    div3.innerHTML = `<h2><i class="fas fa-trash"></i></h2>`;
+
+    div3.onclick = function () {
+      geolocation_id = res._id;
+      deleteGeolocation(geolocation_id);
+    };
+    div.appendChild(div3);
+  }
+
+  div.onclick = function () {
+    $(".permanentMarker").remove();
+    geolocation_id = res._id;
+    $("#geolocation-form").val(geolocation_id);
+
+    getSensorDetail(geolocation_id);
+
+    // Removing active class from the remaining geolocations.
+    data.allGeoLocations.forEach((res) => {
+      var div;
+      if (isHamburgerNavbar) {
+        div = document.getElementById("HamNav" + res._id);
+      } else {
+        div = document.getElementById(res._id);
+      }
+      div.classList.remove("active-geolocation");
+    });
+    // Adding active class to the clicked geolocation.
+    div.classList.add("active-geolocation");
+  };
+  if (isHamburgerNavbar) {
+    navbarLocationsDiv.appendChild(div);
+  } else {
+    mainLocationsDiv.appendChild(div);
+  }
 }
 
 // Getting geolocations
@@ -723,86 +593,66 @@ async function getGeolocation() {
 
     allGlobalGeolocations = data;
 
+    // Getting All the Users.
+    const settingsForGettingUsers = {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    };
+    let users = await fetch("/getAllUsers", settingsForGettingUsers);
+    let userDetails = await users.json();
+    // console.log("All USERS", userDetails);
+
     geolocation_id = data.allGeoLocations[0]._id;
     $("#geolocation-form").val(geolocation_id);
-    console.log(geolocation_id);
     getSensorDetail(geolocation_id);
 
     $("#geolocation").val(geolocation_id);
 
-    // Setting Geolocations For Left-Coloumn-
-    data.allGeoLocations.forEach((res) => {
+    var userIndex = 1;
+
+    userDetails.forEach((user) => {
       var div = document.createElement("div");
-      div.className = "location_card";
-      div.tabIndex = 1;
-      div.id = res._id;
-
-      const state = res.location;
-      const place = res.name;
-
-      var div2 = document.createElement("div");
-      div2.innerHTML = `<h3>${place}</h3><p>${state}</p>`;
-
-      div.appendChild(div2);
-      if (currentUser.type == "admin" || currentUser.type == "orghead") {
-        var div3 = document.createElement("div");
-        div3.id = "deleteGeolocationBtn";
-        div3.style.margin = "auto";
-        div3.innerHTML = `<h2><i class="fas fa-trash"></i></h2>`;
-
-        div3.onclick = function () {
-          geolocation_id = res._id;
-          deleteGeolocation(geolocation_id);
-        };
-        div.appendChild(div3);
+      var clonedDiv = document.createElement("div");
+      if(currentUser.type == "admin") {
+        div.style.display = "flex";
+        div.style.margin = "5px auto";
+        div.style.color = "white";
+        div.innerHTML = `<h4 style="margin: auto; flex-grow: 1;">${userIndex}. ${
+          user.name.charAt(0).toUpperCase() + user.name.slice(1)
+        }</h4><p style="font-size: 0.8rem; margin: auto;">[${user.type.charAt(0).toUpperCase() + user.type.slice(1)}]</p>`;
+        mainLocationsDiv.appendChild(div);
+        clonedDiv = div.cloneNode(true)
+        navbarLocationsDiv.appendChild(clonedDiv);
       }
 
+      var isLocationFound = false;
 
-      div.onclick = function () {
-        $(".permanentMarker").remove();
-        geolocation_id = res._id;
-        $("#geolocation-form").val(geolocation_id);
-        getSensorDetail(geolocation_id);
-      };
-      mainLocationsDiv.appendChild(div);
-      // navbarLocationsDiv.appendChild(div);
-    });
+      data.allGeoLocations.forEach((res) => {
+        if (res.user == user._id) {
+          isLocationFound = true;
+          createGeolocationColoumn(res, currentUser, data, false);
+          // Giving active class to the first geolocation.
+          var firstGeoDiv = document.getElementById(geolocation_id);
+          firstGeoDiv.classList.add("active-geolocation");
 
-    // Setting Geolocations For Hamburger Navbar-
-    data.allGeoLocations.forEach((res) => {
-      var div = document.createElement("div");
-      div.className = "location_card";
-      div.tabIndex = 1;
-      div.id = "HamNav" + res._id;
+          // Assigning Geolocations to Hamburger Navbar.
+          createGeolocationColoumn(res, currentUser, data, true);
+          // Giving active class to the first geolocation.
+          var firstGeoDiv = document.getElementById("HamNav" + geolocation_id);
+          firstGeoDiv.classList.add("active-geolocation");
+        }
+      });
 
-      const state = res.location;
-      const place = res.name;
-
-      var div2 = document.createElement("div");
-      div2.innerHTML = `<h3>${place}</h3><p>${state}</p>`;
-      div.appendChild(div2);
-
-      if (currentUser.type == "admin" || currentUser.type == "orghead") {
-        var div3 = document.createElement("div");
-        div3.id = "deleteGeolocationBtn";
-        div3.style.margin = "auto";
-        div3.innerHTML = `<h2><i class="fas fa-trash"></i></h2>`;
-
-        div3.onclick = function () {
-          geolocation_id = res._id;
-          deleteGeolocation(geolocation_id);
-        };
-        div.appendChild(div3);
+      if (!isLocationFound) {
+        userIndex--;
+        div.style.display = "none";
+        clonedDiv.style.display = "none";
       }
 
-
-      div.onclick = function () {
-        $(".permanentMarker").remove();
-        geolocation_id = res._id;
-        $("#geolocation-form").val(geolocation_id);
-        getSensorDetail(geolocation_id);
-      };
-      navbarLocationsDiv.appendChild(div);
+      userIndex++;
     });
   } catch (err) {
     console.log(err);
@@ -849,7 +699,7 @@ function applyFilter(el) {
   if (val == "All Sensors") {
     showAllTheSensorsOnImageMap(sensors_data);
   } else {
-    showThatTypeOfSensor(val);
+    showThatTypeOfSensor(val, sensors_data);
   }
 }
 
@@ -881,7 +731,7 @@ function applyFilterForWeight() {
     if (val == "All Sensors") {
       showAllTheSensorsOnImageMap(sensors_data);
     } else {
-      showThatTypeOfSensor(val);
+      showThatTypeOfSensor(val, sensors_data);
     }
   } else {
     $(".permanentMarker").remove();
@@ -898,55 +748,6 @@ function applyFilterForWeight() {
       showSensorsAccordingToWeightOfThatType(75, 10000, val);
     }
   }
-}
-
-// setTimeout(() => {
-//   getSensorDetail();
-// }, 3000);
-
-// Many Functionalities
-function readURL(input) {
-  if (input.files && input.files[0]) {
-    var reader = new FileReader();
-
-    reader.onload = function (e) {
-      $(".image-btn-and-dragger").hide();
-      // $('.file-upload-btn').hide();
-      $(".file-upload-content").show();
-
-      $(".file-upload-image").attr("src", e.target.result);
-
-      $(".image-title").html(input.files[0].name);
-    };
-
-    reader.readAsDataURL(input.files[0]);
-  } else {
-    removeUpload();
-  }
-}
-
-function removeUpload() {
-  $(".file-upload-input").replaceWith($(".file-upload-input").clone());
-  $(".file-upload-content").hide();
-  $(".image-btn-and-dragger").show();
-  $(".file-upload-image").attr("src", "#");
-  // $('.file-upload-btn').show();
-}
-$(".image-upload-wrap").bind("dragover", function () {
-  $(".image-upload-wrap").addClass("image-dropping");
-});
-$(".image-upload-wrap").bind("dragleave", function () {
-  $(".image-upload-wrap").removeClass("image-dropping");
-});
-
-function create_UUID() {
-  var dt = new Date().getTime();
-  var uuid = "xxxxx".replace(/[xy]/g, function (c) {
-    var r = (dt + Math.random() * 16) % 16 | 0;
-    dt = Math.floor(dt / 16);
-    return (c == "x" ? r : (r & 0x3) | 0x8).toString(16);
-  });
-  return uuid;
 }
 
 // It gives the complete detail of the sensor by the sensor id-
@@ -971,65 +772,85 @@ function getSensorDetailUsingSensorID(sensor_id) {
   return currSensorData;
 }
 
-function showAddSensorForm() {
-  $("#sensor-id").attr("value", create_UUID());
-  $("#add-sensor-top-slider").slideDown("slow");
-  $("#left-coloumn").css({ opacity: "0.4" });
-  $("#right-coloumn").css({ opacity: "0.4" });
-}
-
-function showCreateUserForm() {
-  $("#createUser").slideToggle("slow");
-}
-
-function showCreateAlertTooltip(sensorId) {
+async function showCreateAlertTooltip(sensorId) {
   $("#emailAlertsTooltip").slideDown("slow");
+  var mainDiv = document.getElementById("emailAlertsTooltipPreviousAlerts");
   let currSensorData = getSensorDetailUsingSensorID(sensorId);
-  // document.getElementById("minThreshold").value = (currSensorData.minThreshold == -100000) ? 0 : currSensorData.minThreshold;
-  // document.getElementById("maxThreshold").value = (currSensorData.maxThreshold == 100000) ? 0 : currSensorData.maxThreshold;
-  document.getElementById("minThreshold").value = currSensorData.minThreshold;
-  document.getElementById("maxThreshold").value = currSensorData.maxThreshold;
+  var alertList = currSensorData.alertList;
+
+  // Removes all the previous classes.
+  mainDiv.innerHTML = '';
+
+  var currUserMin = null;
+  var currUserMax = null;
+  let currentUser = await myDetails();
+  alertList.forEach((data, index) => {
+    if(currentUser.email == data.userEmail) {
+      currUserMin = data.min;
+      currUserMax = data.max;
+    } else {
+      var p = document.createElement('p');
+      p.style.color = "white"
+      p.style.fontFamily = "'Montserrat', sans-serif";
+      p.style.fontSize = "0.8rem";
+      p.style.margin = "3px 0px";
+      p.innerHTML = `	&#8226; Min: ${data.min} - Max: ${data.max}`;
+      mainDiv.appendChild(p);
+    }
+  })
+  if(currUserMin) {
+    document.getElementById("minThreshold").value = currUserMin;
+  } else {
+    document.getElementById("minThreshold").value = -1000;
+  }
+  if(currUserMax) {
+    document.getElementById("maxThreshold").value = currUserMax;
+  } else {
+    document.getElementById("maxThreshold").value = 1000;
+  }
 }
 
 function showEditSensorForm(sensor_id) {
   $("#edit-sensor-top-slider").slideDown("slow");
-  $("#left-coloumn").css({ opacity: "0.4" });
-  $("#right-coloumn").css({ opacity: "0.4" });
+  // $("#left-coloumn").css({ opacity: "0.4" });
+  // $("#right-coloumn").css({ opacity: "0.4" });
   var sensor_details = getSensorDetailUsingSensorID(sensor_id);
   edit_ratio = {
     hRatio: sensor_details.imageCoordinates.hRatio,
     vRatio: sensor_details.imageCoordinates.vRatio,
+    isVerified: sensor_details.isVerified,
   };
+  $(
+    `select[id='edit-sensor-types'] option[value=${sensor_details.sensorType}]`
+  ).attr("selected", true);
   $("#edit-sensor-name-form").val(sensor_details.sensorName);
   $("#edit-sensor-location-form").val(sensor_details.location);
   $("#edit-sensor-id").val(sensor_details.sensorId);
   $("#edit-latitude").val(sensor_details.latitude);
   $("#edit-longitude").val(sensor_details.longitude);
-  // console.log(sensor_details);
 }
 
 async function createAlert(e) {
   // e.preventDefault();
   var minThreshold = document.getElementById("minThreshold").value;
   var maxThreshold = document.getElementById("maxThreshold").value;
-  if(idOfSensorWhichIsClicked == null) {
+  if (idOfSensorWhichIsClicked == null) {
     alert("No sensor found");
     return;
   }
   var sensorId = idOfSensorWhichIsClicked;
   var geolocation = geolocation_id;
   var imageID = global_del_image_id;
-  
-  if(minThreshold == "" || maxThreshold == "") {
-    alert("These fields cannot be empty.");  
+
+  if (minThreshold == "" || maxThreshold == "") {
+    alert("These fields cannot be empty.");
     return;
   }
   // if(minThreshold > maxThreshold) {
-  //   // alert("Min Value cannot be greater than the Max Value.");  
-  //   alert(minThreshold +  " " + maxThreshold);  
+  //   // alert("Min Value cannot be greater than the Max Value.");
+  //   alert(minThreshold +  " " + maxThreshold);
   //   return;
   // }
-  
 
   // Get Geolocation User Details
   const geoUser = (await getGeolocationUserByGeoId(geolocation)).user;
@@ -1046,6 +867,9 @@ async function createAlert(e) {
 }
 
 async function deleteSensor(sensor_id) {
+  if (confirm("Are you sure want to delete the sensor?") == false) {
+    return;
+  }
   var sensorId = sensor_id;
   var geolocation = geolocation_id;
   var imageID = global_del_image_id;
@@ -1061,8 +885,6 @@ async function deleteSensor(sensor_id) {
     geoUser,
     sensorIdUUID,
   };
-  // console.log(obj)
-  // return
   deleteSensorAPICall(obj);
 }
 
@@ -1075,79 +897,9 @@ function closeSlider() {
   $(".marker").remove();
 }
 
-function closeEditSensorForm() {
-  $("#edit-sensor-top-slider").slideUp("slow");
-  $("#left-coloumn").css({ opacity: "1" });
-  $("#right-coloumn").css({ opacity: "1" });
-}
-
-function centerDivUsingID(div_id) {
-  var w = screen.width / 2 - $("#" + div_id).width() / 2;
-  var len = w.toString() + "px";
-  document.getElementById(div_id).style.left = len;
-}
-
-// It takes the ADD SENSOR form exactly in the center of the frame.
-centerDivUsingID("add-sensor-top-slider");
-
-// It takes the EDIT SENSOR form exactly in the center of the frame.
-centerDivUsingID("edit-sensor-top-slider");
-
-// It takes the CREATE USER form exactly in the center of the frame.
-centerDivUsingID("createUser");
-
-// It takes the CREATE ALERT form exactly in the center of the frame.
-centerDivUsingID("emailAlertsTooltip");
-
-// Closses the slider, when we click outside that div and outside the image.
-$(document).mouseup(function (e) {
-  var container = $("#add-sensor-top-slider");
-  var mapImage = $("#inside-map");
-  var createUserForm = $("#createUser");
-  var sensorDataTooltip = $(".sensorsDataDiv");
-  var permanentMarkers = $(".permanentMarker");
-  var edit_sensor_top_slider = $("#edit-sensor-top-slider");
-  var emailAlertsTooltip = $("#emailAlertsTooltip");
-  if (
-    !container.is(e.target) &&
-    container.has(e.target).length === 0 &&
-    !mapImage.is(e.target) &&
-    mapImage.has(e.target).length === 0
-  ) {
-    closeSlider();
-  }
-  if (
-    !createUserForm.is(e.target) &&
-    createUserForm.has(e.target).length === 0
-  ) {
-    createUserForm.slideUp("slow");
-  }
-  if (
-    !sensorDataTooltip.is(e.target) &&
-    sensorDataTooltip.has(e.target).length === 0 &&
-    !permanentMarkers.is(e.target) &&
-    permanentMarkers.has(e.target).length === 0
-  ) {
-    // removeDataOfSensor();
-    $(".sensorsDataDiv").fadeOut("slow");
-  }
-  if (
-    !edit_sensor_top_slider.is(e.target) &&
-    edit_sensor_top_slider.has(e.target).length === 0
-  ) {
-    closeEditSensorForm();
-  }
-  if (
-    !emailAlertsTooltip.is(e.target) &&
-    emailAlertsTooltip.has(e.target).length === 0
-  ) {
-    $("#emailAlertsTooltip").slideUp("slow");
-  }
-});
-
 function addSensorBtn() {
   if (image == undefined || image == null || image.length == 0) {
-    alert("Uploaded an Image to Add Sensor.")
+    alert("Uploaded an Image to Add Sensor.");
     return;
   }
   // if(sensors_data==null) return;
@@ -1177,38 +929,37 @@ async function showDataOfSensor(el) {
     sensorLiveWeight = sensorLiveData.data[0].data;
   }
   var sensorLiveTime =
-    sensorLiveData == null || sensorLiveData.data[0].time == null || currSensorData.isVerified == false
+    sensorLiveData == null ||
+    sensorLiveData.data[0].time == null ||
+    currSensorData.isVerified == false
       ? "x"
       : sensorLiveData.data[0].time;
 
   $("#sensorNameTooltip").html(sensorName);
   $("#sensorIdTooltip").html("Id: " + sensorId);
+
   $("#sensorLocationTooltip").html(
     '<i class="fas fa-map-marker-alt"></i> ' + sensorLocation
   );
 
-  if(currSensorData.isVerified == true) {
+  if (currSensorData.isVerified == true) {
     var isVerifiedPara = $("#isSensorVerifiedPara");
     isVerifiedPara.css("color", "rgb(50, 205, 50)");
     isVerifiedPara.css("cursor", "pointer");
     isVerifiedPara.css("margin", "auto 2px");
     isVerifiedPara.css("fontSize", "0.9rem");
-    isVerifiedPara.prop('title', 'Verified');
-    isVerifiedPara.html(
-      '<i class="fas fa-check"></i>'
-    );
+    isVerifiedPara.prop("title", "Verified");
+    isVerifiedPara.html('<i class="fas fa-check"></i>');
   } else {
     var isVerifiedPara = $("#isSensorVerifiedPara");
     isVerifiedPara.css("color", "red");
     isVerifiedPara.css("cursor", "pointer");
     isVerifiedPara.css("margin", "auto 2px");
     isVerifiedPara.css("fontSize", "0.9rem");
-    isVerifiedPara.prop('title', 'Not Verified');
-    isVerifiedPara.html(
-      '<i class="fas fa-times"></i>'
-    );
+    isVerifiedPara.prop("title", "Not Verified");
+    isVerifiedPara.html('<i class="fas fa-times"></i>');
   }
-  
+
   $("#sensorWeightTooltip").html(sensorLiveWeight);
   // $("#sensorTimeTooltip").html('<i class="far fa-clock"></i> ' + "5:44PM | 21st May 2021");
   const date =
@@ -1251,60 +1002,167 @@ async function showDataOfSensor(el) {
   if (currentUser.type == "user") {
     document.getElementById("editBtnTooltip").style.display = "none";
     document.getElementById("deleteBtnTooltip").style.display = "none";
-    document.getElementById("createAlertBtn").style.display = "none";
+    // document.getElementById("createAlertBtn").style.display = "none";
     document.getElementById("exportSingleSensorData").style.display = "none";
     document.getElementById("lower-border").style.marginBottom = "18px";
+
+    // Normal Users Cannot See the Sesnor ID
+    document.getElementById("sensorIdTooltip").style.display = "none";
   }
 
-  $(".sensorsDataDiv").css({
-    left: left + "px",
-    top: top + "px",
-  });
+  var currentWindowSize = $(window).width();
+  var widthOfTooltip = $(".sensorsDataDiv").width();
+  var rightWidth = currentWindowSize - left;
+  var leftWidth = left;
+
+  if (currentWindowSize < widthOfTooltip + 10) {
+    $("#sensorsDataDivGrid").css("grid-template-columns", "100%");
+    $("#sensorsDataDivGrid").css("max-width", currentWindowSize - 20 + "px");
+    $(".sensorsDataDiv").css({
+      maxWidth: currentWindowSize - 40 + "px",
+      // left: (currentWindowSize-widthOfTooltip)/2 + "px",
+      margin: "0px 15px",
+      top: top + "px",
+    });
+    $("#mapPlots").css("height", "150px");
+  } else if (currentWindowSize < 2 * widthOfTooltip + 10) {
+    $(".sensorsDataDiv").css({
+      left: (currentWindowSize - widthOfTooltip) / 2 + "px",
+      top: top + "px",
+    });
+  } else {
+    if (rightWidth < widthOfTooltip + 10) {
+      if (rightWidth > leftWidth) {
+        $(".sensorsDataDiv").css({
+          left: left + "px",
+          top: top + "px",
+        });
+      } else {
+        $(".sensorsDataDiv").css({
+          left: leftWidth - widthOfTooltip - 20 + "px",
+          top: top + "px",
+        });
+      }
+    } else {
+      $(".sensorsDataDiv").css({
+        left: left + "px",
+        top: top + "px",
+      });
+    }
+  }
 
   $(".sensorsDataDiv").fadeIn("slow");
-
 
   // -------------------------------------------------------------------------------------
   // indexLabel: "\u2191 highest",markerColor: "red", markerType: "triangle" }
   // , indexLabel: "\u2193 lowest",markerColor: "DarkSlateGrey", markerType: "cross" }
-  CanvasJS.addColorSet("defaultShade",
-                [
-                  "#f96332",               
-                ]);
+  makeOrUpdateLinePlot(sensorLiveData, currSensorData);
+}
 
+function makeOrUpdateLinePlot(sensorLiveData, currSensorData) {
+  CanvasJS.addColorSet("defaultShade", [
+    "#f96332",
+    "pink",
+    "green",
+    "brown",
+    "purple",
+  ]);
 
-  dataPoints = [];
-  var itr = 1;
-  for(var itr = 1; itr<=10; itr++) {
-    obj = {y: parseInt(sensorLiveData.data[itr].data), x: new Date(sensorLiveData.data[itr].time)};
-    dataPoints.push(obj);
+  var maxValuesToDisplay = 10;
+  mainData = [];
+
+  if (sensorLiveData == null || currSensorData.isVerified == false) {
+    // No need to display the line plot.
+    // We will draw an empty graph.
+    var chart = new CanvasJS.Chart("mapPlots", {
+      animationEnabled: true,
+      colorSet: "defaultShade",
+      title: {
+        text: `No Data`,
+        fontFamily: "tahoma",
+      },
+      data: [
+        {
+          type: "line",
+          indexLabelFontSize: 15,
+          xValueType: "dateTime",
+          xValueFormatString: "DD MMM hh:mm TT",
+          dataPoints: [],
+        },
+      ],
+    });
+
+    chart.render();
+    return;
+  }
+
+  if (sensorLiveData.data[0].data.indexOf(",") >= 0) {
+    // Multiple Values in one sensor is found.
+    var n = 0;
+    var diffPartsWholeArray = [];
+    for (
+      var itr = 0;
+      itr < Math.min(sensorLiveData.data.length, maxValuesToDisplay);
+      itr++
+    ) {
+      var diffParts = sensorLiveData.data[itr].data.split(",");
+      n = diffParts.length;
+      diffPartsWholeArray.push(diffParts);
+    }
+    for (var i = 0; i < n; i++) {
+      var tempObj = {
+        type: "line",
+        indexLabelFontSize: 15,
+        xValueType: "dateTime",
+        xValueFormatString: "DD MMM hh:mm TT",
+        dataPoints: [],
+      };
+      for (
+        var itr = 0;
+        itr < Math.min(sensorLiveData.data.length, maxValuesToDisplay);
+        itr++
+      ) {
+        obj = {
+          y: parseFloat(diffPartsWholeArray[itr][i]),
+          x: new Date(sensorLiveData.data[itr].time),
+        };
+        tempObj.dataPoints.push(obj);
+      }
+      mainData.push(tempObj);
+    }
+  } else {
+    var tempObj = {
+      type: "line",
+      indexLabelFontSize: 15,
+      xValueType: "dateTime",
+      xValueFormatString: "DD MMM hh:mm TT",
+      dataPoints: [],
+    };
+    for (
+      var itr = 0;
+      itr < Math.min(sensorLiveData.data.length, maxValuesToDisplay);
+      itr++
+    ) {
+      obj = {
+        y: parseFloat(sensorLiveData.data[itr].data),
+        x: new Date(sensorLiveData.data[itr].time),
+      };
+      tempObj.dataPoints.push(obj);
+    }
+    mainData.push(tempObj);
   }
 
   var chart = new CanvasJS.Chart("mapPlots", {
     animationEnabled: true,
-    // theme: "theme2",
     colorSet: "defaultShade",
-    title:{
+    title: {
       text: `${currSensorData.sensorType} Data`,
       fontFamily: "tahoma",
     },
-    axisY: {
-      scaleBreaks: {
-        customBreaks: [{
-          startValue: 100,
-          endValue: 400,
-        }]
-      }
-    },
-    data: [{        
-      type: "line",
-          indexLabelFontSize: 15,
-          dataPoints,
-    }]
+    data: mainData,
   });
 
   chart.render();
-
 }
 
 async function exportData(sensorData = sensors_data) {
@@ -1317,7 +1175,6 @@ async function exportData(sensorData = sensors_data) {
     return;
   }
   if (sensors_data == null) {
-    
   }
   let settings = {};
   if (sensorData === sensors_data) {
@@ -1330,10 +1187,7 @@ async function exportData(sensorData = sensors_data) {
         });
       });
     });
-    // allSensorsIds.forEach((data) => {
-    //   console.log(data);
-    // });
-    // return;
+
     settings = {
       method: "POST",
       headers: {
@@ -1353,8 +1207,6 @@ async function exportData(sensorData = sensors_data) {
   }
 
   await fetch("/exportdata", settings);
-  // const exportedData = await response.json();
-  // console.log(exportedData, "Exported Data");
 
   var element = document.createElement("a");
   element.setAttribute("href", "temp.csv");
@@ -1387,7 +1239,9 @@ async function updateDataOfSensorInTooltip(currSensorData) {
     sensorLiveWeight = sensorLiveData.data[0].data;
   }
   var sensorLiveTime =
-    (sensorLiveData == null || currSensorData.isVerified == false) ? "x" : sensorLiveData.data[0].time;
+    sensorLiveData == null || currSensorData.isVerified == false
+      ? "x"
+      : sensorLiveData.data[0].time;
   $("#sensorWeightTooltip").html(sensorLiveWeight);
   const date =
     sensorLiveTime == "x"
@@ -1401,45 +1255,10 @@ async function updateDataOfSensorInTooltip(currSensorData) {
     '<i class="far fa-clock"></i> ' + date + " | " + time
   );
 
-  CanvasJS.addColorSet("defaultShade",
-                [
-                  "#f96332",               
-                ]);
-
-
-  dataPoints = [];
-  var itr = 1;
-  for(var itr = 1; itr<=10; itr++) {
-    obj = {y: parseInt(sensorLiveData.data[itr].data), x: new Date(sensorLiveData.data[itr].time)};
-    dataPoints.push(obj);
-  }
-
-  var chart = new CanvasJS.Chart("mapPlots", {
-    animationEnabled: true,
-    // theme: "theme2",
-    colorSet: "defaultShade",
-    title:{
-      text: `${currSensorData.sensorType} Data`,
-      fontFamily: "tahoma",
-    },
-    axisY: {
-      scaleBreaks: {
-        customBreaks: [{
-          startValue: 100,
-          endValue: 400,
-        }]
-      }
-    },
-    data: [{        
-      type: "line",
-          indexLabelFontSize: 15,
-          dataPoints,
-    }]
-  });
-
-  chart.render();
-
-  
+  // We will update the graph only when the last stored value is not equal to the current value.
+  // if(sensorLiveData.data[0] && sensorLiveData.data[1] && parseInt(sensorLiveData.data[0].data)!=parseInt(sensorLiveData.data[1].data)) {
+  //   makeOrUpdateLinePlot(sensorLiveData, currSensorData);
+  // }
 }
 
 // API calling for adding a new sensor when user clicks Add Sensor button on popUp
@@ -1461,10 +1280,10 @@ async function addSensorAPICall(e) {
       const location = document.getElementById("sensor-location-form").value;
       const sensorId = document.getElementById("sensor-id").value;
       let e = document.getElementById("sensor-categories");
-      const category = e.options[e.selectedIndex].text;
+      const category = e.options[e.selectedIndex].value;
       const geolocation = geolocation_id;
       e = document.getElementById("sensor-types");
-      const sensorType = e.options[e.selectedIndex].text;
+      const sensorType = e.options[e.selectedIndex].value;
 
       if (latitude == "" || longitude == "") {
         latitude = -1;
@@ -1518,12 +1337,6 @@ async function editSensorAPICall(e) {
       alert("Select a Geolocation First");
       // break;
     } else {
-      // $("#edit-sensor-name-form").val(sensor_details.sensorName);
-      // $("#edit-sensor-location-form").val(sensor_details.location);
-      // $("#edit-sensor-id").val(sensor_details.sensorId);
-      // $("#edit-latitude").val(sensor_details.latitude);
-      // $("#edit-longitude").val(sensor_details.longitude);
-
       const imageId = $("#inside-map").attr("imageid");
       const sensorName = document.getElementById("edit-sensor-name-form").value;
       const latitude = document.getElementById("edit-latitude").value;
@@ -1533,10 +1346,10 @@ async function editSensorAPICall(e) {
       ).value;
       const sensorId = document.getElementById("edit-sensor-id").value;
       let e = document.getElementById("edit-sensor-categories");
-      const category = e.options[e.selectedIndex].text;
+      const category = e.options[e.selectedIndex].value;
       const geolocation = geolocation_id;
       e = document.getElementById("edit-sensor-types");
-      const sensorType = e.options[e.selectedIndex].text;
+      const sensorType = e.options[e.selectedIndex].value;
 
       if (latitude == "" || longitude == "") {
         latitude = -1;
@@ -1556,9 +1369,9 @@ async function editSensorAPICall(e) {
         geolocation,
         location,
         sensorType,
+        isVerified: edit_ratio.isVerified,
       };
-      // console.log(formData)
-      // return
+
       const settings = {
         method: "POST",
         headers: {
@@ -1577,7 +1390,6 @@ async function editSensorAPICall(e) {
     alert("Something went wrong...");
   }
 }
-
 
 // API Call to Create Alert
 async function createAlertAPICall(obj) {
@@ -1687,7 +1499,3 @@ async function parentUser(email) {
     alert("Something went wrong...");
   }
 }
-
-// setTimeout(() => {
-//   console.clear();
-// }, 5000);

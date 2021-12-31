@@ -12,9 +12,7 @@
 
     const response = await fetch("/getAllUsers", settings);
     allUsersData = await response.json();
-    // allUsersData = data
     console.log(allUsersData);
-    // return data;   
   }
 
   async function getAllGeolocations() {
@@ -28,9 +26,7 @@
 
     const response = await fetch("/getAllGeolocations", settings);
     allGeolocationsData = await response.json();
-    // allGeolocationsData = data;
     console.log(allGeolocationsData);
-    // return data;
   }
 
   async function getAllSensors() {
@@ -45,10 +41,9 @@
     document.getElementById("sensorVerificationCards").style.display = "none";
     const response = await fetch("/getAllSensors", settings);
     allSensorsData = await response.json();
-    // allSensorsData = data;
     console.log(allSensorsData);
 
-    setTimeout(function(){ extractInfo() }, 500);
+    setTimeout(function(){ extractInfo() }, 50);
     document.getElementById("sensorVerificationLoader").style.display = "none";
     document.getElementById("sensorVerificationCards").style.display = "block";
 
@@ -81,27 +76,34 @@
   }
 
   function extractInfo() {
-      allSensorsData.forEach(a => {
-        var user = getUserFromUserId(a.user);
-          const sensorArray = a.sensor;
-          sensorArray.forEach(b => {
-            const dataArray = b.data;
-            var geolocation = getGeolocationFromGeoId(b.geolocation);
-            dataArray.forEach(c => {
-              var imageId = (c.image) ? c.image : null;
-                const sensorDetailArray = c.sensorDetail;
-                sensorDetailArray.forEach(currSensorDetail => {
-                  // userName = (user) ? user.name : null;
-                  // geolocationName = (geolocation) ? geolocation.name : null;
-                  // sensorDetail = (currSensor) ? currSensor : null;
-                  if(user && geolocation && imageId && currSensorDetail && currSensorDetail.isVerified == false) {
-                    createDiv(user, geolocation, imageId, currSensorDetail)
-                    // console.log(user.name + " | " + geolocation.name + " | " + currSensorDetail.sensorName);
-                  } 
-                })
-            })
+    var anyUnVerifiedSensorFound = false;
+    allSensorsData.forEach(a => {
+      var user = getUserFromUserId(a.user);
+        const sensorArray = a.sensor;
+        sensorArray.forEach(b => {
+          const dataArray = b.data;
+          var geolocation = getGeolocationFromGeoId(b.geolocation);
+          dataArray.forEach(c => {
+            var imageId = (c.image) ? c.image : null;
+              const sensorDetailArray = c.sensorDetail;
+              sensorDetailArray.forEach(currSensorDetail => {
+                // userName = (user) ? user.name : null;
+                // geolocationName = (geolocation) ? geolocation.name : null;
+                // sensorDetail = (currSensor) ? currSensor : null;
+                if(user && geolocation && imageId && currSensorDetail && currSensorDetail.isVerified == false) {
+                  anyUnVerifiedSensorFound = true;
+                  createDiv(user, geolocation, imageId, currSensorDetail)
+                  // console.log(user.name + " | " + geolocation.name + " | " + currSensorDetail.sensorName);
+                } 
+              })
           })
-      })
+        })
+    })
+
+    if(anyUnVerifiedSensorFound == false) {
+      document.getElementById("noSensorText").style.display = "block";
+    }
+
   }
 
   function createDiv(user, geolocation, imageId, currSensorDetail) {
@@ -229,6 +231,9 @@
     var acceptBtn = document.createElement("BUTTON");
     acceptBtn.append(document.createTextNode("Accept"));
     acceptBtn.onclick = function () {
+      if(confirm("Are you sure want to verify that sensor?") == false) {
+        return;
+      }
       var sensorId = currSensorDetail._id;
       var geoId = geolocation._id;
       var userId = user._id;
@@ -250,6 +255,9 @@
     var declineBtn = document.createElement("BUTTON");
     declineBtn.append(document.createTextNode("Decline"));
     declineBtn.onclick = function () {
+      if(confirm("Are you sure want to decline that sensor?") == false) {
+        return;
+      }
       var sensorId = currSensorDetail._id;
       var geoId = geolocation._id;
       var userId = user._id;

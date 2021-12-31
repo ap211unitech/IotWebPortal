@@ -2,6 +2,8 @@ const router = require("express").Router();
 const Geolocation = require("../models/GeoLocations");
 const Image = require("../models/Image");
 const auth = require("../config/auth");
+const Sensor = require("../models/Sensor");
+const fs = require("fs");
 
 // Add new geolocation
 router.post('/addGeolocation', auth, async (req, res) => {
@@ -30,7 +32,6 @@ router.post('/getGeolocations', auth, async (req, res) => {
     try {
         if (req.user.type == "admin") {
             const allGeoLocations = await Geolocation.find();
-            // console.log(allGeoLocations)
             if (allGeoLocations.length == 0) {
                 return res.status(200).json({ msg: 'No geolocation found', status: 404 });
             }
@@ -38,7 +39,6 @@ router.post('/getGeolocations', auth, async (req, res) => {
         }
         else if (req.user.type == "orghead") {
             const allGeoLocations = await Geolocation.find({ user: req.user._id });
-            // console.log(allGeoLocations)
             if (allGeoLocations.length == 0) {
                 return res.status(200).json({ msg: 'No geolocation found', status: 404 });
             }
@@ -46,7 +46,6 @@ router.post('/getGeolocations', auth, async (req, res) => {
         }
         else {
             const allGeoLocations = await Geolocation.find({ user: req.body.parent });
-            // console.log(allGeoLocations)
             if (allGeoLocations.length == 0) {
                 return res.status(200).json({ msg: 'No geolocation found', status: 404 });
             }
@@ -80,31 +79,33 @@ router.get('/getAllGeolocations', async (req, res) => {
     } catch (err) {
         console.log(err);
         return res.status(500).json({ msg: 'Internal Server Error' });
-
     }
 })
 
-// Delete geolocation and delete image,sensor and other data
+// Delete geolocation and delete image,sensor and Live data
 router.delete('/deleteGeolocation', auth, async (req, res) => {
     const { geoId, user } = req.body;
-    console.log(geoId, user, "DELETE")
     try {
         // Delete Geolocation
         await Geolocation.deleteOne({ user: user, _id: geoId });
         // Delete Image for that geolocation
         const findUserFromImage = await Image.findOne({ user });
-        if (findUser) {
+        if (findUserFromImage) {
             const ImageArray = findUserFromImage.image;
             const index = ImageArray.find(data => data.geolocation.toString() === geoId);
-            findUserFromImage.image.splice(index, 1);
-            await findUserFromImage.save();
+            // console.log("Index: ", index);
+            if(index != undefined) {
+                // fs.unlinkSync((findUserFromImage.image)[index].name);
+                findUserFromImage.image.splice(index, 1);
+                await findUserFromImage.save();
+            }
         }
         let sensorIdArr = [];
         // Delete all Sensors For that Geolocation marked on Image
         const findUserFromSensor = await Sensor.findOne({ user });
         if (findUserFromSensor) {
             const index1 = findUserFromSensor.sensor.find(data => data.geolocation.toString() === geoId);
-            if (index1) {
+            if (index1!=undefined) {
                 let obj = findUserFromSensor.sensor[index1];
                 obj.data.forEach(a => {
                     a.sensorDetail.forEach(b => {
